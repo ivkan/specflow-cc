@@ -66,6 +66,8 @@ Complete the core workflow cycle:
 
 **Agent needed:** `agents/spec-reviser.md`
 
+> **Note:** `spec-reviser` is a new agent not in the original DESIGN.md (which lists 4 agents). This is an intentional extension — revising specs based on audit feedback requires different skills than creating them: understanding audit context, making targeted changes, preserving spec integrity.
+
 ---
 
 #### 2. `/sf run`
@@ -79,6 +81,24 @@ Complete the core workflow cycle:
 - Create atomic commits during implementation
 - Update status to `review` when done
 - Create execution summary in specification
+
+**Warning format (if not audited):**
+```
+⚠️  WARNING: Specification has not passed audit
+
+Status: draft (or auditing, revision_requested)
+Last audit: v2 — REVISION REQUESTED
+
+Outstanding comments:
+1. [Critical] Missing error handling for API failures
+2. [Suggestion] Consider adding retry logic
+
+Proceeding without audit approval may result in:
+- Implementation that doesn't meet requirements
+- Rework needed after review
+
+Continue anyway? [y/N]
+```
 
 **Agent needed:** `agents/spec-executor.md`
 
@@ -106,6 +126,35 @@ Complete the core workflow cycle:
 **Agent needed:** `agents/impl-reviewer.md`
 
 **Output format:** Similar to `/sf audit` but for implementation.
+
+**Review History format (in specification):**
+```markdown
+## Review History
+
+### Review v1 — 2024-01-15
+**Result:** APPROVED / CHANGES REQUESTED
+**Reviewer:** impl-reviewer (subagent)
+
+**Findings:**
+1. [Critical/Major/Minor] Description of issue
+   - File: `src/auth.ts:45`
+   - Issue: Missing null check
+   - Suggestion: Add guard clause
+
+2. [Passed] Compliance with specification
+   - All endpoints implemented as specified
+
+**Summary:** Brief overall assessment
+
+---
+
+### Fix Response v1 — 2024-01-15
+Applied fixes:
+- Fixed null check in auth.ts
+- Added error handling
+
+---
+```
 
 ---
 
@@ -221,3 +270,8 @@ Report readiness for Phase 3 (Navigation & To-Do):
 - Consider how executor handles large specifications
 - Review should check deletion of old files explicitly
 - `/sf done` should gracefully handle edge cases (no review, etc.)
+
+## Design Decisions
+
+- **No `templates/review.md` needed** — Review History uses the same inline format as Audit History, embedded in the specification file. This keeps all spec-related information in one place.
+- **`spec-reviser` agent added** — Extends DESIGN.md's 4 agents to 5. The revision task is distinct enough to warrant a dedicated agent.
