@@ -6,93 +6,240 @@ SpecFlow is a lean, audit-driven development workflow that integrates with Claud
 
 ## Philosophy
 
-- **Spec-first** — Write specifications before code
-- **Explicit audit** — Dedicated audit phase, not just verification
-- **Fresh context** — Auditors don't see the creation process (no bias)
-- **Lean process** — Minimal commands, maximum value
-- **Human gate** — You control when to proceed
-- **Token awareness** — Specs sized for single sessions
+| Principle | Description |
+|-----------|-------------|
+| **Spec-first** | Write specifications before code |
+| **Explicit audit** | Dedicated audit phase, not just verification |
+| **Fresh context** | Auditors don't see the creation process (no bias) |
+| **Lean process** | Minimal commands, maximum value |
+| **Human gate** | You control when to proceed (soft blocking) |
+| **Token awareness** | Specs sized for single sessions (~150k tokens) |
 
 ## Installation
 
 ```bash
+# Interactive mode (prompts for location)
 npx specflow-cc
+
+# Install globally (recommended)
+npx specflow-cc --global
+
+# Install to current project only
+npx specflow-cc --local
 ```
 
-## Core Workflow
+### Options
 
-```
-/sf init    → Initialize project
-/sf new     → Create specification
-/sf audit   → Audit specification
-/sf revise  → Revise based on audit
-/sf run     → Execute specification
-/sf review  → Review implementation
-/sf fix     → Fix based on review
-/sf done    → Complete and commit
-```
+| Flag | Description |
+|------|-------------|
+| `-g, --global` | Install to `~/.claude` (available in all projects) |
+| `-l, --local` | Install to `./.claude` (current project only) |
+| `--force-statusline` | Replace existing statusline configuration |
+| `-h, --help` | Show help |
 
 ## Quick Start
 
 ```bash
-# 1. Initialize project (once)
+# 1. Initialize project (once per project)
 /sf init
 
-# 2. Create a spec
+# 2. Create a specification
 /sf new "Add user authentication with JWT"
 
-# 3. Audit the spec
+# 3. Audit the specification (fresh context)
 /sf audit
 
-# 4. Run when approved
+# 4. Revise if needed
+/sf revise
+
+# 5. Execute when approved
 /sf run
 
-# 5. Review implementation
+# 6. Review implementation (fresh context)
 /sf review
 
-# 6. Complete
+# 7. Fix if needed
+/sf fix
+
+# 8. Complete and archive
 /sf done
 ```
 
 ## Commands
 
-### Core
+### Core Workflow
+
 | Command | Description |
 |---------|-------------|
-| `/sf init` | Initialize project |
-| `/sf new` | Create specification |
-| `/sf audit` | Audit specification |
-| `/sf revise` | Revise specification |
+| `/sf init` | Initialize project, analyze codebase |
+| `/sf new [description]` | Create new specification |
+| `/sf audit` | Audit specification (fresh context) |
+| `/sf revise [instructions]` | Revise spec based on audit |
 | `/sf run` | Execute specification |
-| `/sf review` | Review implementation |
-| `/sf fix` | Fix implementation |
-| `/sf done` | Complete |
+| `/sf review` | Review implementation (fresh context) |
+| `/sf fix [instructions]` | Fix based on review |
+| `/sf done` | Complete, commit, and archive |
+| `/sf status` | Show current state and next step |
 
 ### Navigation
-| Command | Description |
-|---------|-------------|
-| `/sf status` | Current state |
-| `/sf list` | All specifications |
-| `/sf show` | Show one spec |
-| `/sf next` | Next priority task |
 
-### To-Do
 | Command | Description |
 |---------|-------------|
-| `/sf todo` | Add idea |
-| `/sf todos` | List todos |
-| `/sf plan` | Convert to spec |
-| `/sf priority` | Prioritize |
+| `/sf list` | List all specifications |
+| `/sf show [ID]` | Show specification details |
+| `/sf next` | Switch to next priority task |
 
-### Session
+### To-Do Management
+
 | Command | Description |
 |---------|-------------|
-| `/sf pause` | Save context |
-| `/sf resume` | Restore context |
+| `/sf todo [text]` | Add idea or future task |
+| `/sf todos` | List all todos with priorities |
+| `/sf plan [ID]` | Convert todo into specification |
+| `/sf priority` | Interactive prioritization |
+
+### Decomposition
+
+| Command | Description |
+|---------|-------------|
+| `/sf split [ID]` | Split large spec into smaller parts |
+| `/sf deps` | Show dependency graph |
+
+### Session Management
+
+| Command | Description |
+|---------|-------------|
+| `/sf pause` | Save context for later |
+| `/sf resume` | Restore saved context |
+
+### Utilities
+
+| Command | Description |
+|---------|-------------|
+| `/sf help [command]` | Show help for commands |
+| `/sf history [ID]` | View completed specifications |
+| `/sf metrics` | Project statistics |
+
+## Workflow Diagram
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    SPECFLOW WORKFLOW                         │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  /sf init    ──→  Initialize project (once)                  │
+│       ↓                                                      │
+│  /sf new     ──→  Create specification                       │
+│       ↓                                                      │
+│  ┌─────────────────────────────────────┐                     │
+│  │  SPEC AUDIT LOOP                    │                     │
+│  │  /sf audit ──→ APPROVED? ──yes──→ ──┼──→                  │
+│  │       │                             │    ↓                │
+│  │       no                            │                     │
+│  │       ↓                             │                     │
+│  │  /sf revise ────────→ loop back     │                     │
+│  └─────────────────────────────────────┘                     │
+│       ↓                                                      │
+│  /sf run     ──→  Execute specification                      │
+│       ↓                                                      │
+│  ┌─────────────────────────────────────┐                     │
+│  │  IMPL REVIEW LOOP                   │                     │
+│  │  /sf review ──→ APPROVED? ──yes──→ ─┼──→                  │
+│  │       │                             │    ↓                │
+│  │       no                            │                     │
+│  │       ↓                             │                     │
+│  │  /sf fix ───────────→ loop back     │                     │
+│  └─────────────────────────────────────┘                     │
+│       ↓                                                      │
+│  /sf done    ──→  Complete and archive                       │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Project Structure
+
+After `/sf init`, SpecFlow creates:
+
+```
+.specflow/
+├── PROJECT.md       # Project overview and patterns
+├── STATE.md         # Current state and queue
+├── config.json      # Configuration
+├── specs/           # Active specifications
+│   └── SPEC-001.md
+├── audits/          # Detailed audit reports (when >3 issues)
+├── todos/           # Future ideas
+│   └── TODO.md
+└── archive/         # Completed specifications
+```
+
+## Specification Format
+
+```markdown
+---
+id: SPEC-001
+type: feature | refactor | bugfix
+status: draft | audited | running | review | done
+priority: high | medium | low
+complexity: small | medium | large
+created: 2026-01-20
+---
+
+# Task Title
+
+## Context
+[Why this is needed]
+
+## Task
+[What needs to be done]
+
+## Requirements
+### Interfaces
+### Files to Create/Modify
+### Files to Delete
+
+## Acceptance Criteria
+- [ ] Criterion 1
+- [ ] Criterion 2
+
+## Constraints
+- [What NOT to do]
+
+## Assumptions
+- [Made by agent, verify if incorrect]
+```
+
+## Complexity Estimation
+
+| Size | Tokens | Action |
+|------|--------|--------|
+| Small | ≤50k | Execute directly |
+| Medium | 50-150k | Warning, proceed |
+| Large | >150k | Requires `/sf split` |
+
+## Statusline
+
+SpecFlow includes a statusline hook showing:
+- Current model
+- Active specification status `[SF: SPEC-001 running]`
+- Context window usage (color-coded)
+
+## Comparison with GSD
+
+| Aspect | GSD | SpecFlow |
+|--------|-----|----------|
+| Commands | 25 | 22 |
+| Agents | 11 | 6 |
+| Phases per task | 5+ | 3-4 |
+| Quality audit | No | Yes (explicit) |
+| Revision loop | No | Yes |
+| Code deletion | Not verified | Explicit checklist |
+| Blocking | Hard | Soft (warning) |
 
 ## Documentation
 
-See [docs/DESIGN.md](docs/DESIGN.md) for full design specification.
+- [Design Document](docs/DESIGN.md) — Full architecture and decisions
+- [Changelog](CHANGELOG.md) — Version history
 
 ## License
 
