@@ -1,0 +1,36 @@
+{
+  "name": "specflow-cc",
+  "version": "0.1.0",
+  "description": "Spec-driven development system for Claude Code",
+  "bin": {
+    "specflow-cc": "bin/install.js"
+  },
+  "files": [
+    "bin",
+    "commands",
+    "agents",
+    "templates",
+    "hooks"
+  ],
+  "keywords": [
+    "claude",
+    "claude-code",
+    "ai",
+    "spec-driven",
+    "development",
+    "audit"
+  ],
+  "author": "ivkan",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ivkan/specflow-cc.git"
+  },
+  "homepage": "https://github.com/ivkan/specflow-cc",
+  "bugs": {
+    "url": "https://github.com/ivkan/specflow-cc/issues"
+  },
+  "engines": {
+    "node": ">=16.7.0"
+  }
+}
