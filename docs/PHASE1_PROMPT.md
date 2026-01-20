@@ -1,183 +1,149 @@
-# Задача: Реализация SpecFlow — Фаза 1 (Core)
+Task: SpecFlow Implementation — Phase 1 (Core)  
+Context  
+Project: SpecFlow — spec-driven development system for Claude Code  
+Directory: ~/Projects/specflow-cc  
+Specification: docs/DESIGN.md  
+Repository: https://github.com/ivkan/specflow-cc  
+Reference  
+GSD (for pattern borrowing): `/Users/koristuvac/Projects/dev/get-shit-done`  
+What to study:  
+`bin/install.js` — installation mechanism (already adapted)  
+`commands/*.md` — slash command format for Claude Code  
+`agents/*.md` — agent format (subagent prompts)  
+`hooks/statusline.js` — statusline integration  
+Important: DO NOT copy GSD, but adapt to SpecFlow philosophy:  
+Audit-driven (not verification-driven)  
+Lean process (fewer phases)  
+Human gate (warnings, not hard blocks)  
 
-## Контекст
+Phase 1: Core Commands  
+Goal  
+Implement a minimal working workflow:  
+- Project initialization  
+- Specification creation  
+- Specification audit  
+- Status viewing  
 
-**Проект:** SpecFlow — spec-driven development system для Claude Code
-**Директория:** ~/Projects/specflow-cc
-**Спецификация:** docs/DESIGN.md
-**Репозиторий:** https://github.com/ivkan/specflow-cc
+Commands to implement  
+1. `/sf init`  
+File: `commands/sf/init.md`  
+Functionality:  
+- Create `.specflow/` directory  
+- Analyze codebase (tech stack, patterns, structure)  
+- Create `PROJECT.md` with project overview  
+- Create `STATE.md` with initial state  
+- Create `config.json` with default settings  
+Templates needed:  
+- `templates/project.md`  
+- `templates/state.md`  
 
-## Референс
+2. `/sf new [description]`  
+File: `commands/sf/new.md`  
+Functionality:  
+- Accept task description  
+- Ask critical questions (if needed)  
+- Create `SPEC-XXX.md` in `.specflow/specs/`  
+- Estimate complexity (small/medium/large)  
+- Update `STATE.md`  
+Agent needed:  
+- `agents/spec-creator.md`  
+Template needed:  
+- `templates/spec.md`  
 
-GSD (для заимствования паттернов): `/Users/koristuvac/Projects/dev/get-shit-done`
+3. `/sf audit`  
+File: `commands/sf/audit.md`  
+Functionality:  
+- Read active specification  
+- Launch subagent for audit (fresh context)  
+- Record result in specification (Audit History)  
+- Update status in `STATE.md`  
+- Output result with next step  
+Agent needed:  
+- `agents/spec-auditor.md`  
 
-**Что изучить:**
-- `bin/install.js` — механизм установки (уже адаптирован)
-- `commands/*.md` — формат slash-команд Claude Code
-- `agents/*.md` — формат агентов (subagent prompts)
-- `hooks/statusline.js` — интеграция со statusline
+4. `/sf status`  
+File: `commands/sf/status.md`  
+Functionality:  
+- Read `STATE.md`  
+- Show current position  
+- Show recommended next step  
+- Show specification queue  
 
-**Важно:** НЕ копировать GSD, а адаптировать под философию SpecFlow:
-- Audit-driven (не verification-driven)
-- Lean process (меньше этапов)
-- Human gate (предупреждения, не блокировки)
+Implementation Requirements  
+Command format (study GSD)  
+# Command: /sf init  
 
----
+<purpose>  
+[Command description]  
+</purpose>  
 
-## Фаза 1: Core Commands
+<workflow>  
+[Execution steps]  
+</workflow>  
 
-### Цель
-Реализовать минимальный работающий workflow:
-1. Инициализация проекта
-2. Создание спецификации
-3. Аудит спецификации
-4. Просмотр статуса
+<context>  
+@.specflow/STATE.md (if exists)  
+</context>  
 
-### Команды для реализации
+...  
 
-#### 1. `/sf init`
-**Файл:** `commands/sf/init.md`
+Agent format (study GSD)  
+# Agent: spec-creator  
 
-**Функционал:**
-- Создать `.specflow/` директорию
-- Проанализировать кодовую базу (стек, паттерны, структура)
-- Создать `PROJECT.md` с обзором проекта
-- Создать `STATE.md` с начальным состоянием
-- Создать `config.json` с настройками по умолчанию
+<role>  
+[Agent role]  
+</role>  
 
-**Шаблоны нужны:**
-- `templates/project.md`
-- `templates/state.md`
+<instructions>  
+[Detailed instructions]  
+</instructions>  
 
-#### 2. `/sf new [описание]`
-**Файл:** `commands/sf/new.md`
+<output>  
+[Output format]  
+</output>  
 
-**Функционал:**
-- Принять описание задачи
-- Задать критические вопросы (если нужно)
-- Создать `SPEC-XXX.md` в `.specflow/specs/`
-- Оценить сложность (small/medium/large)
-- Обновить `STATE.md`
+Atomic commits  
+One commit per completed unit of work  
+Format: `feat(sf): add /sf init command`  
 
-**Агент нужен:**
-- `agents/spec-creator.md`
+Testing  
+After implementing each command — test manually  
+Ensure the command works in Claude Code  
 
-**Шаблон нужен:**
-- `templates/spec.md`
+Implementation Order  
+Templates (`templates/`)  
+- `project.md`  
+- `state.md`  
+- `spec.md`  
 
-#### 3. `/sf audit`
-**Файл:** `commands/sf/audit.md`
+Agents (`agents/`)  
+- `spec-creator.md`  
+- `spec-auditor.md`  
 
-**Функционал:**
-- Прочитать активную спецификацию
-- Запустить subagent для аудита (fresh context)
-- Записать результат в спецификацию (История аудитов)
-- Обновить статус в `STATE.md`
-- Вывести результат с next step
+Commands (`commands/sf/`)  
+- `init.md`  
+- `new.md`  
+- `audit.md`  
+- `status.md`  
 
-**Агент нужен:**
-- `agents/spec-auditor.md`
+Testing  
+- Initialize a test project  
+- Create a specification  
+- Perform an audit  
+- Check status  
 
-#### 4. `/sf status`
-**Файл:** `commands/sf/status.md`
+Phase 1 Completion Criteria  
+[ ] `/sf init` creates `.specflow/` with PROJECT.md, STATE.md, config.json  
+[ ] `/sf new "description"` creates SPEC-XXX.md  
+[ ] `/sf audit` performs audit and records result  
+[ ] `/sf status` displays current state  
+[ ] All commands work in Claude Code  
+[ ] Code is committed and pushed  
 
-**Функционал:**
-- Прочитать `STATE.md`
-- Показать текущую позицию
-- Показать следующий рекомендуемый шаг
-- Показать очередь спецификаций
-
----
-
-## Требования к реализации
-
-### Формат команд (изучить GSD)
-```markdown
-# Command: /sf init
-
-<purpose>
-[Описание команды]
-</purpose>
-
-<workflow>
-[Шаги выполнения]
-</workflow>
-
-<context>
-@.specflow/STATE.md (if exists)
-</context>
-
-...
-```
-
-### Формат агентов (изучить GSD)
-```markdown
-# Agent: spec-creator
-
-<role>
-[Роль агента]
-</role>
-
-<instructions>
-[Детальные инструкции]
-</instructions>
-
-<output>
-[Формат вывода]
-</output>
-```
-
-### Atomic commits
-- Один коммит на каждую законченную единицу работы
-- Формат: `feat(sf): add /sf init command`
-
-### Тестирование
-- После создания каждой команды — протестировать вручную
-- Убедиться, что команда работает в Claude Code
-
----
-
-## Порядок реализации
-
-1. **Шаблоны** (`templates/`)
-   - `project.md`
-   - `state.md`
-   - `spec.md`
-
-2. **Агенты** (`agents/`)
-   - `spec-creator.md`
-   - `spec-auditor.md`
-
-3. **Команды** (`commands/sf/`)
-   - `init.md`
-   - `new.md`
-   - `audit.md`
-   - `status.md`
-
-4. **Тестирование**
-   - Инициализировать тестовый проект
-   - Создать спецификацию
-   - Провести аудит
-   - Проверить статус
-
----
-
-## Критерии завершения Фазы 1
-
-- [ ] `/sf init` создаёт `.specflow/` с PROJECT.md, STATE.md, config.json
-- [ ] `/sf new "описание"` создаёт SPEC-XXX.md
-- [ ] `/sf audit` проводит аудит и записывает результат
-- [ ] `/sf status` показывает текущее состояние
-- [ ] Все команды работают в Claude Code
-- [ ] Код закоммичен и запушен
-
----
-
-## После завершения
-
-Сообщить о готовности к Фазе 2:
-- `/sf revise`
-- `/sf run`
-- `/sf review`
-- `/sf fix`
-- `/sf done`
+After completion  
+Report readiness for Phase 2:  
+- `/sf revise`  
+- `/sf run`  
+- `/sf review`  
+- `/sf fix`  
+- `/sf done`  
