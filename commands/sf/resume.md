@@ -1,0 +1,248 @@
+---
+name: sf:resume
+description: Restore context from last pause and continue work
+allowed-tools:
+  - Read
+  - Write
+  - Bash
+  - Glob
+  - AskUserQuestion
+---
+
+<purpose>
+Restore the work context from the last pause. Reads the pause file, displays full context summary, verifies current state matches, and provides clear next steps. Essential for seamless session continuity.
+</purpose>
+
+<context>
+@.specflow/STATE.md
+</context>
+
+<workflow>
+
+## Step 1: Verify Initialization
+
+```bash
+[ -d .specflow ] && echo "OK" || echo "NOT_INITIALIZED"
+```
+
+**If NOT_INITIALIZED:**
+```
+SpecFlow not initialized.
+
+Run `/sf init` to start.
+```
+Exit.
+
+## Step 2: Find Latest Pause File
+
+```bash
+ls -1 .specflow/sessions/PAUSE-*.md 2>/dev/null | sort -r | head -1
+```
+
+**If no pause files found:**
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ NO PAUSED SESSION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+No paused session found.
+
+**Options:**
+- `/sf status` — view current state
+- `/sf next` — find next task to work on
+- `/sf list` — see all specifications
+```
+Exit.
+
+## Step 3: Read Pause File
+
+Parse the pause file and extract:
+- Timestamp
+- Specification ID and title
+- Status at pause
+- Progress (criteria checked/total)
+- Recent changes list
+- User notes
+- Conversation summary
+
+## Step 4: Calculate Time Since Pause
+
+Calculate elapsed time:
+- If < 1 hour: "X minutes ago"
+- If < 24 hours: "X hours ago"
+- If < 7 days: "X days ago"
+- Otherwise: show date
+
+## Step 5: Verify Current State
+
+Read `.specflow/STATE.md` and compare:
+- Active Specification: same or different?
+- Status: same or different?
+
+### If State Matches
+
+Continue to Step 7.
+
+### If State Changed
+
+Display warning:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ STATE CHANGED SINCE PAUSE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Pause State:**
+- Specification: {SPEC-XXX}
+- Status: {status_at_pause}
+
+**Current State:**
+- Specification: {SPEC-YYY or same}
+- Status: {current_status}
+
+**Changes Detected:**
+- {description of what changed}
+
+---
+```
+
+Use AskUserQuestion:
+- header: "State"
+- question: "How should we proceed?"
+- options:
+  1. "Use current state (recommended)" — Accept changes, show current context
+  2. "Restore pause state" — Revert STATE.md to pause state
+  3. "View diff" — Show detailed differences
+
+**If "Restore pause state":**
+Update STATE.md to match pause state.
+
+**If "View diff":**
+Show detailed comparison and ask again.
+
+## Step 6: Update STATE.md (if needed)
+
+Ensure active specification and status match the resumed context.
+
+## Step 7: Load Current Specification Details
+
+If specification exists, read `.specflow/specs/SPEC-XXX.md`:
+- Full acceptance criteria with current checkbox state
+- Context and Task sections
+- Any audit/review history
+
+## Step 8: Check Current Git State
+
+```bash
+git status --porcelain 2>/dev/null
+```
+
+Compare with pause state changes to identify:
+- Files still modified
+- New changes since pause
+
+## Step 9: Display Full Resume Context
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ SESSION RESUMED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Restoring:** PAUSE-{YYYYMMDD}-{HHMMSS} ({time_ago})
+
+---
+
+## Context
+
+**Specification:** {SPEC-XXX} — {title}
+**Status:** {status}
+**Priority:** {priority} | **Complexity:** {complexity}
+
+---
+
+## Where You Left Off
+
+{Conversation summary from pause file}
+
+{If user notes exist:}
+**Your Notes:**
+> {notes}
+
+---
+
+## Progress
+
+**Acceptance Criteria:** {checked}/{total} ({percentage}%)
+
+| Status | Criterion |
+|--------|-----------|
+| [x] | {completed criterion 1} |
+| [x] | {completed criterion 2} |
+| [ ] | {pending criterion 3} |
+| [ ] | {pending criterion 4} |
+
+---
+
+## Files in Progress
+
+{If files tracked at pause:}
+| File | Status at Pause | Current |
+|------|-----------------|---------|
+| src/auth/middleware.ts | Created | ✓ exists |
+| src/types/auth.ts | Created | ✓ exists |
+| src/utils/jwt.ts | Modified | ✓ modified |
+
+{If new uncommitted changes since pause:}
+**New Changes Since Pause:**
+- {new file or modification}
+
+---
+
+## Recommended Action
+
+Based on status `{status}`:
+
+**Next Step:** `{recommended_command}` — {description}
+
+{Context-specific guidance based on where they left off}
+```
+
+## Step 10: Provide Focus Hints
+
+Based on notes and context:
+
+```
+---
+
+## Focus Points
+
+Based on your notes and progress:
+
+1. {Key thing to focus on next}
+2. {Related file or section}
+3. {Pending acceptance criterion to complete}
+```
+
+## Step 11: Clean Up Old Pause Files (Optional)
+
+If more than 5 pause files exist, suggest cleanup:
+
+```
+**Note:** {N} old pause files in sessions/. Run `/sf history` to review or clean up.
+```
+
+</workflow>
+
+<success_criteria>
+- [ ] Initialization verified
+- [ ] Latest pause file found and read
+- [ ] Time since pause calculated
+- [ ] Current state compared with pause state
+- [ ] State conflict handled if detected
+- [ ] Full context restored and displayed
+- [ ] Acceptance criteria progress shown
+- [ ] Files in progress tracked
+- [ ] User notes displayed
+- [ ] Clear recommended next action
+- [ ] Focus hints provided
+</success_criteria>
