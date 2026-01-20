@@ -1,0 +1,59 @@
+---
+id: SPEC-XXX
+type: feature | refactor | bugfix
+status: draft | audited | running | review | done
+priority: high | medium | low
+complexity: small | medium | large
+created: YYYY-MM-DD
+---
+
+# [Task Title]
+
+## Context
+
+[Why this is needed — background, motivation, problem being solved]
+
+## Task
+
+[What needs to be done — clear description of the work]
+
+## Requirements
+
+### Interfaces (if applicable)
+
+```typescript
+// Type definitions, API contracts, etc.
+```
+
+### Files to Create/Modify
+
+- [ ] `path/to/file.ext` — [what to do]
+- [ ] `path/to/another.ext` — [what to do]
+
+### Files to Delete
+
+- [ ] `path/to/old.ext` — [reason for deletion]
+
+## Acceptance Criteria
+
+- [ ] [Criterion 1 — specific, measurable]
+- [ ] [Criterion 2 — specific, measurable]
+- [ ] [Criterion 3 — specific, measurable]
+
+## Constraints
+
+- [What NOT to do]
+- [Boundaries and limitations]
+
+## Assumptions
+
+> Filled by spec-creator agent. Review and correct if needed.
+
+- [Assumption 1]
+- [Assumption 2]
+
+---
+
+## Audit History
+
+<!-- Filled by /sf audit -->
