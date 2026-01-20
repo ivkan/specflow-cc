@@ -112,6 +112,12 @@ npx specflow-cc --local
 | `/sf pause` | Save context for later |
 | `/sf resume` | Restore saved context |
 
+### Analysis
+
+| Command | Description |
+|---------|-------------|
+| `/sf scan [--focus]` | Deep codebase analysis for concerns and tech debt |
+
 ### Utilities
 
 | Command | Description |
@@ -164,6 +170,7 @@ After `/sf init`, SpecFlow creates:
 .specflow/
 ├── PROJECT.md       # Project overview and patterns
 ├── STATE.md         # Current state and queue
+├── SCAN.md          # Codebase scan results (from /sf scan)
 ├── config.json      # Configuration
 ├── specs/           # Active specifications
 │   └── SPEC-001.md
@@ -228,8 +235,8 @@ SpecFlow includes a statusline hook showing:
 
 | Aspect | GSD | SpecFlow |
 |--------|-----|----------|
-| Commands | 25 | 22 |
-| Agents | 11 | 6 |
+| Commands | 25 | 23 |
+| Agents | 11 | 7 |
 | Phases per task | 5+ | 3-4 |
 | Quality audit | No | Yes (explicit) |
 | Revision loop | No | Yes |
