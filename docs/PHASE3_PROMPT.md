@@ -291,9 +291,12 @@ Total: 4 items
 
 **Behavior:**
 ```
-/sf plan TODO-001    → Convert specific TODO to spec
+/sf plan TODO-001    → Convert specific TODO by ID
+/sf plan 1           → Convert TODO by list number (from /sf todos)
 /sf plan             → Interactive: show todos, ask which to convert
 ```
+
+> **Note:** Both ID (`TODO-001`) and list number (`1`) are supported. List numbers correspond to the order shown in `/sf todos` output.
 
 **Output:** Same as `/sf new` but with TODO context pre-filled.
 
