@@ -93,7 +93,19 @@ Read the command file and extract:
 /sf:new "Add user authentication with JWT"
 /sf:new "Fix pagination bug in user list"
 /sf:new "Refactor UserService to use repository pattern"
+/sf:new --research RES-001 "Add OAuth login"
 /sf:new                    # Interactive mode
+```
+```
+
+**For `/sf:research`:**
+```
+## Examples
+
+```
+/sf:research "OAuth vs JWT for authentication"
+/sf:research "state management options for React"
+/sf:research "database migration strategies"
 ```
 ```
 
@@ -212,6 +224,13 @@ Workflow: Spec → Audit → Revise → Run → Review → Fix → Done
 | /sf:pause    | Save session context for later          |
 | /sf:resume   | Restore previous session context        |
 
+## Research & Analysis
+
+| Command      | Description                             |
+|--------------|-----------------------------------------|
+| /sf:research | Research topic for spec context         |
+| /sf:scan     | Deep codebase analysis                  |
+
 ## Utilities
 
 | Command      | Description                             |
@@ -225,11 +244,12 @@ Workflow: Spec → Audit → Revise → Run → Review → Fix → Done
 ## Quick Start
 
 1. `/sf:init` — Initialize project (once)
-2. `/sf:new "task"` — Create specification
-3. `/sf:audit` — Audit the spec
-4. `/sf:run` — Implement
-5. `/sf:review` — Review implementation
-6. `/sf:done` — Complete and archive
+2. `/sf:research "topic"` — Research before spec (optional)
+3. `/sf:new "task"` — Create specification
+4. `/sf:audit` — Audit the spec
+5. `/sf:run` — Implement
+6. `/sf:review` — Review implementation
+7. `/sf:done` — Complete and archive
 
 ## Typical Session
 

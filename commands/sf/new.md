@@ -1,6 +1,7 @@
 ---
 name: sf:new
 description: Create a new specification from task description
+argument-hint: "[--research RES-XXX] <task description>"
 allowed-tools:
   - Read
   - Write
@@ -40,7 +41,16 @@ Exit.
 
 ## Step 2: Parse Arguments
 
-Extract task description from command arguments.
+Extract from command arguments:
+- `--research RES-XXX` — optional research document to include as context
+- Task description — what to build
+
+**If --research provided:**
+```bash
+[ -f .specflow/research/RES-XXX.md ] && echo "FOUND" || echo "NOT_FOUND"
+```
+
+If NOT_FOUND, warn user and continue without research context.
 
 **If no description provided:**
 Use AskUserQuestion:
@@ -66,7 +76,13 @@ Task(prompt="
 @.specflow/STATE.md
 </current_state>
 
+{If --research provided:}
+<research_context>
+@.specflow/research/RES-XXX.md
+</research_context>
+
 Create a specification following the spec-creator agent instructions.
+{If research provided, add: "Use the research findings to inform the specification."}
 ", subagent_type="sf-spec-creator", description="Create specification")
 ```
 

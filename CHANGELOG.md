@@ -5,6 +5,23 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-01-21
+
+### Added
+
+- `/sf:research` — Research topics before creating specifications
+- `researcher` agent — Explores codebase and web for findings
+- `research.md` template — Structured research document format
+- `--research RES-XXX` flag for `/sf:new` — Include research as spec context
+- `.specflow/research/` directory created on init
+
+### Changed
+
+- `/sf:help` now includes Research & Analysis section
+- Quick start guide updated with optional research step
+
+---
+
 ## [1.3.1] - 2026-01-21
 
 ### Fixed

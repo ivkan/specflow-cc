@@ -80,7 +80,7 @@ ls tsconfig.json 2>/dev/null
 ## Step 5: Create .specflow Directory
 
 ```bash
-mkdir -p .specflow/specs .specflow/audits .specflow/archive .specflow/todos
+mkdir -p .specflow/specs .specflow/audits .specflow/archive .specflow/todos .specflow/research
 ```
 
 ## Step 6: Generate PROJECT.md
@@ -190,10 +190,14 @@ Create `.specflow/config.json`:
 | `.specflow/PROJECT.md` | Project overview |
 | `.specflow/STATE.md` | Current state |
 | `.specflow/config.json` | Configuration |
+| `.specflow/research/` | Research documents |
 
 ## Next Step
 
 `/sf:new "your task description"` — create first specification
+
+Or research first:
+`/sf:research "topic"` — research before creating spec
 
 ---
 
@@ -210,6 +214,7 @@ Create `.specflow/config.json`:
 - [ ] .specflow/specs/ subdirectory created
 - [ ] .specflow/audits/ subdirectory created
 - [ ] .specflow/archive/ subdirectory created
+- [ ] .specflow/research/ subdirectory created
 - [ ] PROJECT.md created with detected stack
 - [ ] STATE.md created with initial state
 - [ ] config.json created with defaults
