@@ -198,9 +198,15 @@ The agent will:
 
 ---
 
+📄 File: .specflow/specs/SPEC-XXX.md
+
+---
+
 ## Next Step
 
 `/sf:review` — audit the implementation
+
+<sub>/clear recommended → reviewer needs fresh context</sub>
 ```
 
 </workflow>

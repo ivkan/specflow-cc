@@ -94,15 +94,17 @@ The agent will:
 
 - [List assumptions agent made]
 
-### File
+---
 
-`.specflow/specs/SPEC-XXX.md`
+📄 **File:** `.specflow/specs/SPEC-XXX.md`
 
 ---
 
 ## Next Step
 
 `/sf:audit` — audit specification before implementation
+
+<sub>/clear recommended → auditor needs fresh context</sub>
 
 {If complexity is large:}
 

@@ -104,6 +104,10 @@ The agent will:
 
 ---
 
+📄 File: .specflow/specs/SPEC-XXX.md
+
+---
+
 ## Next Step
 
 `/sf:run` — implement specification
@@ -123,6 +127,10 @@ The agent will:
 
 1. [Recommendation 1]
 2. [Recommendation 2]
+
+---
+
+📄 File: .specflow/specs/SPEC-XXX.md
 
 ---
 
@@ -151,6 +159,10 @@ Choose one:
 ### Recommendations
 
 3. [Recommendation 1]
+
+---
+
+📄 File: .specflow/specs/SPEC-XXX.md
 
 ---
 

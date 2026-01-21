@@ -191,9 +191,15 @@ Append to Review History:
 
 ---
 
+📄 File: .specflow/specs/SPEC-XXX.md
+
+---
+
 ## Next Step
 
 `/sf:review` — re-review to verify fixes
+
+<sub>/clear recommended → reviewer needs fresh context</sub>
 ```
 
 </workflow>

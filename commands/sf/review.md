@@ -131,6 +131,10 @@ The agent will:
 
 ---
 
+📄 File: .specflow/specs/SPEC-XXX.md
+
+---
+
 ## Next Step
 
 `/sf:done` — finalize and archive specification
@@ -157,6 +161,10 @@ The agent will:
 
 1. {Suggestion 1}
 2. {Suggestion 2}
+
+---
+
+📄 File: .specflow/specs/SPEC-XXX.md
 
 ---
 
@@ -197,6 +205,10 @@ Choose one:
 ### Passed
 
 - [✓] {What's working}
+
+---
+
+📄 File: .specflow/specs/SPEC-XXX.md
 
 ---
 
