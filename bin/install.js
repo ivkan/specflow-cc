@@ -269,12 +269,12 @@ function finishInstall(settingsPath, settings, statuslineCommand, shouldInstallS
   writeSettings(settingsPath, settings);
 
   console.log(`
-  ${green}Done!${reset} Launch Claude Code and run ${cyan}/sf help${reset}.
+  ${green}Done!${reset} Launch Claude Code and run ${cyan}/sf:help${reset}.
 
   ${yellow}Quick start:${reset}
-    /sf init     - Initialize project
-    /sf new      - Create specification
-    /sf help     - Show all commands
+    /sf:init     - Initialize project
+    /sf:new      - Create specification
+    /sf:help     - Show all commands
 `);
 }
 
