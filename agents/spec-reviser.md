@@ -137,7 +137,7 @@ Set status to "auditing" (ready for re-audit).
 ## Step 7: Update STATE.md
 
 - Status → "auditing"
-- Next Step → "/sf audit"
+- Next Step → "/sf:audit"
 
 </process>
 
@@ -167,7 +167,7 @@ Return formatted revision result:
 
 ### Next Step
 
-`/sf audit` — re-audit revised specification
+`/sf:audit` — re-audit revised specification
 ```
 
 </output>

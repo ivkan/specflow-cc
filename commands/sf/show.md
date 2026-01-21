@@ -31,7 +31,7 @@ Display the full content of a specification including context, task, requirement
 ```
 SpecFlow not initialized.
 
-Run `/sf init` to start.
+Run `/sf:init` to start.
 ```
 Exit.
 
@@ -47,8 +47,8 @@ Read `.specflow/STATE.md` and get Active Specification.
 ```
 No specification specified and no active specification.
 
-Use `/sf show SPEC-XXX` to view a specific spec
-or `/sf list` to see all specifications.
+Use `/sf:show SPEC-XXX` to view a specific spec
+or `/sf:list` to see all specifications.
 ```
 Exit.
 
@@ -66,7 +66,7 @@ Exit.
 ```
 Specification {ID} not found.
 
-Use `/sf list` to see available specifications.
+Use `/sf:list` to see available specifications.
 ```
 Exit.
 
@@ -101,12 +101,12 @@ Based on current status:
 
 | Status | Recommended Action |
 |--------|-------------------|
-| draft | `/sf audit` — audit specification |
-| auditing | Complete audit or `/sf revise` |
-| revision_requested | `/sf revise` — address comments |
-| audited | `/sf run` — implement specification |
-| running | Continue implementation or `/sf review` |
-| review | `/sf fix` or `/sf done` |
+| draft | `/sf:audit` — audit specification |
+| auditing | Complete audit or `/sf:revise` |
+| revision_requested | `/sf:revise` — address comments |
+| audited | `/sf:run` — implement specification |
+| running | Continue implementation or `/sf:review` |
+| review | `/sf:fix` or `/sf:done` |
 | done | No action (archived) |
 
 ## Step 7: Display Specification
@@ -174,8 +174,8 @@ Based on current status:
 ```
 This specification is complete and archived.
 
-To view active specs: `/sf list`
-To see completed history: `/sf history`
+To view active specs: `/sf:list`
+To see completed history: `/sf:history`
 ```
 
 **If spec has outstanding issues:**
@@ -186,7 +186,7 @@ From {audit/review} v{N}:
 1. {issue}
 2. {issue}
 
-Address with `/sf revise` or `/sf fix`.
+Address with `/sf:revise` or `/sf:fix`.
 ```
 
 </workflow>

@@ -27,7 +27,7 @@ Display all specifications from `.specflow/specs/` with their basic info: ID, ti
 ```
 SpecFlow not initialized.
 
-Run `/sf init` to start.
+Run `/sf:init` to start.
 ```
 Exit.
 
@@ -50,7 +50,7 @@ ls -1 .specflow/specs/SPEC-*.md 2>/dev/null
 No specifications found.
 
 Create your first specification:
-`/sf new "task description"`
+`/sf:new "task description"`
 ```
 Exit.
 
@@ -95,9 +95,9 @@ Total: 3 specs | {archived} complete | {in_progress} in progress
 ---
 
 **Actions:**
-- `/sf show SPEC-XXX` — view details
-- `/sf next` — work on highest priority
-- `/sf new "task"` — create new specification
+- `/sf:show SPEC-XXX` — view details
+- `/sf:next` — work on highest priority
+- `/sf:new "task"` — create new specification
 ```
 
 ## Step 8: Show Status Legend (if helpful)

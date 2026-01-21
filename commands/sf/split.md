@@ -37,7 +37,7 @@ Analyze a specification's complexity and split it into smaller, manageable sub-s
 ```
 SpecFlow not initialized.
 
-Run `/sf init` first.
+Run `/sf:init` first.
 ```
 Exit.
 
@@ -52,7 +52,7 @@ Exit.
 ```
 Specification {ID} not found.
 
-Use `/sf list` to see available specifications.
+Use `/sf:list` to see available specifications.
 ```
 Exit.
 
@@ -65,8 +65,8 @@ Read active specification from `.specflow/STATE.md`:
 ```
 No specification specified and no active specification.
 
-Usage: `/sf split SPEC-001`
-   or: Set active spec with `/sf show SPEC-001`
+Usage: `/sf:split SPEC-001`
+   or: Set active spec with `/sf:show SPEC-001`
 ```
 Exit.
 
@@ -88,7 +88,7 @@ Read the specification and assess complexity:
 
 This specification is small enough to implement directly.
 
-**Next Step:** `/sf audit {ID}` — audit before implementation
+**Next Step:** `/sf:audit {ID}` — audit before implementation
 ```
 Exit.
 
@@ -241,9 +241,9 @@ Exit.
 
 ## Next Step
 
-`/sf audit {ID}a` — start with first sub-specification (no dependencies)
+`/sf:audit {ID}a` — start with first sub-specification (no dependencies)
 
-**Tip:** Use `/sf deps` to see the full dependency graph.
+**Tip:** Use `/sf:deps` to see the full dependency graph.
 ```
 
 </workflow>

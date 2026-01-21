@@ -31,7 +31,7 @@ Finalize the completed specification. Archives the spec, updates STATE.md, extra
 ```
 SpecFlow not initialized.
 
-Run `/sf init` first.
+Run `/sf:init` first.
 ```
 Exit.
 
@@ -43,7 +43,7 @@ Read `.specflow/STATE.md` and extract Active Specification.
 ```
 No active specification to finalize.
 
-Run `/sf new "task description"` to create one.
+Run `/sf:new "task description"` to create one.
 ```
 Exit.
 
@@ -89,7 +89,7 @@ Continue anyway?
 
 Use AskUserQuestion with options:
 - "Yes, finalize anyway" → continue, log warning
-- "No, run review first" → exit with `/sf review` suggestion
+- "No, run review first" → exit with `/sf:review` suggestion
 
 **If user proceeds anyway:**
 Log in STATE.md Warnings table:
@@ -147,7 +147,7 @@ mv .specflow/specs/SPEC-XXX.md .specflow/archive/
 
 - Active Specification → "none"
 - Status → "idle"
-- Next Step → "/sf new or /sf next"
+- Next Step → "/sf:new or /sf:next"
 
 ### Remove from Queue
 
@@ -213,13 +213,13 @@ git commit -m "docs(sf): complete SPEC-XXX
 {If queue has more specs:}
 **Next in queue:** SPEC-YYY — {title}
 
-Run `/sf next` to start the next specification.
+Run `/sf:next` to start the next specification.
 
 {If queue is empty:}
 Queue is empty.
 
-Run `/sf new "task"` to create a new specification
-or `/sf todos` to see pending ideas.
+Run `/sf:new "task"` to create a new specification
+or `/sf:todos` to see pending ideas.
 ```
 
 </workflow>
@@ -244,7 +244,7 @@ mv .specflow/specs/SPEC-XXX.md .specflow/archive/
 
 1. Set Active Specification to "none"
 2. Set Status to "idle"
-3. Set Next Step to "/sf new or /sf next"
+3. Set Next Step to "/sf:new or /sf:next"
 4. Remove from Queue table
 5. Add any extracted decisions
 

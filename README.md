@@ -41,28 +41,28 @@ npx specflow-cc --local
 
 ```bash
 # 1. Initialize project (once per project)
-/sf init
+/sf:init
 
 # 2. Create a specification
-/sf new "Add user authentication with JWT"
+/sf:new "Add user authentication with JWT"
 
 # 3. Audit the specification (fresh context)
-/sf audit
+/sf:audit
 
 # 4. Revise if needed
-/sf revise
+/sf:revise
 
 # 5. Execute when approved
-/sf run
+/sf:run
 
 # 6. Review implementation (fresh context)
-/sf review
+/sf:review
 
 # 7. Fix if needed
-/sf fix
+/sf:fix
 
 # 8. Complete and archive
-/sf done
+/sf:done
 ```
 
 ## Commands
@@ -71,60 +71,60 @@ npx specflow-cc --local
 
 | Command | Description |
 |---------|-------------|
-| `/sf init` | Initialize project, analyze codebase |
-| `/sf new [description]` | Create new specification |
-| `/sf audit` | Audit specification (fresh context) |
-| `/sf revise [instructions]` | Revise spec based on audit |
-| `/sf run` | Execute specification |
-| `/sf review` | Review implementation (fresh context) |
-| `/sf fix [instructions]` | Fix based on review |
-| `/sf done` | Complete, commit, and archive |
-| `/sf status` | Show current state and next step |
+| `/sf:init` | Initialize project, analyze codebase |
+| `/sf:new [description]` | Create new specification |
+| `/sf:audit` | Audit specification (fresh context) |
+| `/sf:revise [instructions]` | Revise spec based on audit |
+| `/sf:run` | Execute specification |
+| `/sf:review` | Review implementation (fresh context) |
+| `/sf:fix [instructions]` | Fix based on review |
+| `/sf:done` | Complete, commit, and archive |
+| `/sf:status` | Show current state and next step |
 
 ### Navigation
 
 | Command | Description |
 |---------|-------------|
-| `/sf list` | List all specifications |
-| `/sf show [ID]` | Show specification details |
-| `/sf next` | Switch to next priority task |
+| `/sf:list` | List all specifications |
+| `/sf:show [ID]` | Show specification details |
+| `/sf:next` | Switch to next priority task |
 
 ### To-Do Management
 
 | Command | Description |
 |---------|-------------|
-| `/sf todo [text]` | Add idea or future task |
-| `/sf todos` | List all todos with priorities |
-| `/sf plan [ID]` | Convert todo into specification |
-| `/sf priority` | Interactive prioritization |
+| `/sf:todo [text]` | Add idea or future task |
+| `/sf:todos` | List all todos with priorities |
+| `/sf:plan [ID]` | Convert todo into specification |
+| `/sf:priority` | Interactive prioritization |
 
 ### Decomposition
 
 | Command | Description |
 |---------|-------------|
-| `/sf split [ID]` | Split large spec into smaller parts |
-| `/sf deps` | Show dependency graph |
+| `/sf:split [ID]` | Split large spec into smaller parts |
+| `/sf:deps` | Show dependency graph |
 
 ### Session Management
 
 | Command | Description |
 |---------|-------------|
-| `/sf pause` | Save context for later |
-| `/sf resume` | Restore saved context |
+| `/sf:pause` | Save context for later |
+| `/sf:resume` | Restore saved context |
 
 ### Analysis
 
 | Command | Description |
 |---------|-------------|
-| `/sf scan [--focus]` | Deep codebase analysis for concerns and tech debt |
+| `/sf:scan [--focus]` | Deep codebase analysis for concerns and tech debt |
 
 ### Utilities
 
 | Command | Description |
 |---------|-------------|
-| `/sf help [command]` | Show help for commands |
-| `/sf history [ID]` | View completed specifications |
-| `/sf metrics` | Project statistics |
+| `/sf:help [command]` | Show help for commands |
+| `/sf:history [ID]` | View completed specifications |
+| `/sf:metrics` | Project statistics |
 
 ## Workflow Diagram
 
@@ -133,44 +133,44 @@ npx specflow-cc --local
 │                    SPECFLOW WORKFLOW                         │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
-│  /sf init    ──→  Initialize project (once)                  │
+│  /sf:init    ──→  Initialize project (once)                  │
 │       ↓                                                      │
-│  /sf new     ──→  Create specification                       │
+│  /sf:new     ──→  Create specification                       │
 │       ↓                                                      │
 │  ┌─────────────────────────────────────┐                     │
 │  │  SPEC AUDIT LOOP                    │                     │
-│  │  /sf audit ──→ APPROVED? ──yes──→ ──┼──→                  │
+│  │  /sf:audit ──→ APPROVED? ──yes──→ ──┼──→                  │
 │  │       │                             │    ↓                │
 │  │       no                            │                     │
 │  │       ↓                             │                     │
-│  │  /sf revise ────────→ loop back     │                     │
+│  │  /sf:revise ────────→ loop back     │                     │
 │  └─────────────────────────────────────┘                     │
 │       ↓                                                      │
-│  /sf run     ──→  Execute specification                      │
+│  /sf:run     ──→  Execute specification                      │
 │       ↓                                                      │
 │  ┌─────────────────────────────────────┐                     │
 │  │  IMPL REVIEW LOOP                   │                     │
-│  │  /sf review ──→ APPROVED? ──yes──→ ─┼──→                  │
+│  │  /sf:review ──→ APPROVED? ──yes──→ ─┼──→                  │
 │  │       │                             │    ↓                │
 │  │       no                            │                     │
 │  │       ↓                             │                     │
-│  │  /sf fix ───────────→ loop back     │                     │
+│  │  /sf:fix ───────────→ loop back     │                     │
 │  └─────────────────────────────────────┘                     │
 │       ↓                                                      │
-│  /sf done    ──→  Complete and archive                       │
+│  /sf:done    ──→  Complete and archive                       │
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ## Project Structure
 
-After `/sf init`, SpecFlow creates:
+After `/sf:init`, SpecFlow creates:
 
 ```
 .specflow/
 ├── PROJECT.md       # Project overview and patterns
 ├── STATE.md         # Current state and queue
-├── SCAN.md          # Codebase scan results (from /sf scan)
+├── SCAN.md          # Codebase scan results (from /sf:scan)
 ├── config.json      # Configuration
 ├── specs/           # Active specifications
 │   └── SPEC-001.md
@@ -222,7 +222,7 @@ created: 2026-01-20
 |------|--------|--------|
 | Small | ≤50k | Execute directly |
 | Medium | 50-150k | Warning, proceed |
-| Large | >150k | Requires `/sf split` |
+| Large | >150k | Requires `/sf:split` |
 
 ## Statusline
 

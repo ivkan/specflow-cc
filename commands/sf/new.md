@@ -34,7 +34,7 @@ Create a new specification from a task description. Asks critical questions if n
 ```
 SpecFlow not initialized.
 
-Run `/sf init` first.
+Run `/sf:init` first.
 ```
 Exit.
 
@@ -102,14 +102,14 @@ The agent will:
 
 ## Next Step
 
-`/sf audit` — audit specification before implementation
+`/sf:audit` — audit specification before implementation
 
 {If complexity is large:}
 
 ### Warning
 
 Specification is large (>150k tokens estimated).
-Consider `/sf split SPEC-XXX` to decompose into smaller specs.
+Consider `/sf:split SPEC-XXX` to decompose into smaller specs.
 ```
 
 </workflow>
@@ -153,7 +153,7 @@ Create `.specflow/specs/SPEC-XXX.md` with:
 
 - **Active Specification:** SPEC-XXX
 - **Status:** drafting
-- **Next Step:** /sf audit
+- **Next Step:** /sf:audit
 ```
 
 Add to Queue table.
@@ -167,5 +167,5 @@ Add to Queue table.
 - [ ] Complexity estimated (small/medium/large)
 - [ ] Assumptions documented
 - [ ] STATE.md updated with new spec
-- [ ] User knows next step is /sf audit
+- [ ] User knows next step is /sf:audit
 </success_criteria>

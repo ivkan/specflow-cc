@@ -33,7 +33,7 @@ Revise the active specification based on audit feedback. Can apply all comments,
 ```
 SpecFlow not initialized.
 
-Run `/sf init` first.
+Run `/sf:init` first.
 ```
 Exit.
 
@@ -45,7 +45,7 @@ Read `.specflow/STATE.md` and extract Active Specification.
 ```
 No active specification to revise.
 
-Run `/sf new "task description"` to create one.
+Run `/sf:new "task description"` to create one.
 ```
 Exit.
 
@@ -57,7 +57,7 @@ Read the active spec file: `.specflow/specs/SPEC-XXX.md`
 ```
 Specification SPEC-XXX cannot be revised (status: {status}).
 
-Use `/sf status` to see current state.
+Use `/sf:status` to see current state.
 ```
 Exit.
 
@@ -69,7 +69,7 @@ Find the most recent "Audit v[N]" section in Audit History.
 ```
 Specification SPEC-XXX has no audit history.
 
-Run `/sf audit` first to get feedback.
+Run `/sf:audit` first to get feedback.
 ```
 Exit.
 
@@ -167,7 +167,7 @@ The agent will:
 
 ## Next Step
 
-`/sf audit` — re-audit revised specification
+`/sf:audit` — re-audit revised specification
 ```
 
 </workflow>
@@ -216,7 +216,7 @@ In spec frontmatter: `status: auditing`
 
 In STATE.md:
 - Status → "auditing"
-- Next Step → "/sf audit"
+- Next Step → "/sf:audit"
 
 </fallback>
 

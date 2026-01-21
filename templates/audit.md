@@ -58,4 +58,4 @@ verdict: pass | fail | conditional
 
 ## Response History
 
-<!-- Filled by /sf revise -->
+<!-- Filled by /sf:revise -->

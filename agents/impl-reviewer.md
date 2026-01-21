@@ -196,8 +196,8 @@ Append to specification's Review History:
 
 ## Step 8: Update STATE.md
 
-- If APPROVED: Status → "done", Next Step → "/sf done"
-- If CHANGES_REQUESTED: Status → "review", Next Step → "/sf fix"
+- If APPROVED: Status → "done", Next Step → "/sf:done"
+- If CHANGES_REQUESTED: Status → "review", Next Step → "/sf:fix"
 
 </process>
 
@@ -246,13 +246,13 @@ Return review result:
 
 ## Next Step
 
-{If APPROVED:} `/sf done` — finalize and archive
+{If APPROVED:} `/sf:done` — finalize and archive
 
-{If CHANGES_REQUESTED:} `/sf fix` — address issues
+{If CHANGES_REQUESTED:} `/sf:fix` — address issues
 
 Options:
-- `/sf fix all` — apply all fixes
-- `/sf fix 1,2` — fix specific issues
+- `/sf:fix all` — apply all fixes
+- `/sf:fix 1,2` — fix specific issues
 ```
 
 </output>

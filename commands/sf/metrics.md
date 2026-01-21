@@ -32,7 +32,7 @@ Calculate and display project statistics including completion rates, quality met
 ```
 SpecFlow not initialized.
 
-Run `/sf init` first.
+Run `/sf:init` first.
 ```
 Exit.
 
@@ -147,7 +147,7 @@ Based on calculated metrics, generate 2-4 actionable insights:
 - "Specs may benefit from better scoping upfront"
 
 **If large specs > 20% of total:**
-- "Consider splitting large specs earlier (/sf split)"
+- "Consider splitting large specs earlier (/sf:split)"
 
 **If first-pass review rate > 70%:**
 - "Good implementation quality — specs are well-defined"
@@ -156,7 +156,7 @@ Based on calculated metrics, generate 2-4 actionable insights:
 - "Many specs in progress — consider completing before starting new"
 
 **If TODO_COUNT > 5 and conversion rate < 30%:**
-- "Backlog growing — consider /sf priority or /sf plan"
+- "Backlog growing — consider /sf:priority or /sf:plan"
 
 **If all metrics good:**
 - "Project health is excellent — keep up the discipline!"
@@ -250,7 +250,7 @@ Based on calculated metrics, generate 2-4 actionable insights:
 {If no todos:}
 No to-do items.
 
-Add ideas: `/sf todo "idea"`
+Add ideas: `/sf:todo "idea"`
 
 ---
 
@@ -287,7 +287,7 @@ No specifications created yet.
 
 Create your first specification to start tracking metrics:
 
-`/sf new "task description"`
+`/sf:new "task description"`
 
 ---
 

@@ -179,7 +179,7 @@ SPEC-XXXc
 
 ### Next Step
 
-`/sf audit SPEC-XXXa` — start with first sub-specification
+`/sf:audit SPEC-XXXa` — start with first sub-specification
 ```
 
 </output>

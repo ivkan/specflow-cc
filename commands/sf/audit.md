@@ -32,7 +32,7 @@ Audit the active specification using a fresh context subagent. The auditor evalu
 ```
 SpecFlow not initialized.
 
-Run `/sf init` first.
+Run `/sf:init` first.
 ```
 Exit.
 
@@ -44,7 +44,7 @@ Read `.specflow/STATE.md` and extract Active Specification.
 ```
 No active specification to audit.
 
-Run `/sf new "task description"` to create one.
+Run `/sf:new "task description"` to create one.
 ```
 Exit.
 
@@ -56,7 +56,7 @@ Read the active spec file: `.specflow/specs/SPEC-XXX.md`
 ```
 Specification SPEC-XXX is already audited (status: {status}).
 
-Use `/sf run` to implement or `/sf status` to see current state.
+Use `/sf:run` to implement or `/sf:status` to see current state.
 ```
 Exit.
 
@@ -90,7 +90,7 @@ The agent will:
 
 ## Step 6: Display Result
 
-### If APPROVED:
+### If APPROVED (no recommendations):
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -106,7 +106,31 @@ The agent will:
 
 ## Next Step
 
-`/sf run` — implement specification
+`/sf:run` — implement specification
+```
+
+### If APPROVED (with optional recommendations):
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ AUDIT PASSED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Specification:** SPEC-XXX
+**Status:** APPROVED
+
+### Recommendations (Optional)
+
+1. [Recommendation 1]
+2. [Recommendation 2]
+
+---
+
+## Next Steps
+
+Choose one:
+• `/sf:run` — implement specification as-is
+• `/sf:revise` — apply optional recommendations first ({N} items)
 ```
 
 ### If NEEDS_REVISION:
@@ -132,12 +156,12 @@ The agent will:
 
 ## Next Step
 
-`/sf revise` — address critical issues
+`/sf:revise` — address critical issues
 
 Options:
-- `/sf revise all` — apply all feedback
-- `/sf revise 1,2` — fix specific issues
-- `/sf revise [instructions]` — custom changes
+- `/sf:revise all` — apply all feedback
+- `/sf:revise 1,2` — fix specific issues
+- `/sf:revise [instructions]` — custom changes
 ```
 
 </workflow>
@@ -194,8 +218,8 @@ Append to spec's Audit History:
 
 ### Update STATE.md
 
-- If APPROVED: Status → "audited", Next Step → "/sf run"
-- If NEEDS_REVISION: Status → "revision_requested", Next Step → "/sf revise"
+- If APPROVED: Status → "audited", Next Step → "/sf:run"
+- If NEEDS_REVISION: Status → "revision_requested", Next Step → "/sf:revise"
 
 </fallback>
 

@@ -28,7 +28,7 @@ Display the current SpecFlow state including active specification, queue, and re
 ```
 SpecFlow not initialized.
 
-Run `/sf init` to start.
+Run `/sf:init` to start.
 ```
 Exit.
 
@@ -67,12 +67,12 @@ Based on current status:
 
 | Status | Next Action |
 |--------|-------------|
-| idle | `/sf new "task"` — create specification |
-| drafting | `/sf audit` — audit specification |
-| revision_requested | `/sf revise` — fix issues |
-| audited | `/sf run` — implement |
-| running | Continue implementation or `/sf review` |
-| reviewing | `/sf fix` or `/sf done` |
+| idle | `/sf:new "task"` — create specification |
+| drafting | `/sf:audit` — audit specification |
+| revision_requested | `/sf:revise` — fix issues |
+| audited | `/sf:run` — implement |
+| running | Continue implementation or `/sf:review` |
+| reviewing | `/sf:fix` or `/sf:done` |
 
 ## Step 6: Display Status
 
@@ -138,17 +138,17 @@ Based on state, provide additional guidance:
 
 **If idle for long time:**
 ```
-**Tip:** Have ideas? Use `/sf todo "idea"` to capture for later.
+**Tip:** Have ideas? Use `/sf:todo "idea"` to capture for later.
 ```
 
 **If spec is large:**
 ```
-**Tip:** Consider `/sf split SPEC-XXX` to break into smaller specs.
+**Tip:** Consider `/sf:split SPEC-XXX` to break into smaller specs.
 ```
 
 **If multiple specs in queue:**
 ```
-**Tip:** Use `/sf next` to work on highest priority item.
+**Tip:** Use `/sf:next` to work on highest priority item.
 ```
 
 **If warnings present:**

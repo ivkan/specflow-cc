@@ -33,7 +33,7 @@ Display completed specifications from the archive. Shows completion dates, audit
 ```
 SpecFlow not initialized.
 
-Run `/sf init` first.
+Run `/sf:init` first.
 ```
 Exit.
 
@@ -54,9 +54,9 @@ No completed specifications yet.
 Complete your first spec to see it here.
 
 **Workflow:**
-1. `/sf new "task"` — Create specification
-2. `/sf audit` → `/sf run` → `/sf review`
-3. `/sf done` — Archives the specification
+1. `/sf:new "task"` — Create specification
+2. `/sf:audit` → `/sf:run` → `/sf:review`
+3. `/sf:done` — Archives the specification
 ```
 Exit.
 
@@ -78,10 +78,10 @@ Exit.
 Specification {ID} not found in archive.
 
 It may be:
-- Still in progress: `/sf show {ID}`
-- Never existed: `/sf list` to see all specs
+- Still in progress: `/sf:show {ID}`
+- Never existed: `/sf:list` to see all specs
 
-Use `/sf history` to see archived specifications.
+Use `/sf:history` to see archived specifications.
 ```
 Exit.
 
@@ -241,7 +241,7 @@ Most recent first.
 
 ---
 
-**View details:** `/sf history SPEC-001`
+**View details:** `/sf:history SPEC-001`
 
 **Insights:**
 {If first-pass audit rate < 50%:}

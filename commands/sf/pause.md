@@ -29,7 +29,7 @@ Save the current work context to enable seamless resumption later. Creates a pau
 ```
 SpecFlow not initialized.
 
-Run `/sf init` to start.
+Run `/sf:init` to start.
 ```
 Exit.
 
@@ -192,7 +192,7 @@ Under Current Position, add:
 
 **Session saved successfully.**
 
-Resume with: `/sf resume`
+Resume with: `/sf:resume`
 ```
 
 </workflow>

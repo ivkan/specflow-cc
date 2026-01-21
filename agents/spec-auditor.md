@@ -100,7 +100,7 @@ Separate findings into:
 
 **Critical (blocks implementation):**
 - Numbered list: 1, 2, 3...
-- Must be fixed before `/sf run`
+- Must be fixed before `/sf:run`
 
 **Recommendations (improvements):**
 - Numbered list continuing from critical
@@ -138,8 +138,8 @@ N+1. [recommendation]
 ## Step 7: Update STATE.md
 
 Update status:
-- If APPROVED: Status → "audited", Next Step → "/sf run"
-- If NEEDS_REVISION: Status → "revision_requested", Next Step → "/sf revise"
+- If APPROVED: Status → "audited", Next Step → "/sf:run"
+- If NEEDS_REVISION: Status → "revision_requested", Next Step → "/sf:revise"
 
 </process>
 
@@ -168,7 +168,7 @@ Return formatted audit result:
 
 ### Next Step
 
-`/sf revise` — address critical issues
+`/sf:revise` — address critical issues
 
 ---
 
@@ -180,7 +180,7 @@ Return formatted audit result:
 
 ### Next Step
 
-`/sf run` — implement specification
+`/sf:run` — implement specification
 ```
 
 </output>

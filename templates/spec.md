@@ -56,4 +56,4 @@ created: YYYY-MM-DD
 
 ## Audit History
 
-<!-- Filled by /sf audit -->
+<!-- Filled by /sf:audit -->

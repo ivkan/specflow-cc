@@ -30,7 +30,7 @@ Interactively prioritize specifications and to-do items. Allows reordering, sett
 ```
 SpecFlow not initialized.
 
-Run `/sf init` to start.
+Run `/sf:init` to start.
 ```
 Exit.
 
@@ -179,7 +179,7 @@ After changes:
 
 ---
 
-Use `/sf next` to work on highest priority task.
+Use `/sf:next` to work on highest priority task.
 ```
 
 </workflow>

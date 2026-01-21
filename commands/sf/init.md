@@ -30,7 +30,7 @@ Initialize SpecFlow in the current project. Analyzes the codebase to understand 
 ```
 SpecFlow already initialized in this project.
 
-Use `/sf status` to see current state.
+Use `/sf:status` to see current state.
 ```
 Exit.
 
@@ -133,7 +133,7 @@ Create `.specflow/STATE.md`:
 
 - **Active Specification:** none
 - **Status:** idle
-- **Next Step:** /sf new
+- **Next Step:** /sf:new
 
 ## Queue
 
@@ -193,7 +193,7 @@ Create `.specflow/config.json`:
 
 ## Next Step
 
-`/sf new "your task description"` — create first specification
+`/sf:new "your task description"` — create first specification
 
 ---
 
@@ -213,5 +213,5 @@ Create `.specflow/config.json`:
 - [ ] PROJECT.md created with detected stack
 - [ ] STATE.md created with initial state
 - [ ] config.json created with defaults
-- [ ] User knows next step is /sf new
+- [ ] User knows next step is /sf:new
 </success_criteria>

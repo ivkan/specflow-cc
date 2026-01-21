@@ -33,7 +33,7 @@ Display the dependency graph between specifications. Shows which specs can be wo
 ```
 SpecFlow not initialized.
 
-Run `/sf init` first.
+Run `/sf:init` first.
 ```
 Exit.
 
@@ -51,7 +51,7 @@ ls .specflow/specs/SPEC-*.md 2>/dev/null
 
 No specifications found.
 
-Create your first spec: `/sf new "task description"`
+Create your first spec: `/sf:new "task description"`
 ```
 Exit.
 
@@ -88,7 +88,7 @@ Build dependency map:
 ```
 Specification {ID} not found.
 
-Use `/sf list` to see available specifications.
+Use `/sf:list` to see available specifications.
 ```
 Exit.
 
@@ -128,12 +128,12 @@ None — no other specifications depend on this.
 {If blocked:}
 **Blocked by:** {blocking spec ID} must complete first.
 
-When {blocking ID} is done, run: `/sf run {ID}`
+When {blocking ID} is done, run: `/sf:run {ID}`
 
 {If ready:}
 **Ready:** All dependencies satisfied.
 
-Next: `/sf audit {ID}` or `/sf run {ID}`
+Next: `/sf:audit {ID}` or `/sf:run {ID}`
 
 {If done:}
 **Complete:** This specification is done.
@@ -212,11 +212,11 @@ SPEC-003 [audited] → SPEC-004 [draft]
 **Next actionable:**
 {List specs that are ready to work on, sorted by priority}
 
-- `/sf run SPEC-001b` (running)
-- `/sf audit SPEC-005` (audited)
-- `/sf audit SPEC-002` (draft)
+- `/sf:run SPEC-001b` (running)
+- `/sf:audit SPEC-005` (audited)
+- `/sf:audit SPEC-002` (draft)
 
-**Tip:** `/sf deps SPEC-XXX` for details on a specific spec.
+**Tip:** `/sf:deps SPEC-XXX` for details on a specific spec.
 ```
 
 </workflow>

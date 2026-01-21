@@ -9,7 +9,7 @@ allowed-tools:
 ---
 
 <purpose>
-Add a new to-do item to the backlog. To-dos are ideas or tasks that don't need immediate specification but should be captured for later. They can later be converted to specifications with `/sf plan`.
+Add a new to-do item to the backlog. To-dos are ideas or tasks that don't need immediate specification but should be captured for later. They can later be converted to specifications with `/sf:plan`.
 </purpose>
 
 <context>
@@ -32,7 +32,7 @@ Add a new to-do item to the backlog. To-dos are ideas or tasks that don't need i
 ```
 SpecFlow not initialized.
 
-Run `/sf init` to start.
+Run `/sf:init` to start.
 ```
 Exit.
 
@@ -111,9 +111,9 @@ Also update `*Last updated:` line at the bottom.
 ---
 
 **Actions:**
-- `/sf todos` — view all to-do items
-- `/sf plan TODO-{XXX}` — convert to specification
-- `/sf priority` — set priorities
+- `/sf:todos` — view all to-do items
+- `/sf:plan TODO-{XXX}` — convert to specification
+- `/sf:priority` — set priorities
 ```
 
 </workflow>

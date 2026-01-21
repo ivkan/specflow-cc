@@ -34,7 +34,7 @@ Fix the implementation based on review feedback. Can apply all fixes, specific n
 ```
 SpecFlow not initialized.
 
-Run `/sf init` first.
+Run `/sf:init` first.
 ```
 Exit.
 
@@ -46,7 +46,7 @@ Read `.specflow/STATE.md` and extract Active Specification.
 ```
 No active specification to fix.
 
-Run `/sf new "task description"` to create one.
+Run `/sf:new "task description"` to create one.
 ```
 Exit.
 
@@ -59,7 +59,7 @@ Read the active spec file: `.specflow/specs/SPEC-XXX.md`
 Specification SPEC-XXX is not in review status (status: {status}).
 
 {If not yet run:}
-Run `/sf run` first to implement the specification.
+Run `/sf:run` first to implement the specification.
 
 {If already done:}
 Specification already completed.
@@ -74,7 +74,7 @@ Find the most recent "Review v[N]" section in Review History.
 ```
 Specification SPEC-XXX has no review history.
 
-Run `/sf review` first to get feedback.
+Run `/sf:review` first to get feedback.
 ```
 Exit.
 
@@ -165,7 +165,7 @@ Append to Review History:
 ## Step 8: Update STATE.md
 
 - Status → "review" (ready for re-review)
-- Next Step → "/sf review"
+- Next Step → "/sf:review"
 
 ## Step 9: Display Result
 
@@ -193,7 +193,7 @@ Append to Review History:
 
 ## Next Step
 
-`/sf review` — re-review to verify fixes
+`/sf:review` — re-review to verify fixes
 ```
 
 </workflow>
@@ -256,7 +256,7 @@ Append to Review History.
 ### Update STATE.md
 
 - Status → "review"
-- Next Step → "/sf review"
+- Next Step → "/sf:review"
 
 </fallback>
 

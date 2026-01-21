@@ -26,7 +26,7 @@ Display all to-do items from the backlog, sorted by priority. Shows ID, descript
 ```
 SpecFlow not initialized.
 
-Run `/sf init` to start.
+Run `/sf:init` to start.
 ```
 Exit.
 
@@ -45,7 +45,7 @@ Exit.
 No to-do items found.
 
 Add your first idea:
-`/sf todo "your idea here"`
+`/sf:todo "your idea here"`
 ```
 Exit.
 
@@ -100,10 +100,10 @@ Within same priority, sort by date (oldest first).
 ---
 
 **Actions:**
-- `/sf plan 1` — convert first item to specification
-- `/sf plan TODO-001` — convert by ID
-- `/sf priority` — change priorities
-- `/sf todo "new idea"` — add new item
+- `/sf:plan 1` — convert first item to specification
+- `/sf:plan TODO-001` — convert by ID
+- `/sf:priority` — change priorities
+- `/sf:todo "new idea"` — add new item
 ```
 
 ## Step 7: Show Notes (if any have notes)

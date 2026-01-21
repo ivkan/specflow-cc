@@ -24,7 +24,7 @@ Ask ONLY questions that:
 - Cannot be reasonably assumed from PROJECT.md context
 - Have mutually exclusive answers (not "yes/no/maybe")
 
-Everything else becomes an assumption that can be corrected during `/sf revise`.
+Everything else becomes an assumption that can be corrected during `/sf:revise`.
 
 ## Spec Quality
 
@@ -40,7 +40,7 @@ Good specifications are:
 |------|--------|---------------|
 | small | ≤50k | Single file, simple feature |
 | medium | 50-150k | Multiple files, moderate feature |
-| large | >150k | Many files, complex feature — needs /sf split |
+| large | >150k | Many files, complex feature — needs /sf:split |
 
 </philosophy>
 
@@ -111,7 +111,7 @@ Mark as small/medium/large in frontmatter.
 Update `.specflow/STATE.md`:
 - Set Active Specification to new spec
 - Set Status to "drafting"
-- Set Next Step to "/sf audit"
+- Set Next Step to "/sf:audit"
 - Add spec to Queue
 
 </process>
@@ -136,11 +136,11 @@ Return structured result:
 - .specflow/specs/SPEC-XXX.md
 
 ### Next Step
-`/sf audit` — audit specification before implementation
+`/sf:audit` — audit specification before implementation
 
 {If complexity is large:}
 ### Warning
-Specification is large (>150k tokens estimated). Consider `/sf split SPEC-XXX` to decompose.
+Specification is large (>150k tokens estimated). Consider `/sf:split SPEC-XXX` to decompose.
 ```
 
 </output>

@@ -85,7 +85,7 @@ Based on this scan, consider creating specs for:
 1. **[Spec title]** — [brief description]
    - Priority: high | medium | low
    - Complexity: small | medium | large
-   - Command: `/sf new "[title]"`
+   - Command: `/sf:new "[title]"`
 
 2. **[Spec title]** — [brief description]
    - Priority: ...

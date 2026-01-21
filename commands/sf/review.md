@@ -32,7 +32,7 @@ Review the implementation of the active specification in a fresh context. The re
 ```
 SpecFlow not initialized.
 
-Run `/sf init` first.
+Run `/sf:init` first.
 ```
 Exit.
 
@@ -44,7 +44,7 @@ Read `.specflow/STATE.md` and extract Active Specification.
 ```
 No active specification to review.
 
-Run `/sf new "task description"` to create one.
+Run `/sf:new "task description"` to create one.
 ```
 Exit.
 
@@ -57,10 +57,10 @@ Read the active spec file: `.specflow/specs/SPEC-XXX.md`
 Specification SPEC-XXX is not ready for review (status: {status}).
 
 {If status is draft/auditing/revision_requested:}
-Run `/sf run` first to implement the specification.
+Run `/sf:run` first to implement the specification.
 
 {If status is done:}
-Specification already completed. Use `/sf history` to view archived specs.
+Specification already completed. Use `/sf:history` to view archived specs.
 ```
 Exit.
 
@@ -72,7 +72,7 @@ Check that Execution Summary exists in spec:
 ```
 No implementation found for SPEC-XXX.
 
-Run `/sf run` to execute the specification first.
+Run `/sf:run` to execute the specification first.
 ```
 Exit.
 
@@ -108,7 +108,7 @@ The agent will:
 
 ## Step 7: Display Result
 
-### If APPROVED:
+### If APPROVED (no minor issues):
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -133,7 +133,38 @@ The agent will:
 
 ## Next Step
 
-`/sf done` — finalize and archive specification
+`/sf:done` — finalize and archive specification
+```
+
+### If APPROVED (with minor suggestions):
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ REVIEW PASSED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Specification:** SPEC-XXX
+**Result:** APPROVED
+
+### Verified
+
+- [✓] All acceptance criteria met
+- [✓] All files created
+- [✓] All deletions performed
+- [✓] Code quality acceptable
+
+### Minor Suggestions (Optional)
+
+1. {Suggestion 1}
+2. {Suggestion 2}
+
+---
+
+## Next Steps
+
+Choose one:
+• `/sf:done` — finalize and archive as-is
+• `/sf:fix` — apply minor suggestions first ({N} items)
 ```
 
 ### If CHANGES_REQUESTED:
@@ -171,12 +202,12 @@ The agent will:
 
 ## Next Step
 
-`/sf fix` — address the issues
+`/sf:fix` — address the issues
 
 Options:
-- `/sf fix all` — apply all fixes
-- `/sf fix 1,2` — fix specific issues
-- `/sf fix [instructions]` — custom fixes
+- `/sf:fix all` — apply all fixes
+- `/sf:fix 1,2` — fix specific issues
+- `/sf:fix [instructions]` — custom fixes
 ```
 
 </workflow>
@@ -239,8 +270,8 @@ Append Review History to spec.
 
 ### Update STATE.md
 
-- If APPROVED: Status → "done", Next Step → "/sf done"
-- If CHANGES_REQUESTED: Status → "review", Next Step → "/sf fix"
+- If APPROVED: Status → "done", Next Step → "/sf:done"
+- If CHANGES_REQUESTED: Status → "review", Next Step → "/sf:fix"
 
 </fallback>
 

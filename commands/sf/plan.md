@@ -23,7 +23,7 @@ Convert a to-do item from the backlog into a full specification. Reuses the spec
 </context>
 
 <arguments>
-- `[ID or #]` — Optional. Either TODO-XXX ID or list number from `/sf todos`. If omitted, shows todos and prompts for selection.
+- `[ID or #]` — Optional. Either TODO-XXX ID or list number from `/sf:todos`. If omitted, shows todos and prompts for selection.
 </arguments>
 
 <workflow>
@@ -38,7 +38,7 @@ Convert a to-do item from the backlog into a full specification. Reuses the spec
 ```
 SpecFlow not initialized.
 
-Run `/sf init` to start.
+Run `/sf:init` to start.
 ```
 Exit.
 
@@ -52,7 +52,7 @@ Exit.
 ```
 No to-do items found.
 
-Add ideas first with `/sf todo "your idea"`.
+Add ideas first with `/sf:todo "your idea"`.
 ```
 Exit.
 
@@ -95,7 +95,7 @@ Read the selected todo:
 ```
 Todo "{arg}" not found.
 
-Use `/sf todos` to see available items.
+Use `/sf:todos` to see available items.
 ```
 Exit.
 
@@ -161,14 +161,14 @@ Update `*Last updated:` timestamp.
 
 ## Next Step
 
-`/sf audit` — audit specification before implementation
+`/sf:audit` — audit specification before implementation
 
 {If complexity is large:}
 
 ### Warning
 
 Specification is large (>150k tokens estimated).
-Consider `/sf split SPEC-{YYY}` to decompose.
+Consider `/sf:split SPEC-{YYY}` to decompose.
 ```
 
 </workflow>
@@ -183,9 +183,9 @@ Consider `/sf split SPEC-{YYY}` to decompose.
 
 Read from TODO.md.
 
-### Create Spec (same as /sf new)
+### Create Spec (same as /sf:new)
 
-Use `/sf new "{todo description}"` logic:
+Use `/sf:new "{todo description}"` logic:
 1. Generate SPEC-XXX ID
 2. Create spec with todo context
 3. Set priority from todo

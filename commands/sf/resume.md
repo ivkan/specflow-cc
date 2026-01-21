@@ -29,7 +29,7 @@ Restore the work context from the last pause. Reads the pause file, displays ful
 ```
 SpecFlow not initialized.
 
-Run `/sf init` to start.
+Run `/sf:init` to start.
 ```
 Exit.
 
@@ -48,9 +48,9 @@ ls -1 .specflow/sessions/PAUSE-*.md 2>/dev/null | sort -r | head -1
 No paused session found.
 
 **Options:**
-- `/sf status` — view current state
-- `/sf next` — find next task to work on
-- `/sf list` — see all specifications
+- `/sf:status` — view current state
+- `/sf:next` — find next task to work on
+- `/sf:list` — see all specifications
 ```
 Exit.
 
@@ -228,7 +228,7 @@ Based on your notes and progress:
 If more than 5 pause files exist, suggest cleanup:
 
 ```
-**Note:** {N} old pause files in sessions/. Run `/sf history` to review or clean up.
+**Note:** {N} old pause files in sessions/. Run `/sf:history` to review or clean up.
 ```
 
 </workflow>

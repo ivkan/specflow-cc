@@ -182,7 +182,7 @@ Append to specification:
 ## Step 8: Update STATE.md
 
 - Status → "review"
-- Next Step → "/sf review"
+- Next Step → "/sf:review"
 
 </process>
 
@@ -216,7 +216,7 @@ Return execution result:
 
 ### Next Step
 
-`/sf review` — audit implementation
+`/sf:review` — audit implementation
 ```
 
 </output>

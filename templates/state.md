@@ -4,7 +4,7 @@
 
 - **Active Specification:** [none | SPEC-XXX]
 - **Status:** [idle | drafting | auditing | running | reviewing]
-- **Next Step:** [/sf new | /sf audit | /sf run | /sf review | /sf done]
+- **Next Step:** [/sf:new | /sf:audit | /sf:run | /sf:review | /sf:done]
 
 ## Queue
 

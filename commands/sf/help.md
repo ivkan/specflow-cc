@@ -38,7 +38,7 @@ Check if command exists:
 ```
 Unknown command: {command}
 
-Run `/sf help` for available commands.
+Run `/sf:help` for available commands.
 ```
 Exit.
 
@@ -51,7 +51,7 @@ Read the command file and extract:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- /sf {command}
+ /sf:{command}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 {Description from frontmatter}
@@ -59,7 +59,7 @@ Read the command file and extract:
 ## Usage
 
 ```
-/sf {command} {arguments syntax}
+/sf:{command} {arguments syntax}
 ```
 
 ## Description
@@ -85,68 +85,68 @@ Read the command file and extract:
 
 ### Command-Specific Examples
 
-**For `/sf new`:**
+**For `/sf:new`:**
 ```
 ## Examples
 
 ```
-/sf new "Add user authentication with JWT"
-/sf new "Fix pagination bug in user list"
-/sf new "Refactor UserService to use repository pattern"
-/sf new                    # Interactive mode
+/sf:new "Add user authentication with JWT"
+/sf:new "Fix pagination bug in user list"
+/sf:new "Refactor UserService to use repository pattern"
+/sf:new                    # Interactive mode
 ```
 ```
 
-**For `/sf audit`:**
+**For `/sf:audit`:**
 ```
 ## Examples
 
 ```
-/sf audit                  # Audit active specification
-/sf audit SPEC-003         # Audit specific specification
+/sf:audit                  # Audit active specification
+/sf:audit SPEC-003         # Audit specific specification
 ```
 ```
 
-**For `/sf run`:**
+**For `/sf:run`:**
 ```
 ## Examples
 
 ```
-/sf run                    # Run active specification
-/sf run SPEC-003           # Run specific specification
+/sf:run                    # Run active specification
+/sf:run SPEC-003           # Run specific specification
 ```
 ```
 
-**For `/sf revise`:**
+**For `/sf:revise`:**
 ```
 ## Examples
 
 ```
-/sf revise                 # Interactive — shows audit comments
-/sf revise all             # Apply all audit comments
-/sf revise 1,2             # Apply only comments 1 and 2
-/sf revise "add error handling, ignore item 3"
+/sf:revise                 # Interactive — shows audit comments
+/sf:revise all             # Apply all audit comments
+/sf:revise 1,2             # Apply only comments 1 and 2
+/sf:revise "add error handling, ignore item 3"
 ```
 ```
 
-**For `/sf split`:**
+**For `/sf:split`:**
 ```
 ## Examples
 
 ```
-/sf split                  # Split active specification
-/sf split SPEC-001         # Split specific specification
+/sf:split                  # Split active specification
+/sf:split SPEC-001         # Split specific specification
 ```
 ```
 
-**For `/sf todo`:**
+**For `/sf:todo`:**
 ```
 ## Examples
 
 ```
-/sf todo "Add caching layer for API"
-/sf todo "Research WebSocket alternatives"
-/sf todo "Refactor authentication flow"
+/sf:todo "Add caching layer for API"
+/sf:todo "Research WebSocket alternatives"
+/sf:todo "Refactor authentication flow"
 ```
 ```
 
@@ -171,81 +171,81 @@ Workflow: Spec → Audit → Revise → Run → Review → Fix → Done
 
 | Command      | Description                             |
 |--------------|-----------------------------------------|
-| /sf init     | Initialize project, analyze codebase    |
-| /sf new      | Create specification from task          |
-| /sf audit    | Audit specification (fresh context)     |
-| /sf revise   | Revise spec based on audit feedback     |
-| /sf run      | Execute specification                   |
-| /sf review   | Review implementation (fresh context)   |
-| /sf fix      | Fix implementation based on review      |
-| /sf done     | Finalize, commit, and archive           |
+| /sf:init     | Initialize project, analyze codebase    |
+| /sf:new      | Create specification from task          |
+| /sf:audit    | Audit specification (fresh context)     |
+| /sf:revise   | Revise spec based on audit feedback     |
+| /sf:run      | Execute specification                   |
+| /sf:review   | Review implementation (fresh context)   |
+| /sf:fix      | Fix implementation based on review      |
+| /sf:done     | Finalize, commit, and archive           |
 
 ## Navigation
 
 | Command      | Description                             |
 |--------------|-----------------------------------------|
-| /sf status   | Show current state and next step        |
-| /sf list     | List all specifications                 |
-| /sf show     | Show specification details              |
-| /sf next     | Work on highest priority task           |
+| /sf:status   | Show current state and next step        |
+| /sf:list     | List all specifications                 |
+| /sf:show     | Show specification details              |
+| /sf:next     | Work on highest priority task           |
 
 ## To-Do
 
 | Command      | Description                             |
 |--------------|-----------------------------------------|
-| /sf todo     | Add idea to backlog                     |
-| /sf todos    | List all to-do items                    |
-| /sf plan     | Convert to-do to specification          |
-| /sf priority | Change to-do priorities                 |
+| /sf:todo     | Add idea to backlog                     |
+| /sf:todos    | List all to-do items                    |
+| /sf:plan     | Convert to-do to specification          |
+| /sf:priority | Change to-do priorities                 |
 
 ## Decomposition
 
 | Command      | Description                             |
 |--------------|-----------------------------------------|
-| /sf split    | Split large spec into sub-specs         |
-| /sf deps     | Show dependency graph                   |
+| /sf:split    | Split large spec into sub-specs         |
+| /sf:deps     | Show dependency graph                   |
 
 ## Sessions
 
 | Command      | Description                             |
 |--------------|-----------------------------------------|
-| /sf pause    | Save session context for later          |
-| /sf resume   | Restore previous session context        |
+| /sf:pause    | Save session context for later          |
+| /sf:resume   | Restore previous session context        |
 
 ## Utilities
 
 | Command      | Description                             |
 |--------------|-----------------------------------------|
-| /sf help     | This help (or detailed: /sf help new)   |
-| /sf history  | View completed specifications           |
-| /sf metrics  | Project statistics and insights         |
+| /sf:help     | This help (or detailed: /sf:help new)   |
+| /sf:history  | View completed specifications           |
+| /sf:metrics  | Project statistics and insights         |
 
 ---
 
 ## Quick Start
 
-1. `/sf init` — Initialize project (once)
-2. `/sf new "task"` — Create specification
-3. `/sf audit` — Audit the spec
-4. `/sf run` — Implement
-5. `/sf review` — Review implementation
-6. `/sf done` — Complete and archive
+1. `/sf:init` — Initialize project (once)
+2. `/sf:new "task"` — Create specification
+3. `/sf:audit` — Audit the spec
+4. `/sf:run` — Implement
+5. `/sf:review` — Review implementation
+6. `/sf:done` — Complete and archive
 
 ## Typical Session
 
 ```
-/sf status        # Where am I?
-/sf next          # What should I work on?
-/sf audit         # Audit current spec
-/sf revise all    # Apply audit feedback
-/sf run           # Implement
-/sf review        # Review implementation
-/sf done          # Complete
+/sf:status        # Where am I?
+/sf:next          # What should I work on?
+/sf:audit         # Audit current spec
+/sf:revise all    # Apply audit feedback
+/sf:run           # Implement
+/sf:review        # Review implementation
+/sf:done          # Complete
 ```
 
 ---
 
-**Detailed help:** `/sf help <command>`
+**Detailed help:** `/sf:help <command>`
 
 **Documentation:** See DESIGN.md for full specification
 ```

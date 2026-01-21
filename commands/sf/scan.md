@@ -39,7 +39,7 @@ Valid focus areas:
 ```
 ⚠️  Project not initialized
 
-Run /sf init first to set up SpecFlow.
+Run /sf:init first to set up SpecFlow.
 ```
 STOP.
 
@@ -113,8 +113,8 @@ Top Priority Issues:
 📁 Full report: .specflow/SCAN.md
 
 Next steps:
-• /sf new "Fix: {top concern}" — Create spec for top issue
-• /sf todo {concern} — Add to backlog for later
+• /sf:new "Fix: {top concern}" — Create spec for top issue
+• /sf:todo {concern} — Add to backlog for later
 ```
 
 </workflow>

@@ -34,7 +34,7 @@ Execute the active specification by implementing all requirements. Creates atomi
 ```
 SpecFlow not initialized.
 
-Run `/sf init` first.
+Run `/sf:init` first.
 ```
 Exit.
 
@@ -46,7 +46,7 @@ Read `.specflow/STATE.md` and extract Active Specification.
 ```
 No active specification to execute.
 
-Run `/sf new "task description"` to create one.
+Run `/sf:new "task description"` to create one.
 ```
 Exit.
 
@@ -93,7 +93,7 @@ Continue anyway?
 
 Use AskUserQuestion with options:
 - "Yes, proceed anyway" → continue, log warning
-- "No, run audit first" → exit with `/sf audit` suggestion
+- "No, run audit first" → exit with `/sf:audit` suggestion
 
 **If user proceeds anyway:**
 Log in STATE.md Warnings table:
@@ -200,7 +200,7 @@ The agent will:
 
 ## Next Step
 
-`/sf review` — audit the implementation
+`/sf:review` — audit the implementation
 ```
 
 </workflow>
@@ -248,7 +248,7 @@ Append Execution Summary to spec.
 ### Update STATE.md
 
 - Status → "review"
-- Next Step → "/sf review"
+- Next Step → "/sf:review"
 
 </fallback>
 

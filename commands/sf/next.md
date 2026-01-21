@@ -28,7 +28,7 @@ Find the highest priority specification that needs action, set it as active in S
 ```
 SpecFlow not initialized.
 
-Run `/sf init` to start.
+Run `/sf:init` to start.
 ```
 Exit.
 
@@ -47,8 +47,8 @@ ls -1 .specflow/specs/SPEC-*.md 2>/dev/null
 No specifications ready for work.
 
 **Options:**
-- `/sf new "description"` — create new specification
-- `/sf todos` — view idea backlog
+- `/sf:new "description"` — create new specification
+- `/sf:todos` — view idea backlog
 ```
 Exit.
 
@@ -91,9 +91,9 @@ Choose spec with highest score.
 All specifications are either completed or blocked.
 
 **Options:**
-- `/sf new "description"` — create new specification
-- `/sf todos` — view idea backlog
-- `/sf list` — see all specifications
+- `/sf:new "description"` — create new specification
+- `/sf:todos` — view idea backlog
+- `/sf:list` — see all specifications
 ```
 Exit.
 
@@ -108,12 +108,12 @@ Update `.specflow/STATE.md`:
 
 | Status | Recommended Command | Description |
 |--------|---------------------|-------------|
-| draft | `/sf audit` | Audit specification |
+| draft | `/sf:audit` | Audit specification |
 | auditing | Continue audit | Complete the audit |
-| revision_requested | `/sf revise` | Address audit comments |
-| audited | `/sf run` | Implement specification |
-| running | Continue or `/sf review` | Complete implementation |
-| review | `/sf fix` or `/sf done` | Address review or finalize |
+| revision_requested | `/sf:revise` | Address audit comments |
+| audited | `/sf:run` | Implement specification |
+| running | Continue or `/sf:review` | Complete implementation |
+| review | `/sf:fix` or `/sf:done` | Address review or finalize |
 
 ## Step 7: Display Next Task
 
@@ -156,7 +156,7 @@ From {audit/review} v{N}:
 
 **If status is revision_requested:**
 ```
-**Tip:** Review audit comments with `/sf show {ID}` before revising.
+**Tip:** Review audit comments with `/sf:show {ID}` before revising.
 ```
 
 **If status is review:**
@@ -166,7 +166,7 @@ From {audit/review} v{N}:
 
 **If complexity is large:**
 ```
-**Tip:** Consider `/sf split {ID}` to break into smaller specs.
+**Tip:** Consider `/sf:split {ID}` to break into smaller specs.
 ```
 
 </workflow>

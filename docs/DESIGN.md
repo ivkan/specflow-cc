@@ -111,17 +111,17 @@ Solution: Integrate quality audit as a distinct phase.
 │                    SPECFLOW WORKFLOW                        │  
 ├─────────────────────────────────────────────────────────────┤  
 │                                                             │  
-│  /sf init              → Project initialization             │  
+│  /sf:init              → Project initialization             │  
 │       ↓                                                     │  
-│  /sf new               → Create specification               │  
+│  /sf:new               → Create specification               │  
 │       ↓                                                     │  
-│  /sf audit             → Specification audit (fresh context)│  
+│  /sf:audit             → Specification audit (fresh context)│  
 │       ↓                                                     │  
-│  /sf run               → Implementation per spec            │  
+│  /sf:run               → Implementation per spec            │  
 │       ↓                                                     │  
-│  /sf review            → Implementation audit (fresh context)│  
+│  /sf:review            → Implementation audit (fresh context)│  
 │       ↓                                                     │  
-│  /sf done              → Finalize + commit                  │  
+│  /sf:done              → Finalize + commit                  │  
 │                                                             │  
 └─────────────────────────────────────────────────────────────┘  
 
@@ -146,49 +146,49 @@ Naming Principles
 Core Commands  
 | Command     | Description                          | When to Use                     |
 |-------------|--------------------------------------|---------------------------------|
-| /sf init    | Initialize project + analyze codebase| Once at project start           |
-| /sf new     | Create new specification             | Start of new task               |
-| /sf audit   | Audit specification                  | After spec creation/refinement  |
-| /sf revise  | Revise spec based on feedback        | After audit with comments       |
-| /sf run     | Execute specification                | After approved audit            |
-| /sf review  | Audit implementation                 | After execution                 |
-| /sf fix     | Fix implementation per feedback      | After review with comments      |
-| /sf done    | Finalize + commit                    | After approved review           |
+| /sf:init    | Initialize project + analyze codebase| Once at project start           |
+| /sf:new     | Create new specification             | Start of new task               |
+| /sf:audit   | Audit specification                  | After spec creation/refinement  |
+| /sf:revise  | Revise spec based on feedback        | After audit with comments       |
+| /sf:run     | Execute specification                | After approved audit            |
+| /sf:review  | Audit implementation                 | After execution                 |
+| /sf:fix     | Fix implementation per feedback      | After review with comments      |
+| /sf:done    | Finalize + commit                    | After approved review           |
 
 Navigation & State  
 | Command      | Description                     |
 |--------------|---------------------------------|
-| /sf status   | Current state, next step        |
-| /sf list     | List all specifications         |
-| /sf show [ID]| Show specification              |
-| /sf next     | Next highest-priority task      |
+| /sf:status   | Current state, next step        |
+| /sf:list     | List all specifications         |
+| /sf:show [ID]| Show specification              |
+| /sf:next     | Next highest-priority task      |
 
 Task Management  
 | Command        | Description                        |
 |----------------|------------------------------------|
-| /sf todo [text]| Add future idea/task               |
-| /sf todos      | List todos with priorities         |
-| /sf plan [ID]  | Convert todo into specification    |
-| /sf priority   | Interactive prioritization         |
+| /sf:todo [text]| Add future idea/task               |
+| /sf:todos      | List todos with priorities         |
+| /sf:plan [ID]  | Convert todo into specification    |
+| /sf:priority   | Interactive prioritization         |
 
 Decomposition  
 | Command       | Description                      |
 |---------------|----------------------------------|
-| /sf split [ID]| Split large spec into parts      |
-| /sf deps      | Show dependency graph            |
+| /sf:split [ID]| Split large spec into parts      |
+| /sf:deps      | Show dependency graph            |
 
 Sessions  
 | Command     | Description                |
 |-------------|----------------------------|
-| /sf pause   | Save context for pause     |
-| /sf resume  | Restore context            |
+| /sf:pause   | Save context for pause     |
+| /sf:resume  | Restore context            |
 
 Utilities  
 | Command      | Description                   |
 |--------------|-------------------------------|
-| /sf help     | Command reference             |
-| /sf history  | History of completed specs    |
-| /sf metrics  | Statistics (time, revisions, etc.) |
+| /sf:help     | Command reference             |
+| /sf:history  | History of completed specs    |
+| /sf:metrics  | Statistics (time, revisions, etc.) |
 
 3.4 Full Workflow  
 ┌─────────────────────────────────────────────────────────────────────────┐  
@@ -198,7 +198,7 @@ Utilities
 │  ┌────────────────────────────────────────────────── ───────────────┐    │  
 │  │ INITIALIZATION (once)                                            │    │  
 │  │                                                                  │    │  
-│  │   /sf init  ──→  Codebase analysis                               │    │  
+│  │   /sf:init  ──→  Codebase analysis                               │    │  
 │  │                 Create .specflow/PROJECT.md                      │    │  
 │  │                 Create .specflow/STATE.md                        │    │  
 │  └─────────────────────────────────────────────────────────────────┘    │  
@@ -206,13 +206,13 @@ Utilities
 │  ┌─────────────────────────────────────────────────────────────────┐    │  
 │  │ SPEC CREATION                                                    │    │  
 │  │                                                                   │    │  
-│  │  /sf new  "task description"                                      │    │  
+│  │  /sf:new  "task description"                                      │    │  
 │  │       ↓                                                          │    │  
 │  │  Agent asks critical questions (if needed)                        │    │  
 │  │       ↓                                                          │    │  
 │  │  Creates SPEC-XXX.md with complexity estimate                    │    │  
 │  │        ↓                                                          │    │  
-│  │  [Large?] ──yes──→ /sf split (decomposition)                     │    │  
+│  │  [Large?] ──yes──→ /sf:split (decomposition)                     │    │  
 │  │       │                                                           │    │  
 │  │       no                                                         │    │  
 │  └───────┼───────────────────────────────────────────────── ────────┘    │  
@@ -220,11 +220,11 @@ Utilities
 │  ┌─────────────────────────────────────────────────────────────────┐    │  
 │  │ SPEC AUDIT LOOP                                                  │    │  
 │  │                                                                  │    │  
-│  │  /sf audit ──→ APPROVED? ──yes──→  EXIT LOOP                     │    │  
+│  │  /sf:audit ──→ APPROVED? ──yes──→  EXIT LOOP                     │    │  
 │  │       │                                                          │    │  
 │  │       no (comments)                                              │    │  
 │  │       ↓                                                          │    │  
-│  │  /sf revise [instructions]                                       │    │  
+│  │  /sf:revise [instructions]                                       │    │  
 │  │       │                                                           │    │  
 │  │       └──────────→ loop back                                     │    │  
 │  └───────────────────────────────────── ────────────────────────────┘    │  
@@ -232,18 +232,18 @@ Utilities
 │  ┌──────────────────────────────────────────────────────────────── ─┐    │  
 │  │ EXECUTION                                                        │    │  
 │  │                                                                  │    │  
-│  │  /sf run ──→  Implementation with atomic commits                 │    │  
+│  │  /sf:run ──→  Implementation with atomic commits                 │    │  
 │  │                                                                  │    │  
 │  └───────────────────────────────────────── ────────────────────────┘    │  
 │          ↓                                                               │  
 │  ┌─────────────────────────────────────────────────────────────────┐     │  
 │  │ IMPL REVIEW LOOP                                                 │    │  
 │  │                                                                  │    │  
-│  │  /sf review ──→ APPROVED? ──yes──→ EXIT LOOP                     │    │  
+│  │  /sf:review ──→ APPROVED? ──yes──→ EXIT LOOP                     │    │  
 │  │       │                                                          │    │  
 │  │       no (comments)                                              │    │  
 │  │       ↓                                                          │    │  
-│  │  /sf fix [instructions]                                          │    │  
+│  │  /sf:fix [instructions]                                          │    │  
 │  │       │                                                          │    │  
 │  │       └──────────→ loop back                                     │    │  
 │  └───────────────────── ────────────────────────────────────────────┘    │  
@@ -251,7 +251,7 @@ Utilities
 │  ┌──────────────────────────────────────────────── ─────────────────┐    │  
 │  │ COMPLETION                                                       │    │  
 │  │                                                                  │    │  
-│   │  /sf done ──→ Final commit                                      │    │  
+│   │  /sf:done ──→ Final commit                                      │    │  
 │  │              Update STATE.md                                     │    │  
 │  │              Archive specification                               │    │  
 │  └─────────────────────────────────────────────────────────────────┘    │  
@@ -260,7 +260,7 @@ Utilities
 
 3.5 Audit Cycles  
 Specification Audit  
-/sf audit  
+/sf:audit  
 
 ┌─────────────────────────────────────────────────────────┐  
 │ Audit SPEC-001 v2                                        │  
@@ -274,21 +274,21 @@ Specification Audit
 │ Recommendations:                                         │  
 │ 3. Add example of expected API response                  │  
 │                                                          │  
-│ Next Step: /sf revise                                    │  
+│ Next Step: /sf:revise                                    │  
 └─────────────────────────────────────────────────────────┘  
 
 Audit Without Comments  
-/sf audit  
+/sf:audit  
 
 ✅ SPEC-001 passed audit  
 
 Status: APPROVED  
 Comment: Requirements complete, criteria measurable.  
 
-Next Step: /sf run  
+Next Step: /sf:run  
 
 Implementation Review  
-/sf review  
+/sf:review  
 
 ┌─────────────────────────────────────────────────────────┐  
 │ Review SPEC-001                                          │  
@@ -302,12 +302,12 @@ Implementation Review
 │ Recommendations:                                         │  
 │ 3. Add JSDoc to public methods                           │  
 │                                                          │  
-│ Next Step: /sf fix                                       │  
+│ Next Step: /sf:fix                                       │  
 └─────────────────────────────────────────────────────────┘  
 
-3.6 The `/sf revise` Command  
+3.6 The `/sf:revise` Command  
 Without Arguments — Interactive Mode:  
-/sf revise  
+/sf:revise  
 
 Audit v2 found:  
 
@@ -325,13 +325,13 @@ What to fix?
 - or describe your own changes  
 
 With Arguments:  
-/sf revise all                    # Apply all comments  
-/sf revise 1,2                    # Only items 1 and 2  
-/sf revise add deletion of OldClass.ts, ignore item 3  
+/sf:revise all                    # Apply all comments  
+/sf:revise 1,2                    # Only items 1 and 2  
+/sf:revise add deletion of OldClass.ts, ignore item 3  
 
-3.7 Blocking `/sf run`  
+3.7 Blocking `/sf:run`  
 Warning + Confirmation (not hard block):  
-/sf run  
+/sf:run  
 
 ⚠️  SPEC-001 hasn’t passed audit (status: revision_requested)  
 
@@ -353,8 +353,8 @@ When creating a spec, the agent estimates:
 | Medium  | 50–150k  | Warning, proceed           |  
 | Large   | >150k    | Requires decomposition     |  
 
-The `/sf split` Command  
-/sf split SPEC-001  
+The `/sf:split` Command  
+/sf:split SPEC-001  
 
 Specification SPEC-001 is too large (~200k tokens).  
 
@@ -369,13 +369,13 @@ Create? [Y/n]
 
 3.9 To-Do System  
 Creation  
-/sf todo Add caching for API  
+/sf:todo Add caching for API  
 
 ✅ TODO-005 created  
 Priority: not set  
 
 Viewing  
-/sf todos  
+/sf:todos  
 
 ┌─────────────────────────────────────────────────────────┐  
 │ To-Do List                                               │  
@@ -388,11 +388,11 @@ Viewing
 │ 4  │ Research WebSocket                  │ —            │  
 └────┴─────────────────────────────────────┴──────────────┘  
 
-/sf plan 1    — convert to specification  
-/sf priority  — change priorities  
+/sf:plan 1    — convert to specification  
+/sf:priority  — change priorities  
 
 Prioritization  
-/sf priority  
+/sf:priority  
 
 Current order:  
 1. [high] Add caching for API  
@@ -405,7 +405,7 @@ or "tech" for technically optimal order:
 
 3.10 Clarifying Questions  
 Agent asks only critical questions; rest are assumptions:  
-/sf new "Add authentication"  
+/sf:new "Add authentication"  
 
 To create specification, please clarify:  
 
@@ -414,7 +414,7 @@ To create specification, please clarify:
    b) Session-based  
    c) OAuth 2.0  
 
-Rest will be assumed (can be changed during /sf revise):  
+Rest will be assumed (can be changed during /sf:revise):  
 - Database: PostgreSQL (from PROJECT.md)  
 - Framework: Next.js (from PROJECT.md)  
 
@@ -423,12 +423,12 @@ Assumptions are recorded in the specification:
 - Using PostgreSQL (from PROJECT.md)  
 - API will be REST (not explicitly stated)  
 
-> If assumptions are incorrect, specify during /sf revise  
+> If assumptions are incorrect, specify during /sf:revise  
 
 3.11 Hybrid Audit Storage  
 File Structure  
 .specflow/  
-├── PROJECT.md           # Project overview (from /sf init)  
+├── PROJECT.md           # Project overview (from /sf:init)  
 ├── STATE.md             # Current state  
 ├── config.json          # Configuration  
 ├── specs/  
@@ -504,7 +504,7 @@ created: 2026-01-20
 ## Current Position  
 - **Active Specification:** SPEC-003  
 - **Status:** running  
-- **Next Step:** /sf review  
+- **Next Step:** /sf:review  
 
 ## Queue  
 | # | ID | Title | Priority | Status |  
@@ -549,10 +549,10 @@ created: 2026-01-20
 | Agents               | 11           | 4            |  
 | Phases per Task      | 5+           | 3–4          |  
 | Quality Audit        | No           | Yes (explicit)|  
-| Revision Loop        | No           | Yes (/sf revise, /sf fix) |  
+| Revision Loop        | No           | Yes (/sf:revise, /sf:fix) |  
 | Code Deletion        | Not verified | Explicit checklist |  
 | Blocking             | Hard         | Soft (warning)|  
-| Decomposition        | Manual       | Auto-assessment + /sf split |  
+| Decomposition        | Manual       | Auto-assessment + /sf:split |  
 | To-Do System         | Yes          | Yes + prioritization |  
 | Atomic Commits       | Yes          | Yes          |  
 
@@ -588,15 +588,15 @@ MIT — fully original code.
 6. Implementation Plan  
 Phase 1: Core (3–4 days)  
 Commands:  
-`/sf init`  
-`/sf new`  
-`/sf audit`  
-`/sf revise`  
-`/sf run`  
-`/sf review`  
-`/sf fix`  
-`/sf done`  
-`/sf status`  
+`/sf:init`  
+`/sf:new`  
+`/sf:audit`  
+`/sf:revise`  
+`/sf:run`  
+`/sf:review`  
+`/sf:fix`  
+`/sf:done`  
+`/sf:status`  
 
 Agents:  
 spec-creator  
@@ -606,26 +606,26 @@ impl-reviewer
 
 Phase 2: Navigation & State (2 days)  
 Commands:  
-`/sf list`  
-`/sf show`  
-`/sf next`  
-`/sf pause`  
-`/sf resume`  
+`/sf:list`  
+`/sf:show`  
+`/sf:next`  
+`/sf:pause`  
+`/sf:resume`  
 
 Phase 3: To-Do & Decomposition (2 days)  
 Commands:  
-`/sf todo`  
-`/sf todos`  
-`/sf plan`  
-`/sf priority`  
-`/sf split`  
-`/sf deps`  
+`/sf:todo`  
+`/sf:todos`  
+`/sf:plan`  
+`/sf:priority`  
+`/sf:split`  
+`/sf:deps`  
 
 Phase 4: Polish (1–2 days)  
 Commands:  
-`/sf help`  
-`/sf history`  
-`/sf metrics`  
+`/sf:help`  
+`/sf:history`  
+`/sf:metrics`  
 
 Also:  
 Statusline hook  
@@ -681,19 +681,19 @@ specflow-cc/
 
 8. New Ideas (Beyond GSD)  
 A. Cross-Provider Audit  
-/sf audit --provider=openai  
+/sf:audit --provider=openai  
 
 B. Spec Templates  
-/sf new --template=refactor  
-/sf new --template=api  
-/sf new --template=bugfix  
+/sf:new --template=refactor  
+/sf:new --template=api  
+/sf:new --template=bugfix  
 
 C. Dependency Graph  
-/sf deps              # Visualization  
-/sf deps SPEC-005     # What depends on SPEC-005  
+/sf:deps              # Visualization  
+/sf:deps SPEC-005     # What depends on SPEC-005  
 
 D. Metrics Dashboard  
-/sf metrics           # Time, revisions, success rate  
+/sf:metrics           # Time, revisions, success rate  
 
 9. Decisions Made During Discussion  
 | Date       | Question                  | Decision                     | Justification                     |  
@@ -701,65 +701,65 @@ D. Metrics Dashboard
 | 2026-01-20 | Name                      | SpecFlow                     | Short, reflects essence           |  
 | 2026-01-20 | Audit Storage             | Hybrid                       | ≤3 inline, >3 separate            |  
 | 2026-01-20 | Run Blocking              | Warning                      | Flexibility + trust               |  
-| 2026-01-20 | /sf revise without text   | Interactive mode             | Auto-read audit                   |  
-| 2026-01-20 | Implementation Audit      | Yes, cyclic                  | /sf review + /sf fix              |  
+| 2026-01-20 | /sf:revise without text   | Interactive mode             | Auto-read audit                   |  
+| 2026-01-20 | Implementation Audit      | Yes, cyclic                  | /sf:review + /sf:fix              |  
 | 2026-01-20 | Result Without Comments   | Explicit APPROVED            | Clear feedback                    |  
-| 2026-01-20 | To-Do System              | Yes, with prioritization     | /sf todo, /sf todos, /sf plan     |  
-| 2026-01-20 | Init + map-codebase       | Yes, simplified              | /sf init                          |  
+| 2026-01-20 | To-Do System              | Yes, with prioritization     | /sf:todo, /sf:todos, /sf:plan     |  
+| 2026-01-20 | Init + map-codebase       | Yes, simplified              | /sf:init                          |  
 | 2026-01-20 | Auto Commits              | Yes, configurable            | config.json                       |  
 | 2026-01-20 | Token Limit               | Yes, complexity estimation   | small/medium/large                |  
 | 2026-01-20 | Search During Planning    | Yes                          | Agent searches related code       |  
 | 2026-01-20 | Clarifying Questions      | Critical only                | Rest = assumptions                |  
-| 2026-01-20 | Phase Prioritization      | Yes                          | /sf priority, /sf next            |  
+| 2026-01-20 | Phase Prioritization      | Yes                          | /sf:priority, /sf:next            |  
 | 2026-01-20 | Full CLI                  | Yes                          | From first version                |  
 
 10. Command Summary  
 Core Workflow  
 | Command     | Action                     |  
 |-------------|----------------------------|  
-| /sf init    | Initialize project         |  
-| /sf new     | Create specification       |  
-| /sf audit   | Audit specification        |  
-| /sf revise  | Revise specification       |  
-| /sf run     | Execute                    |  
-| /sf review  | Audit implementation       |  
-| /sf fix     | Fix implementation         |  
-| /sf done    | Finalize                   |  
+| /sf:init    | Initialize project         |  
+| /sf:new     | Create specification       |  
+| /sf:audit   | Audit specification        |  
+| /sf:revise  | Revise specification       |  
+| /sf:run     | Execute                    |  
+| /sf:review  | Audit implementation       |  
+| /sf:fix     | Fix implementation         |  
+| /sf:done    | Finalize                   |  
 
 Navigation  
 | Command     | Action                     |  
 |-------------|----------------------------|  
-| /sf status  | Current state              |  
-| /sf list    | All specifications         |  
-| /sf show    | Show one                   |  
-| /sf next    | Next task                  |  
+| /sf:status  | Current state              |  
+| /sf:list    | All specifications         |  
+| /sf:show    | Show one                   |  
+| /sf:next    | Next task                  |  
 
 To-Do  
 | Command     | Action                     |  
 |-------------|----------------------------|  
-| /sf todo    | Add idea                   |  
-| /sf todos   | List                       |  
-| /sf plan    | Convert to spec            |  
-| /sf priority| Prioritize                 |  
+| /sf:todo    | Add idea                   |  
+| /sf:todos   | List                       |  
+| /sf:plan    | Convert to spec            |  
+| /sf:priority| Prioritize                 |  
 
 Decomposition  
 | Command     | Action                     |  
 |-------------|----------------------------|  
-| /sf split   | Split into parts           |  
-| /sf deps    | Dependency graph           |  
+| /sf:split   | Split into parts           |  
+| /sf:deps    | Dependency graph           |  
 
 Session  
 | Command     | Action                     |  
 |-------------|----------------------------|  
-| /sf pause   | Save context               |  
-| /sf resume  | Restore                    |  
+| /sf:pause   | Save context               |  
+| /sf:resume  | Restore                    |  
 
 Utility  
 | Command     | Action                     |  
 |-------------|----------------------------|  
-| /sf help    | Help                       |  
-| /sf history | History                    |  
-| /sf metrics | Statistics                 |  
+| /sf:help    | Help                       |  
+| /sf:history | History                    |  
+| /sf:metrics | Statistics                 |  
 
 Total: 22 commands (vs 25 in GSD, but with higher functionality per command)  
 Ready for implementation.
