@@ -47,12 +47,13 @@ npx specflow-cc --global
 | `/sf:fix` | Fix based on review |
 | `/sf:done` | Complete and archive |
 
-### Before You Spec
+### Research & Clarification
 
 | Command | Description |
 |---------|-------------|
-| `/sf:research` | Research topic, save findings |
-| `/sf:discuss` | Clarify requirements via Q&A |
+| `/sf:research "topic"` | Research topic, save findings |
+| `/sf:discuss "topic"` | Clarify requirements (multi-question) |
+| `/sf:discuss "question?"` | Quick clarification (single question) |
 | `/sf:scan` | Analyze codebase for issues |
 
 ### Navigation
@@ -114,8 +115,13 @@ npx specflow-cc --global
 # Audit (use /clear first for fresh context)
 /sf:audit
 
-# Implement and review
+# Implement
 /sf:run
+
+# Quick clarification during implementation
+/sf:discuss "Should we use Redis or in-memory cache?"
+
+# Review and complete
 /sf:review
 /sf:done
 ```

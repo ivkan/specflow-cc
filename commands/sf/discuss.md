@@ -1,7 +1,7 @@
 ---
 name: sf:discuss
 description: Interactive Q&A to clarify requirements or resolve specification ambiguities
-argument-hint: "[SPEC-XXX | topic]"
+argument-hint: "[SPEC-XXX | topic | question?]"
 ---
 
 <purpose>
@@ -11,6 +11,7 @@ Use cases:
 - Before `/sf:new`: Clarify requirements before creating a spec
 - After `/sf:new`: Discuss assumptions made in the spec
 - After `/sf:audit`: Resolve issues that need user decision
+- During `/sf:run`: Quick clarification on specific question
 </purpose>
 
 <context>
@@ -44,11 +45,16 @@ Determine discussion mode from arguments:
 - Discussion focuses on clarifying that spec
 - Mode: `spec-clarification`
 
-**Case B: Topic string provided (not SPEC-XXX)**
+**Case B: String contains `?` (direct question)**
+- Single question requiring immediate answer
+- Mode: `direct-question`
+- Example: `/sf:discuss "Should we use Redis or in-memory cache?"`
+
+**Case C: Topic string provided (no `?`, not SPEC-XXX)**
 - Discussion about requirements before spec creation
 - Mode: `requirements-gathering`
 
-**Case C: No arguments**
+**Case D: No arguments**
 - Check STATE.md for active spec
 - If active spec exists: discuss that spec
 - If no active spec: ask what to discuss
@@ -114,6 +120,25 @@ Create discussion record:
 ```
 
 ## 7. Display Result
+
+### For direct-question mode:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ CLARIFICATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Question:** [the question]
+
+**Decision:** [chosen option]
+**Rationale:** [user's reasoning or inferred]
+
+---
+
+📄 **File:** `.specflow/discussions/DISC-XXX.md`
+```
+
+### For other modes:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

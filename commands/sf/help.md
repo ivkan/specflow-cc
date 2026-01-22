@@ -114,9 +114,10 @@ Read the command file and extract:
 ## Examples
 
 ```
-/sf:discuss "auth requirements"   # Before creating spec
-/sf:discuss SPEC-001              # Clarify existing spec
-/sf:discuss                       # Discuss active spec
+/sf:discuss "auth requirements"                    # Topic discussion
+/sf:discuss SPEC-001                               # Clarify spec
+/sf:discuss "Should we use Redis or memory cache?" # Direct question
+/sf:discuss                                        # Active spec
 ```
 ```
 

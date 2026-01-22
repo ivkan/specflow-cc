@@ -48,6 +48,57 @@ Discussion records should:
 
 <process>
 
+## Step 0: Check Mode
+
+**If mode is `direct-question`:**
+- Skip to Direct Question Flow (below)
+- Single question, single answer, quick documentation
+
+**Otherwise:** Continue with standard flow.
+
+---
+
+## Direct Question Flow
+
+For direct questions (argument contains `?`):
+
+1. **Parse the question** — extract from input
+2. **Generate options** — analyze question and create 2-4 clear options
+3. **Ask user** — use AskUserQuestion with the options
+4. **Document** — save single decision to DISC-XXX.md
+5. **Return** — brief confirmation with decision
+
+**Example input:** "Should we use Redis or in-memory cache?"
+
+**Generated options:**
+```
+header: "Cache"
+question: "Should we use Redis or in-memory cache?"
+options:
+  - label: "Redis"
+    description: "Distributed, persistent, scales across instances"
+  - label: "In-memory"
+    description: "Simpler, faster, but lost on restart"
+  - label: "Both (hybrid)"
+    description: "In-memory with Redis fallback"
+```
+
+**Output for direct question:**
+```
+## CLARIFICATION
+
+**Question:** Should we use Redis or in-memory cache?
+**Decision:** Redis
+**Rationale:** Need persistence and multi-instance support
+
+### File
+.specflow/discussions/DISC-XXX.md
+```
+
+---
+
+## Standard Discussion Flow
+
 ## Step 1: Analyze Context
 
 Read the provided context:
