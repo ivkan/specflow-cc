@@ -41,11 +41,19 @@ npx specflow-cc --global
 | `/sf:init` | Initialize project |
 | `/sf:new` | Create specification |
 | `/sf:audit` | Audit spec (fresh context) |
-| `/sf:revise` | Revise based on audit |
+| `/sf:revise` | Revise based on audit (see below) |
 | `/sf:run` | Implement spec |
 | `/sf:review` | Review implementation |
 | `/sf:fix` | Fix based on review |
 | `/sf:done` | Complete and archive |
+
+**Revise options:**
+```bash
+/sf:revise              # Interactive — show issues, ask what to fix
+/sf:revise all          # Apply all feedback
+/sf:revise 1,2          # Fix only items 1 and 2
+/sf:revise "custom..."  # Arbitrary revision instructions
+```
 
 ### Research & Clarification
 
