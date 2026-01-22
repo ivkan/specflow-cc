@@ -5,6 +5,21 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-01-22
+
+### Added
+
+- `/sf:discuss` — Interactive Q&A to clarify requirements and resolve ambiguities
+- `discusser` agent — Conducts focused discussions with clear options
+- `.specflow/discussions/` directory for discussion records
+- Discuss hints after `/sf:new` and `/sf:audit` (NEEDS_REVISION)
+
+### Changed
+
+- Help section "Research & Analysis" renamed to "Research & Clarification"
+
+---
+
 ## [1.4.0] - 2026-01-21
 
 ### Added

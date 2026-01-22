@@ -174,6 +174,8 @@ Options:
 - `/sf:revise all` — apply all feedback
 - `/sf:revise 1,2` — fix specific issues
 - `/sf:revise [instructions]` — custom changes
+
+<sub>Optional: `/sf:discuss SPEC-XXX` — clarify requirements before revising</sub>
 ```
 
 </workflow>

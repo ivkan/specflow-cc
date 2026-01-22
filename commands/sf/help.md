@@ -109,6 +109,17 @@ Read the command file and extract:
 ```
 ```
 
+**For `/sf:discuss`:**
+```
+## Examples
+
+```
+/sf:discuss "auth requirements"   # Before creating spec
+/sf:discuss SPEC-001              # Clarify existing spec
+/sf:discuss                       # Discuss active spec
+```
+```
+
 **For `/sf:audit`:**
 ```
 ## Examples
@@ -224,11 +235,12 @@ Workflow: Spec → Audit → Revise → Run → Review → Fix → Done
 | /sf:pause    | Save session context for later          |
 | /sf:resume   | Restore previous session context        |
 
-## Research & Analysis
+## Research & Clarification
 
 | Command      | Description                             |
 |--------------|-----------------------------------------|
 | /sf:research | Research topic for spec context         |
+| /sf:discuss  | Clarify requirements interactively      |
 | /sf:scan     | Deep codebase analysis                  |
 
 ## Utilities

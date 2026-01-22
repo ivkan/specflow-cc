@@ -122,6 +122,8 @@ The agent will:
 
 <sub>/clear recommended → auditor needs fresh context</sub>
 
+<sub>Optional: `/sf:discuss SPEC-XXX` — clarify assumptions before audit</sub>
+
 {If complexity is large:}
 
 ### Warning
