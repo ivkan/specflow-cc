@@ -5,6 +5,15 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.2] - 2026-01-22
+
+### Fixed
+
+- `/sf:review` now offers `/sf:fix` option when APPROVED with minor issues
+- impl-reviewer agent output distinguishes "no issues" vs "with minor issues"
+
+---
+
 ## [1.5.1] - 2026-01-22
 
 ### Added

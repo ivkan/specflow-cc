@@ -246,9 +246,16 @@ Return review result:
 
 ## Next Step
 
-{If APPROVED:} `/sf:done` — finalize and archive
+{If APPROVED with NO minor issues:}
+`/sf:done` — finalize and archive
 
-{If CHANGES_REQUESTED:} `/sf:fix` — address issues
+{If APPROVED WITH minor issues:}
+Choose one:
+• `/sf:done` — finalize as-is (minor issues are optional)
+• `/sf:fix` — address minor issues first
+
+{If CHANGES_REQUESTED:}
+`/sf:fix` — address issues
 
 Options:
 - `/sf:fix all` — apply all fixes
