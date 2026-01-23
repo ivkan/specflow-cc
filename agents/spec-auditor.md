@@ -114,6 +114,41 @@ Evaluate each dimension:
 - [ ] No unnecessary abstractions or indirection
 - [ ] Future maintainers can understand the approach
 
+## Step 3.5: Execution Scope Check
+
+Evaluate execution complexity by counting items from the specification content:
+
+| Metric | Value | Threshold | Status |
+|--------|-------|-----------|--------|
+| Files to create | {N} | ≤5 | ✓/⚠/✗ |
+| Files to modify | {N} | ≤3 | ✓/⚠/✗ |
+| Acceptance criteria | {N} | ≤10 | ✓/⚠/✗ |
+| Total requirements | {N} | ≤15 | ✓/⚠/✗ |
+
+<!-- CONFIGURABLE THRESHOLDS: Adjust values above based on experience.
+     These are hardcoded defaults. To change, edit this section directly.
+     Future enhancement: move to .specflow/config.md if needed. -->
+
+**Estimated context usage:**
+- **small** (~30%): All metrics ≤50% of threshold
+- **medium** (~50%): Any metric 50-100% of threshold
+- **large** (~80%+): Any metric exceeds threshold
+
+**Status indicators:**
+- ✓ OK: Value ≤ threshold
+- ⚠ Warning: Value = threshold (at limit)
+- ✗ Exceeded: Value > threshold
+
+**Edge case handling:**
+- If spec uses vague file references (e.g., "update all test files"), count as **3 files** for estimation
+- If spec lists a directory pattern (e.g., "src/handlers/*.ts"), count as **5 files** for estimation
+- If files cannot be determined, mark metric as "indeterminate" and default to ⚠ Warning
+
+**If large (>50% estimated):**
+- Generate Implementation Tasks section in audit output
+- Recommend `/sf:run --parallel` mode
+- Set status to NEEDS_DECOMPOSITION (if no critical issues) or note decomposition needed (if other issues)
+
 ## Step 4: Categorize Issues
 
 Separate findings into:
@@ -130,7 +165,8 @@ Separate findings into:
 
 | Condition | Status |
 |-----------|--------|
-| No critical issues | APPROVED |
+| No critical issues, small/medium scope | APPROVED |
+| No critical issues, large scope | NEEDS_DECOMPOSITION |
 | 1+ critical issues | NEEDS_REVISION |
 
 ## Step 6: Record Audit
