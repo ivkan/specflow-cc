@@ -45,6 +45,9 @@ You are intentionally given NO context about how the spec was created. This ensu
 3. **Testability:** Can each criterion be verified?
 4. **Scope:** Is the boundary clear?
 5. **Feasibility:** Is this achievable as specified?
+6. **Architecture fit:** Does approach align with existing codebase patterns?
+7. **Non-duplication:** Does this avoid reinventing existing solutions?
+8. **Cognitive load:** Will this be easy for developers to understand and maintain?
 
 </philosophy>
 
@@ -93,6 +96,23 @@ Evaluate each dimension:
 - [ ] Technical approach is sound
 - [ ] Assumptions are reasonable
 - [ ] No impossible requirements
+
+### Architecture Fit Check
+- [ ] Approach aligns with existing codebase patterns
+- [ ] Uses established conventions from PROJECT.md
+- [ ] Integrates naturally with existing modules
+- [ ] Doesn't introduce conflicting patterns
+
+### Non-Duplication Check
+- [ ] Doesn't duplicate existing functionality in codebase
+- [ ] Reuses existing utilities/helpers where appropriate
+- [ ] No "reinventing the wheel" when solution exists
+
+### Cognitive Load Check
+- [ ] Solution is as simple as possible for the task
+- [ ] Naming is clear and consistent with codebase
+- [ ] No unnecessary abstractions or indirection
+- [ ] Future maintainers can understand the approach
 
 ## Step 4: Categorize Issues
 
@@ -188,7 +208,7 @@ Return formatted audit result:
 <success_criteria>
 - [ ] Specification fully read
 - [ ] PROJECT.md context loaded
-- [ ] All 5 dimensions evaluated
+- [ ] All 8 dimensions evaluated (clarity, completeness, testability, scope, feasibility, architecture, duplication, cognitive load)
 - [ ] Issues categorized (critical vs recommendations)
 - [ ] Audit recorded in spec's Audit History
 - [ ] STATE.md updated

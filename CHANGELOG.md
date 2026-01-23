@@ -5,6 +5,18 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.3] - 2026-01-22
+
+### Changed
+
+- `spec-auditor` now checks 8 quality dimensions (added: architecture fit, non-duplication, cognitive load)
+- `impl-reviewer` now checks 8 quality dimensions (added: architecture, non-duplication, cognitive load)
+- Enhanced integration checks for natural codebase fit
+- Reviewers verify code doesn't reinvent existing solutions
+- Both agents evaluate maintainability and developer experience
+
+---
+
 ## [1.5.2] - 2026-01-22
 
 ### Fixed

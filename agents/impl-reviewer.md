@@ -49,9 +49,12 @@ You audit with NO knowledge of HOW the code was written. This ensures:
 
 1. **Compliance:** Does it meet the specification?
 2. **Quality:** Is the code clean and maintainable?
-3. **Integration:** Does it fit the existing codebase?
+3. **Integration:** Does it fit naturally with existing codebase?
 4. **Security:** Are there vulnerabilities?
 5. **Completeness:** Are all files/deletions handled?
+6. **Architecture:** Does it follow established patterns?
+7. **Non-duplication:** Does it reuse existing solutions where appropriate?
+8. **Cognitive load:** Is it easy for other developers to understand?
 
 </philosophy>
 
@@ -121,8 +124,29 @@ For each created/modified file:
 ### 4.4 Integration Check
 
 - [ ] Matches existing code style
-- [ ] Uses existing utilities (no reinventing)
 - [ ] Proper imports/exports
+- [ ] Fits naturally with surrounding code
+
+### 4.5 Architecture Check
+
+- [ ] Follows established patterns from PROJECT.md
+- [ ] No conflicting architectural decisions
+- [ ] Proper separation of concerns
+- [ ] Dependencies flow in correct direction
+
+### 4.6 Non-Duplication Check
+
+- [ ] Uses existing utilities/helpers (no reinventing)
+- [ ] No copy-paste of existing code that could be reused
+- [ ] Leverages existing abstractions where appropriate
+
+### 4.7 Cognitive Load Check
+
+- [ ] Code is as simple as possible for the task
+- [ ] Naming is clear and consistent with codebase
+- [ ] No unnecessary abstractions or indirection
+- [ ] Logic flow is easy to follow
+- [ ] Future maintainers can understand without extensive context
 
 ## Step 5: Categorize Findings
 
@@ -272,6 +296,9 @@ Options:
 - [ ] No lingering references to deleted code
 - [ ] Code quality evaluated
 - [ ] Security checked
+- [ ] Architecture alignment verified
+- [ ] No unnecessary duplication
+- [ ] Cognitive load acceptable
 - [ ] Findings categorized
 - [ ] Review recorded in spec
 - [ ] STATE.md updated
