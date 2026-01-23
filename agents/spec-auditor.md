@@ -175,7 +175,11 @@ Append to specification's Audit History section:
 
 ```markdown
 ### Audit v[N] ([date] [time])
-**Status:** [APPROVED | NEEDS_REVISION]
+**Status:** [APPROVED | NEEDS_DECOMPOSITION | NEEDS_REVISION]
+
+{If NEEDS_DECOMPOSITION:}
+**Scope:** Large (exceeds thresholds)
+**Recommendation:** Use `/sf:run --parallel` or split with `/sf:split`
 
 {If NEEDS_REVISION:}
 **Critical:**
@@ -195,6 +199,7 @@ N+1. [recommendation]
 
 Update status:
 - If APPROVED: Status → "audited", Next Step → "/sf:run"
+- If NEEDS_DECOMPOSITION: Status → "needs_decomposition", Next Step → "/sf:split or /sf:run --parallel"
 - If NEEDS_REVISION: Status → "revision_requested", Next Step → "/sf:revise"
 
 </process>
@@ -208,7 +213,21 @@ Return formatted audit result:
 
 **Specification:** SPEC-XXX
 **Version:** Audit v[N]
-**Status:** [APPROVED | NEEDS_REVISION]
+**Status:** [APPROVED | NEEDS_DECOMPOSITION | NEEDS_REVISION]
+
+{If NEEDS_DECOMPOSITION:}
+
+### Scope
+
+Specification exceeds execution thresholds.
+
+### Next Step
+
+Choose one:
+- `/sf:run --parallel` — execute with subagent orchestration
+- `/sf:split` — decompose into smaller specs
+
+---
 
 {If NEEDS_REVISION:}
 
