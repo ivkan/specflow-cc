@@ -4,8 +4,8 @@
 
 **SPEC-SUBAGENT-B** — Core Agent Architecture
 
-**Status:** running
-**Next Step:** (in progress)
+**Status:** review
+**Next Step:** `/sf:review`
 
 ## Queue
 
