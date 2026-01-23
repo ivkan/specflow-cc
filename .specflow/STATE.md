@@ -2,16 +2,16 @@
 
 ## Active Specification
 
-None
+**SPEC-SUBAGENT-B** — Core Agent Architecture
 
-**Status:** idle
-**Next Step:** `/sf:next` or `/sf:new`
+**Status:** running
+**Next Step:** (in progress)
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| 1 | SPEC-SUBAGENT-B | Core Agent Architecture | draft | medium | — |
+| 1 | SPEC-SUBAGENT-B | Core Agent Architecture | audited | medium | — |
 | 2 | SPEC-SUBAGENT-C | State Management & Reliability | draft | medium | SPEC-SUBAGENT-B |
 
 ## Decisions
