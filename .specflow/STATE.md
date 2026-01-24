@@ -2,21 +2,19 @@
 
 ## Active Specification
 
-SPEC-SUBAGENT-C
+none
 
-**Status:** review
-**Next Step:** /sf:review
+**Status:** idle
+**Next Step:** /sf:new or /sf:next
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| 1 | SPEC-SUBAGENT-C | State Management & Reliability | review | medium | SPEC-SUBAGENT-B |
 
-**Execution Order Rationale:**
-- SPEC-SUBAGENT-C (state): Benefits from stable orchestrator
+*Queue is empty*
 
-**Master Spec:** SPEC-GSD-IMPROVEMENTS (umbrella for GSD adoption)
+**Master Spec:** SPEC-GSD-IMPROVEMENTS (umbrella for GSD adoption) - COMPLETE
 
 ## Decisions
 
@@ -47,6 +45,8 @@ SPEC-SUBAGENT-C
 | 2026-01-24 | SPEC-GSD-A: Implementation reviewed (v1) and APPROVED - all 7 acceptance criteria met |
 | 2026-01-24 | SPEC-GSD-A: COMPLETED - Goal-backward methodology established for SpecFlow |
 | 2026-01-24 | SPEC-SUBAGENT-C: Audited (v1) and APPROVED - state management and reliability spec ready for implementation |
+| 2026-01-24 | SPEC-SUBAGENT-C: Implementation reviewed (v1) and APPROVED - all 12 acceptance criteria met |
+| 2026-01-24 | SPEC-SUBAGENT-C: COMPLETED - State management and reliability for orchestrated execution |
 
 ## Notes
 
@@ -57,9 +57,10 @@ SPEC-SUBAGENT-C
 - SPEC-SFNEXT-001: Queue position as source of truth for /sf:next
 - SPEC-GSD-C: Explicit context % thresholds for decomposition decisions
 - SPEC-GSD-A: Goal-backward methodology in spec creator and auditor
+- SPEC-SUBAGENT-C: State management and reliability for orchestrated execution
 
 ### In Progress
-- GSD-inspired improvements adoption (1 spec remaining in queue)
+- None (GSD-inspired improvements adoption complete)
 
 ### Architecture Alignment with GSD
 | Aspect | SF Status |
@@ -70,7 +71,7 @@ SPEC-SUBAGENT-C
 | Pre-computed waves | Implemented (SPEC-GSD-B) - DONE |
 | Context % estimation | Implemented (SPEC-GSD-C) - DONE |
 | Goal-backward | Implemented (SPEC-GSD-A) - DONE |
-| Pause/Resume | Pending (SPEC-SUBAGENT-C) |
+| Pause/Resume | Implemented (SPEC-SUBAGENT-C) - DONE |
 
 ---
-*Last updated: 2026-01-24 (SPEC-SUBAGENT-C implemented)*
+*Last updated: 2026-01-24 (SPEC-SUBAGENT-C completed and archived)*
