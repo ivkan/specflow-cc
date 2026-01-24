@@ -32,31 +32,63 @@ Run `/sf:init` to start.
 ```
 Exit.
 
-## Step 2: Find All Specifications
+## Step 2: Read Queue from STATE.md
+
+Read `.specflow/STATE.md` and parse the Queue table.
+
+The Queue table format:
+```
+| Priority | ID | Title | Status | Complexity | Depends On |
+|----------|-----|-------|--------|------------|------------|
+| 1 | SPEC-XXX | Title | status | complexity | - |
+| 2 | SPEC-YYY | Title | status | complexity | SPEC-XXX |
+```
+
+Extract ordered list of spec IDs from the Priority column (1, 2, 3...).
+
+## Step 3: Select First Actionable Spec from Queue
+
+### Status Categories
+
+**Actionable statuses** (process in Queue order):
+- `draft` - needs audit
+- `auditing` - audit in progress
+- `revision_requested` - needs revision
+- `audited` - ready to implement
+- `running` - implementation in progress
+- `review` - needs review
+
+**Non-actionable statuses** (skip):
+- `done` - completed
+- `blocked` - waiting on dependency
+- `archived` - no longer relevant
+
+### Selection Algorithm
+
+```
+for each spec in Queue (ordered by Priority column):
+  read spec file frontmatter to get current status
+  if status is actionable:
+    return this spec as selected
+```
+
+**If Queue is empty or all Queue specs are non-actionable:**
+Proceed to Step 4 (fallback).
+
+**If actionable spec found:**
+Skip Step 4, proceed to Step 5.
+
+## Step 4: Fallback - Scan All Spec Files
+
+Only reached if Queue is empty or contains no actionable specs.
 
 ```bash
 ls -1 .specflow/specs/SPEC-*.md 2>/dev/null
 ```
 
-**If no specs found:**
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- NO ACTIONABLE TASKS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+For each spec file, read frontmatter and check status.
 
-No specifications ready for work.
-
-**Options:**
-- `/sf:new "description"` — create new specification
-- `/sf:todos` — view idea backlog
-```
-Exit.
-
-## Step 3: Parse and Score Specifications
-
-For each spec, read frontmatter and calculate priority score:
-
-### Status Priority (higher = more urgent)
+### Status Priority for Fallback (higher = more urgent)
 | Status | Score | Reason |
 |--------|-------|--------|
 | review | 100 | Needs immediate attention (almost done) |
@@ -66,23 +98,9 @@ For each spec, read frontmatter and calculate priority score:
 | auditing | 60 | Audit in progress |
 | draft | 50 | Needs audit |
 
-### Priority Modifier
-| Priority | Modifier |
-|----------|----------|
-| high | +30 |
-| medium | +20 |
-| low | +10 |
+Select the spec with highest status score. For ties, prefer older specs (lower ID number).
 
-### Final Score
-`score = status_score + priority_modifier`
-
-For ties, prefer older specs (lower ID number).
-
-## Step 4: Select Best Candidate
-
-Choose spec with highest score.
-
-**If no actionable specs** (all done or blocked):
+**If no specs found or no actionable specs:**
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  NO ACTIONABLE TASKS
@@ -173,8 +191,9 @@ From {audit/review} v{N}:
 
 <success_criteria>
 - [ ] Initialization verified
-- [ ] All specs scanned and scored
-- [ ] Highest priority actionable spec selected
+- [ ] Queue table parsed from STATE.md
+- [ ] First actionable spec from Queue selected (by Priority order)
+- [ ] Fallback to status-based scan if Queue empty/exhausted
 - [ ] STATE.md updated with new active spec
 - [ ] Summary displayed with acceptance criteria
 - [ ] Clear recommended action provided
