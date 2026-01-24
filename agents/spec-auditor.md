@@ -49,6 +49,74 @@ You are intentionally given NO context about how the spec was created. This ensu
 7. **Non-duplication:** Does this avoid reinventing existing solutions?
 8. **Cognitive load:** Will this be easy for developers to understand and maintain?
 
+## Context Quality Curve
+
+Claude's quality degrades predictably with context consumption:
+
+| Context Range | Expected Quality | Status |
+|---------------|------------------|--------|
+| 0-30% | PEAK | Optimal |
+| 30-50% | GOOD | Target range |
+| 50-70% | DEGRADING | Split recommended |
+| 70%+ | POOR | Must split |
+
+Target: Keep each worker/execution in the 30-50% range.
+
+## Context Estimation Rules
+
+Estimate context WITHOUT reading source files (to avoid overhead):
+
+### By File Type
+
+| File Type | Typical Lines | Est. Context |
+|-----------|---------------|--------------|
+| Types/interfaces | 50-100 | 2-3% |
+| Simple handler | 100-200 | 3-5% |
+| Complex handler | 200-400 | 5-8% |
+| Test file | 150-300 | 3-5% |
+| Config/utility | 50-100 | 2-3% |
+
+### By Operation
+
+| Component | Base Est. | Modifier |
+|-----------|-----------|----------|
+| Read existing file | 2-3% | +1% per 200 lines |
+| Create new file | 3-5% | +2% if complex logic |
+| Modify existing file | 4-6% | +1% per section changed |
+| Write tests | 3-4% | Per test file |
+| Complex integration | +5-10% | Cross-module wiring |
+| External API calls | +3-5% | Each unique endpoint |
+
+### Complexity Multipliers
+
+| Factor | Multiplier |
+|--------|------------|
+| Straightforward CRUD | 1.0x |
+| Business logic | 1.3x |
+| State management | 1.5x |
+| Async/concurrent | 1.7x |
+| Security-sensitive | 1.5x |
+
+### File Count Quick Estimate
+
+| Files Modified | Context Impact |
+|----------------|----------------|
+| 0-3 files | ~10-15% (small) |
+| 4-6 files | ~20-30% (medium) |
+| 7+ files | ~40%+ (large — split) |
+
+### Worker Overhead
+
+Fixed "entry cost" per subagent invocation:
+
+| Component | Est. Context |
+|-----------|--------------|
+| PROJECT.md loading | ~2% |
+| Task parsing | ~1% |
+| JSON result formatting | ~1% |
+| Deviation buffer | ~1% |
+| **Total** | **~5%** |
+
 </philosophy>
 
 <process>
@@ -116,38 +184,86 @@ Evaluate each dimension:
 
 ## Step 3.5: Execution Scope Check
 
-Evaluate execution complexity by counting items from the specification content:
+Estimate context usage based on file types and task complexity:
 
-| Metric | Value | Threshold | Status |
-|--------|-------|-----------|--------|
-| Files to create | {N} | ≤5 | ✓/⚠/✗ |
-| Files to modify | {N} | ≤3 | ✓/⚠/✗ |
-| Acceptance criteria | {N} | ≤10 | ✓/⚠/✗ |
-| Total requirements | {N} | ≤15 | ✓/⚠/✗ |
+### Context Estimation
 
-<!-- CONFIGURABLE THRESHOLDS: Adjust values above based on experience.
-     These are hardcoded defaults. To change, edit this section directly.
-     Future enhancement: move to .specflow/config.md if needed. -->
+For each file in the spec, estimate context based on file type (see Context Estimation Rules above).
 
-**Estimated context usage:**
-- **small** (~30%): All metrics ≤50% of threshold
-- **medium** (~50%): Any metric 50-100% of threshold
-- **large** (~80%+): Any metric exceeds threshold
+Calculate:
+1. **Per-task-group estimate**: Sum estimates for files in each group
+2. **Apply complexity multiplier**: Based on task nature (CRUD=1.0x, business=1.3x, etc.)
+3. **Add worker overhead**: ~5% per worker invocation
+
+### Execution Scope Table
+
+| Metric | Est. Context | Target | Status |
+|--------|--------------|--------|--------|
+| Total spec context | ~{N}% | ≤50% | ✓/⚠/✗ |
+| Largest task group | ~{N}% | ≤30% | ✓/⚠/✗ |
+| Worker overhead | ~{N}% | ≤10% | ✓/⚠/✗ |
 
 **Status indicators:**
-- ✓ OK: Value ≤ threshold
-- ⚠ Warning: Value = threshold (at limit)
-- ✗ Exceeded: Value > threshold
+- ✓ OK: Within target
+- ⚠ Warning: At or slightly over target (50-70% total, 25-35% per group)
+- ✗ Exceeded: Significantly over (>70% total, >35% per group)
 
-**Edge case handling:**
-- If spec uses vague file references (e.g., "update all test files"), count as **3 files** for estimation
-- If spec lists a directory pattern (e.g., "src/handlers/*.ts"), count as **5 files** for estimation
-- If files cannot be determined, mark metric as "indeterminate" and default to ⚠ Warning
+### Quality Projection
 
-**If large (>50% estimated):**
-- Generate Implementation Tasks section in audit output
+| Context Range | Expected Quality | Status |
+|---------------|------------------|--------|
+| 0-30% | PEAK | - |
+| 30-50% | GOOD | ← Current estimate (or actual) |
+| 50-70% | DEGRADING | - |
+| 70%+ | POOR | - |
+
+Mark the row matching the estimated total context.
+
+### Per-Task-Group Breakdown
+
+For specs with Implementation Tasks, show context per group:
+
+| Group | Wave | Tasks | Est. Context | Cumulative |
+|-------|------|-------|--------------|------------|
+| G1 | 1 | {description} | ~{N}% | {N}% |
+| G2 | 2 | {description} | ~{N}% | {N}% |
+
+**Warning thresholds:**
+- Per-group >30%: Single group too large → split the group
+- Cumulative >60%: Spec large but groups OK → use orchestrated mode
+
+### Decomposition Triggers
+
+Set NEEDS_DECOMPOSITION if ANY of:
+- Total estimated context >50%
+- Any single task group >30%
+- Multiple subsystems (different concerns) in one spec
+- Both creation AND complex modification in same group
+
+### Scope Sanity Thresholds
+
+| Metric | Target | Warning | Blocker |
+|--------|--------|---------|---------|
+| Tasks/plan | 2-3 | 4 | 5+ |
+| Files/plan | 5-8 | 10 | 15+ |
+| Total context | ~50% | ~70% | 80%+ |
+
+**Red flags:**
+- Plan with 5+ tasks (quality degrades)
+- Plan with 15+ file modifications
+- Single task with 10+ files
+- Complex work (auth, payments) crammed into one plan
+
+### Edge Case Handling
+
+- Vague file references (e.g., "update all test files"): estimate as 3 files × 3% = ~9%
+- Directory patterns (e.g., "src/handlers/*.ts"): estimate as 5 files × 5% = ~25%
+- Unknown complexity: default to medium (1.3x multiplier)
+
+**If NEEDS_DECOMPOSITION:**
+- Generate Implementation Tasks section with per-group estimates
 - Recommend `/sf:run --parallel` mode
-- Set status to NEEDS_DECOMPOSITION (if no critical issues) or note decomposition needed (if other issues)
+- Set status to NEEDS_DECOMPOSITION (if no critical issues)
 
 ## Step 4: Generate Implementation Tasks (for large specs)
 
@@ -270,8 +386,20 @@ Append to specification's Audit History section:
 ### Audit v[N] ([date] [time])
 **Status:** [APPROVED | NEEDS_DECOMPOSITION | NEEDS_REVISION]
 
+{Always include context estimate:}
+**Context Estimate:** ~{N}% total
+
 {If NEEDS_DECOMPOSITION:}
-**Scope:** Large (exceeds thresholds)
+**Scope:** Large (~{N}% estimated, exceeds 50% target)
+
+**Per-Group Breakdown:**
+| Group | Est. Context | Status |
+|-------|--------------|--------|
+| G1 | ~{N}% | ✓/⚠ |
+| G2 | ~{N}% | ✓/⚠ |
+
+**Quality Projection:** {GOOD/DEGRADING/POOR} range
+
 **Recommendation:** Use `/sf:run --parallel` or split with `/sf:split`
 
 {If NEEDS_REVISION:}
@@ -310,9 +438,28 @@ Return formatted audit result:
 
 {If NEEDS_DECOMPOSITION:}
 
-### Scope
+### Context Estimate
 
-Specification exceeds execution thresholds.
+| Metric | Est. Context | Target | Status |
+|--------|--------------|--------|--------|
+| Total spec context | ~{N}% | ≤50% | ⚠/✗ |
+| Largest task group | ~{N}% | ≤30% | ✓/⚠/✗ |
+
+### Quality Projection
+
+| Context Range | Expected Quality | Status |
+|---------------|------------------|--------|
+| 0-30% | PEAK | - |
+| 30-50% | GOOD | - |
+| 50-70% | DEGRADING | ← Current |
+| 70%+ | POOR | - |
+
+### Per-Group Breakdown
+
+| Group | Wave | Tasks | Est. Context | Cumulative |
+|-------|------|-------|--------------|------------|
+| G1 | 1 | {desc} | ~{N}% | {N}% |
+| G2 | 2 | {desc} | ~{N}% | {N}% ⚠ |
 
 ### Next Step
 
