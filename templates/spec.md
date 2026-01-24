@@ -51,20 +51,22 @@ created: YYYY-MM-DD
 
 ### Task Groups
 
-| Group | Tasks | Dependencies | Est. Context |
-|-------|-------|--------------|--------------|
-| G1 | Create types.ts interfaces | — | ~15% |
-| G2 | Create partition-handler.ts | G1 | ~20% |
-| G3 | Create topic-handler.ts | G1 | ~20% |
-| G4 | Wire handlers in ServerCoordinator | G2, G3 | ~25% |
+| Group | Wave | Tasks | Dependencies | Est. Context |
+|-------|------|-------|--------------|--------------|
+| G1 | 1 | Create types.ts interfaces | — | ~15% |
+| G2 | 2 | Create partition-handler.ts | G1 | ~20% |
+| G3 | 2 | Create topic-handler.ts | G1 | ~20% |
+| G4 | 3 | Wire handlers in ServerCoordinator | G2, G3 | ~25% |
 
 ### Execution Plan
 
-```
-Wave 1 (parallel): G1
-Wave 2 (parallel): G2, G3
-Wave 3 (sequential): G4
-```
+| Wave | Groups | Parallel? | Workers |
+|------|--------|-----------|---------|
+| 1 | G1 | No | 1 |
+| 2 | G2, G3 | Yes | 2 |
+| 3 | G4 | No | 1 |
+
+**Total workers needed:** 2 (max in any wave)
 
 ## Assumptions
 
