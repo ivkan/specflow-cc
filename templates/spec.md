@@ -51,12 +51,17 @@ created: YYYY-MM-DD
 
 ### Task Groups
 
-| Group | Wave | Tasks | Dependencies | Est. Context |
-|-------|------|-------|--------------|--------------|
-| G1 | 1 | Create types.ts interfaces | — | ~15% |
-| G2 | 2 | Create partition-handler.ts | G1 | ~20% |
-| G3 | 2 | Create topic-handler.ts | G1 | ~20% |
-| G4 | 3 | Wire handlers in ServerCoordinator | G2, G3 | ~25% |
+| Group | Wave | Tasks | Dependencies | Est. Context | Cumulative |
+|-------|------|-------|--------------|--------------|------------|
+| G1 | 1 | Create types.ts interfaces | — | ~15% | 15% |
+| G2 | 2 | Create partition-handler.ts | G1 | ~20% | 35% |
+| G3 | 2 | Create topic-handler.ts | G1 | ~20% | 55% |
+| G4 | 3 | Wire handlers in ServerCoordinator | G2, G3 | ~25% | 80% |
+
+**Context thresholds:**
+- Per-group target: ≤30% (split if exceeded)
+- Cumulative warning: >60% (use orchestrated mode)
+- Cumulative blocker: >80% (must split spec)
 
 ### Execution Plan
 
