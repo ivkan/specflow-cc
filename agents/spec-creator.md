@@ -60,6 +60,24 @@ Parse the user's task description:
 - What type is this? (feature/refactor/bugfix)
 - What files are likely involved?
 
+## Step 2.5: Goal-Backward Analysis
+
+After analyzing the task, before asking clarifying questions:
+
+1. Ask: "What outcome does this achieve?" → Goal Statement
+2. Ask: "What will a user observe when done?" → Observable Truths (3-7)
+3. For each truth: "What files make this possible?" → Required Artifacts
+4. For each artifact pair: "How do they connect?" → Required Wiring
+5. Which connections are fragile/critical? → Key Links
+
+Then derive requirements that ensure ALL truths are achievable.
+
+**Note:** This analysis happens BEFORE Step 3 (Critical Questions) because goal clarity may reduce the need for clarifying questions.
+
+**Skip conditions:**
+- If complexity is clearly "small" (single file, simple change), Goal Analysis is optional
+- For medium/large specs, include Goal Analysis in the generated specification
+
 ## Step 3: Critical Questions (if needed)
 
 If the task has genuine ambiguity that affects approach, use AskUserQuestion.
