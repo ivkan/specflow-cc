@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "execution-state.json",
+  "description": "Schema for orchestrated execution state tracking",
+
+  "spec_id": "SPEC-XXX",
+  "mode": "orchestrated",
+  "started": "2026-01-23T14:30:00Z",
+  "waves": [
+    {
+      "id": 1,
+      "groups": ["G1"],
+      "status": "complete",
+      "results": {
+        "G1": {
+          "status": "complete",
+          "commits": ["abc1234", "def5678"],
+          "files_created": ["src/types.ts"],
+          "files_modified": [],
+          "criteria_met": ["Criterion 1"],
+          "deviations": [],
+          "error": null
+        }
+      }
+    },
+    {
+      "id": 2,
+      "groups": ["G2", "G3", "G4"],
+      "status": "in_progress",
+      "results": {
+        "G2": {
+          "status": "complete",
+          "commits": ["ghi7890"],
+          "files_created": ["src/handler-a.ts"],
+          "files_modified": [],
+          "criteria_met": ["Criterion 2"],
+          "deviations": [],
+          "error": null
+        },
+        "G3": {
+          "status": "running",
+          "commits": [],
+          "files_created": [],
+          "files_modified": [],
+          "criteria_met": [],
+          "deviations": [],
+          "error": null
+        },
+        "G4": {
+          "status": "complete",
+          "commits": ["jkl0123"],
+          "files_created": ["src/handler-c.ts"],
+          "files_modified": [],
+          "criteria_met": ["Criterion 4"],
+          "deviations": [],
+          "error": null
+        }
+      }
+    },
+    {
+      "id": 3,
+      "groups": ["G5"],
+      "status": "pending",
+      "results": {}
+    }
+  ],
+  "commits": ["abc1234", "def5678", "ghi7890", "jkl0123"],
+  "last_checkpoint": "2026-01-23T14:45:00Z",
+
+  "_documentation": {
+    "lifecycle": [
+      "Created when orchestrated execution starts",
+      "Updated after each wave completes",
+      "Updated after each worker returns",
+      "Deleted on successful completion (or archived)"
+    ],
+    "status_values": {
+      "wave": ["pending", "in_progress", "complete", "failed"],
+      "group": ["pending", "running", "complete", "partial", "failed", "blocked"]
+    },
+    "file_location": ".specflow/execution/SPEC-XXX-state.json",
+    "resume_behavior": [
+      "On resume, verify commits exist: git log --oneline | grep {hash}",
+      "If commit missing: wave is NOT complete, must re-run",
+      "If commit exists: skip completed groups",
+      "Spawn FRESH agent with checkpoint data (no context handoff)"
+    ]
+  }
+}
