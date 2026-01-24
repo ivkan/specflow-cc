@@ -265,6 +265,41 @@ Set NEEDS_DECOMPOSITION if ANY of:
 - Recommend `/sf:run --parallel` mode
 - Set status to NEEDS_DECOMPOSITION (if no critical issues)
 
+## Step 3.7: Goal-Backward Validation
+
+**Detection:** Check if Goal Analysis section exists in the spec.
+
+**Handling missing section:**
+- If complexity is "small": Skip validation, no warning
+- If complexity is "medium" or "large" AND section is missing: Add warning "Goal Analysis section recommended for medium/large specs"
+- If Goal Analysis section is present: Proceed with validation
+
+**Handling partial section:**
+- If Goal Analysis exists but is missing subsections: Add warning for each missing subsection
+- Required subsections: Goal Statement, Observable Truths, Required Artifacts, Required Wiring, Key Links
+- Format: "Goal Analysis incomplete: missing {subsection name}"
+
+**Validation (if section exists):**
+
+1. **Truth Coverage**: Every observable truth has ≥1 artifact
+2. **Artifact Purpose**: Every artifact maps to ≥1 truth
+3. **Wiring Completeness**: Artifacts that interact are wired
+4. **Key Links Identified**: Critical paths are flagged
+
+| Check | Status | Issue |
+|-------|--------|-------|
+| Truth 1 has artifacts | ✓/✗ | {missing artifact} |
+| Artifact X has purpose | ✓/✗ | {orphan artifact} |
+| A→B wiring defined | ✓/✗ | {missing connection} |
+
+**Scoring:**
+- Missing truth coverage → Critical issue
+- Orphan artifact → Warning (may be over-engineering)
+- Missing wiring → Critical issue (integration will fail)
+- No key links identified → Warning (risks not assessed)
+- Missing Goal Analysis on medium/large spec → Warning
+- Partial Goal Analysis → Warning per missing subsection
+
 ## Step 4: Generate Implementation Tasks (for large specs)
 
 If scope is large, generate the Implementation Tasks section:
@@ -288,6 +323,34 @@ For each group, identify which other groups must complete first:
 Estimate context usage per group:
 - Consider file count, complexity, and scope
 - Use percentage format: `~15%`, `~20%`
+
+### 4.4 Link to Goal Analysis (if present)
+
+If the spec has a Goal Analysis section, enhance Implementation Tasks:
+
+**Task grouping rules:**
+- Group artifacts that enable same truths
+- Order by dependency (wiring direction)
+- Add "Enables Truths" column to track coverage
+
+**Key link verification tasks:**
+- Each key link identified in Goal Analysis generates a verification task
+- Verification tasks appear in the final wave (after all artifacts created)
+- Task description format: "Verify {link name}"
+- Dependencies: all artifact groups that the key link connects
+
+**Enhanced table format:**
+
+```markdown
+| Group | Wave | Tasks | Enables Truths | Dependencies | Est. Context |
+|-------|------|-------|----------------|--------------|--------------|
+| G1 | 1 | Create login.ts | 1, 2 | — | ~15% |
+| G2 | 2 | Create LoginForm.tsx | 1 | G1 | ~10% |
+| G3 | 2 | Wire API endpoint | 1, 2 | G1 | ~10% |
+| G4 | 3 | Verify key links | 1, 2 | G2, G3 | ~5% |
+```
+
+Note: "Enables Truths" column is only added when Goal Analysis is present.
 
 ## Step 4.5: Compute Execution Waves
 
