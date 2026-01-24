@@ -33,7 +33,21 @@ Run `/sf:init` to start.
 ```
 Exit.
 
-## Step 2: Find Latest Pause File
+## Step 2: Check for Orchestrated Checkpoint
+
+First, check for `.continue-here` file (orchestrated execution):
+
+```bash
+[ -f .specflow/.continue-here ] && echo "ORCHESTRATED" || echo "CHECK_SESSION"
+```
+
+**If ORCHESTRATED:**
+Skip to Step 2.5 (Orchestrated Resume).
+
+**If CHECK_SESSION:**
+Continue to Step 2.1.
+
+## Step 2.1: Find Latest Pause File (single mode)
 
 ```bash
 ls -1 .specflow/sessions/PAUSE-*.md 2>/dev/null | sort -r | head -1
@@ -41,18 +55,112 @@ ls -1 .specflow/sessions/PAUSE-*.md 2>/dev/null | sort -r | head -1
 
 **If no pause files found:**
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+---------------------------------------------------------
  NO PAUSED SESSION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+---------------------------------------------------------
 
 No paused session found.
 
 **Options:**
-- `/sf:status` — view current state
-- `/sf:next` — find next task to work on
-- `/sf:list` — see all specifications
+- `/sf:status` -- view current state
+- `/sf:next` -- find next task to work on
+- `/sf:list` -- see all specifications
 ```
 Exit.
+
+## Step 2.5: Orchestrated Resume (if .continue-here exists)
+
+**Load checkpoint:**
+Read `.specflow/.continue-here` JSON.
+
+**Load full state:**
+Read state file referenced in checkpoint.
+
+**Verify commits exist:**
+
+For each commit in `commits_completed`:
+```bash
+git log --oneline | grep {hash}
+```
+
+**Results:**
+```
+Verifying previous progress...
+
+- Wave 1: [checkmark] 2 commits found (abc1234, def5678)
+- Wave 2/G2: [checkmark] 1 commit found (ghi7890)
+- Checkpoint: [checkmark] wip commit found (jkl0123)
+
+All {N} commits verified.
+```
+
+**If any commit NOT found:**
+```
+WARNING: Some commits not found in git history
+
+Missing commits:
+- abc1234 (Wave 1/G1)
+
+This may indicate:
+- Git history was modified (rebase, reset)
+- Commits were made in a different branch
+
+Options:
+1. "Re-run from Wave 1" -- restart affected waves
+2. "Continue anyway" -- skip verification, proceed
+3. "Abort" -- cancel resume
+```
+
+Use AskUserQuestion to let user decide.
+
+**Display resume summary:**
+```
+---------------------------------------------------------
+ RESUMING ORCHESTRATED EXECUTION
+---------------------------------------------------------
+
+Resuming SPEC-XXX execution...
+
+**Verified:**
+- Wave 1: [checkmark] 2 commits found
+- Wave 2/G2: [checkmark] 1 commit found
+
+**Continuing from:** Wave 2, Group G3
+
+---
+```
+
+**Spawn fresh orchestrator agent:**
+
+```
+Task(prompt="
+<specification>
+@.specflow/specs/SPEC-XXX.md
+</specification>
+
+<project_context>
+@.specflow/PROJECT.md
+</project_context>
+
+<execution_state>
+@.specflow/execution/SPEC-XXX-state.json
+</execution_state>
+
+<execution_mode>resume</execution_mode>
+<verified_commits>{list of verified commit hashes}</verified_commits>
+
+Resume orchestrated execution from checkpoint.
+Commits have been verified - skip verified groups.
+Continue from Wave {N}, Group {G}.
+", subagent_type="sf-spec-executor-orchestrator", description="Resume orchestrated execution")
+```
+
+**Clean up .continue-here:**
+```bash
+rm .specflow/.continue-here
+```
+
+Exit (orchestrator takes over).
 
 ## Step 3: Read Pause File
 
@@ -235,7 +343,11 @@ If more than 5 pause files exist, suggest cleanup:
 
 <success_criteria>
 - [ ] Initialization verified
-- [ ] Latest pause file found and read
+- [ ] Orchestrated checkpoint (.continue-here) detected if present
+- [ ] Commits verified before orchestrated resume
+- [ ] Fresh orchestrator spawned for orchestrated resume
+- [ ] .continue-here cleaned up after orchestrated resume
+- [ ] Latest pause file found and read (single mode)
 - [ ] Time since pause calculated
 - [ ] Current state compared with pause state
 - [ ] State conflict handled if detected
