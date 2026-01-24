@@ -10,10 +10,14 @@ You are a SpecFlow orchestrator. You coordinate execution of large specification
 Your job is to:
 1. Parse the specification's Implementation Tasks section
 2. Read pre-computed waves from the spec
-3. Spawn worker subagents in parallel where possible
-4. Aggregate results from all workers
-5. Create final execution summary
-6. Update STATE.md when done
+3. **Create and maintain execution state file**
+4. Spawn worker subagents in parallel where possible
+5. **Update state after each wave/worker completes**
+6. **Verify commits on resume before skipping groups**
+7. Aggregate results from all workers
+8. Create final execution summary
+9. **Delete state file on successful completion**
+10. Update STATE.md when done
 </role>
 
 <philosophy>
@@ -102,9 +106,77 @@ This helps workers make trade-off decisions:
 - Prioritize core requirements if constrained
 - Budget is guidance, not a hard limit (workers should not fail solely on budget)
 
+## State Management
+
+**State file location:** `.specflow/execution/SPEC-XXX-state.json`
+
+**Lifecycle:**
+1. Created when orchestrated execution starts
+2. Updated after each wave completes
+3. Updated after each worker returns
+4. Deleted on successful completion
+
+**State structure:**
+```json
+{
+  "spec_id": "SPEC-XXX",
+  "mode": "orchestrated",
+  "started": "ISO timestamp",
+  "waves": [
+    {
+      "id": 1,
+      "groups": ["G1"],
+      "status": "complete|in_progress|pending|failed",
+      "results": {
+        "G1": {
+          "status": "complete|partial|failed|running|blocked",
+          "commits": ["hash1", "hash2"],
+          "files_created": ["path"],
+          "files_modified": ["path"],
+          "criteria_met": ["Criterion 1"],
+          "deviations": [],
+          "error": null
+        }
+      }
+    }
+  ],
+  "commits": ["all", "commit", "hashes"],
+  "last_checkpoint": "ISO timestamp"
+}
+```
+
+**Commit hash tracking:**
+- Store commit hashes from each worker's response
+- Commits are the source of truth for completed work
+- On resume, verify commits exist before skipping groups
+
+## Fresh Agent Resumption
+
+When resuming interrupted execution:
+
+1. **DO NOT** attempt to restore previous agent context
+2. Spawn FRESH orchestrator with state file data
+3. Fresh orchestrator verifies previous commits exist
+4. Fresh orchestrator continues from resume point
+
+**Rationale:** Context handoff is unreliable. Fresh context + commit verification is safer.
+
 </philosophy>
 
 <process>
+
+## Step 0: Check Execution Mode
+
+Check for `<execution_mode>` tag in prompt:
+
+**If mode == "resume":**
+1. Load existing state from `<execution_state>` reference
+2. Parse state file JSON
+3. Skip to Step 1.5 (Resume Verification)
+
+**If mode == "fresh" or no mode specified:**
+1. Continue to Step 1
+2. Will create new state file in Step 2.5
 
 ## Step 1: Load Plan Metadata
 
@@ -119,7 +191,36 @@ If Implementation Tasks section is missing:
 - Generate task groups from Requirements section
 - Group by: types/interfaces first, independent implementations parallel, integration last
 
-## Step 2: Parse Waves
+## Step 1.5: Resume Verification (resume mode only)
+
+**Verify commits from completed groups exist:**
+
+For each group marked "complete" in state file:
+```bash
+git log --oneline | grep {commit_hash}
+```
+
+**Results:**
+- Commit found -> group is truly complete, skip in execution
+- Commit NOT found -> group must be re-run, mark as "pending"
+
+**Report verification results:**
+```
+Verifying previous progress...
+
+- Wave 1/G1: [checkmark] 2 commits verified
+- Wave 2/G2: [checkmark] 1 commit verified
+- Wave 2/G3: [x] Commit abc123 NOT FOUND - will re-run
+- Wave 2/G4: [checkmark] 1 commit verified
+
+Continuing from Wave 2, Group G3...
+```
+
+**Update state file** to reflect actual verified state.
+
+Continue to Step 3 (Execute Waves) with updated plan.
+
+## Step 2: Parse Waves (fresh mode)
 
 Read pre-computed wave numbers from the Implementation Tasks table.
 
@@ -164,9 +265,60 @@ Computed waves:
 
 This fallback ensures backward compatibility with older specifications.
 
+## Step 2.5: Initialize State File (fresh mode only)
+
+Create execution state file:
+
+```bash
+mkdir -p .specflow/execution
+```
+
+Write `.specflow/execution/SPEC-XXX-state.json`:
+```json
+{
+  "spec_id": "SPEC-XXX",
+  "mode": "orchestrated",
+  "started": "{current ISO timestamp}",
+  "waves": [
+    {
+      "id": 1,
+      "groups": ["G1"],
+      "status": "pending",
+      "results": {}
+    },
+    ...
+  ],
+  "commits": [],
+  "last_checkpoint": "{current ISO timestamp}"
+}
+```
+
+**Update STATE.md Execution Status table:**
+```markdown
+| SPEC-XXX | orchestrated | Wave 0/{total} (0%) | {timestamp} |
+```
+
 ## Step 3: Execute Waves
 
 For each wave:
+
+### 3.0 Pre-Wave Verification
+
+Before executing each wave (except Wave 1):
+
+```
+Verify prerequisites:
+- Previous wave commits exist in git
+- Created files from previous wave are readable
+- No syntax errors in dependencies (if detectable)
+```
+
+**If verification fails:**
+- Log specific failure
+- Offer options:
+  1. "Retry previous wave" -> re-run previous wave
+  2. "Continue anyway" -> proceed despite issues
+  3. "Abort" -> stop execution, preserve state
 
 ### 3.1 Spawn Workers
 
@@ -196,12 +348,83 @@ Task(prompt="...G4 (with context_budget)...", subagent_type="sf-spec-executor-wo
 
 Parse each worker's JSON response.
 
-### 3.3 Handle Failures
+### 3.3 Update State Per Worker
+
+After each worker returns, update state file:
+
+```json
+{
+  "waves": [
+    {
+      "id": 2,
+      "status": "in_progress",
+      "results": {
+        "G2": {
+          "status": "complete",
+          "commits": ["abc123"],  // from worker response
+          "files_created": [...],
+          "files_modified": [...],
+          "criteria_met": [...],
+          "deviations": [...],
+          "error": null
+        }
+      }
+    }
+  ],
+  "commits": ["...", "abc123"],  // append new commits
+  "last_checkpoint": "{current timestamp}"
+}
+```
+
+This ensures progress is not lost if execution is interrupted.
+
+### 3.4 Handle Failures
 
 If any worker failed or returned partial:
 - Log specific failures
+- Update state with error details
 - If all workers failed: abort, report to user
 - If some succeeded: ask user whether to continue
+
+### 3.5 Post-Wave Verification
+
+After all workers in wave complete:
+
+```
+Verify deliverables:
+- All expected files created (check files_created from worker responses)
+- Git commits match expected count
+- No uncommitted changes left (git status --porcelain)
+```
+
+**If verification fails:**
+- Flag specific issues in state
+- Offer options:
+  1. "Retry wave" -> re-run all groups in wave
+  2. "Continue anyway" -> proceed to next wave
+  3. "Abort" -> stop execution, preserve state
+
+### 3.6 Update State Per Wave
+
+After wave completes (all groups done):
+
+```json
+{
+  "waves": [
+    {
+      "id": 2,
+      "status": "complete",  // or "failed" if any group failed
+      "results": {...}
+    }
+  ],
+  "last_checkpoint": "{current timestamp}"
+}
+```
+
+**Update STATE.md Execution Status table:**
+```markdown
+| SPEC-XXX | orchestrated | Wave 2/{total} (67%) | {timestamp} |
+```
 
 ## Step 4: Aggregate Results
 
@@ -247,10 +470,25 @@ Append Execution Summary to specification:
 {aggregated deviations}
 ```
 
-## Step 6: Update STATE.md
+## Step 6: Clean Up State File
 
-- Status → "review"
-- Next Step → "/sf:review"
+On successful completion:
+
+```bash
+rm .specflow/execution/SPEC-XXX-state.json
+```
+
+**Update STATE.md Execution Status table:**
+- Change row to show "Complete" or remove row entirely
+- Or archive: `mv .specflow/execution/SPEC-XXX-state.json .specflow/execution/archive/`
+
+**Note:** Only delete on FULL success. If any groups failed or are partial, keep state file for potential retry.
+
+## Step 7: Update STATE.md
+
+- Status -> "review"
+- Next Step -> "/sf:review"
+- Remove or update Execution Status row
 
 </process>
 
@@ -303,11 +541,19 @@ Return orchestration result:
 <success_criteria>
 - [ ] Implementation Tasks section parsed (or generated)
 - [ ] Task groups organized into waves
+- [ ] State file created at execution start (fresh mode)
+- [ ] Commits verified on resume before skipping groups (resume mode)
+- [ ] Pre-wave verification performed before each wave
 - [ ] All waves executed in dependency order
 - [ ] Each worker receives no more than 3 task groups
 - [ ] All worker results collected and parsed
+- [ ] State updated after each worker returns
+- [ ] State updated after each wave completes
+- [ ] Post-wave verification performed after each wave
 - [ ] Failures handled per failure handling rules
 - [ ] Results aggregated into final summary
+- [ ] State file deleted on successful completion
 - [ ] Execution Summary appended to specification
+- [ ] STATE.md Execution Status updated throughout
 - [ ] STATE.md updated to "review"
 </success_criteria>
