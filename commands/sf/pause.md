@@ -84,7 +84,52 @@ Also count:
 - Files modified
 - Commits made (from Execution Summary if exists)
 
-## Step 6: Ask for Notes
+## Step 6: Check for Orchestrated Execution
+
+```bash
+ls .specflow/execution/SPEC-XXX-state.json 2>/dev/null
+```
+
+**If orchestrated execution in progress:**
+
+This is a special case - we need to create `.continue-here` for seamless resumption.
+
+1. Read current execution state
+2. Identify current wave and group
+3. Commit any pending work if possible
+
+**Create `.specflow/.continue-here`:**
+```json
+{
+  "type": "orchestrated",
+  "spec_id": "SPEC-XXX",
+  "state_file": ".specflow/execution/SPEC-XXX-state.json",
+  "paused_at": {
+    "wave": 2,
+    "group": "G3",
+    "status": "in_progress"
+  },
+  "commits_completed": ["abc123", "def456", "ghi789"],
+  "timestamp": "2026-01-23T14:45:00Z"
+}
+```
+
+**Attempt to commit pending work:**
+```bash
+git status --porcelain
+```
+
+If uncommitted changes exist:
+```bash
+git add -A
+git commit -m "wip(sf-XXX): pause checkpoint at Wave {N}, Group {G}"
+```
+
+Store this commit hash in `.continue-here` as well.
+
+**Skip to Step 9** with orchestrated-specific output.
+
+## Step 6.5: Ask for Notes
 
 Use AskUserQuestion:
 - header: "Notes"
@@ -164,10 +209,12 @@ Under Current Position, add:
 
 ## Step 10: Display Confirmation
 
+**For single-mode execution:**
+
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+---------------------------------------------------------
  SESSION PAUSED
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+---------------------------------------------------------
 
 **Saved:** PAUSE-{YYYYMMDD}-{HHMMSS}
 
@@ -175,7 +222,7 @@ Under Current Position, add:
 
 ## Context
 
-- **Specification:** {SPEC-XXX} — {title}
+- **Specification:** {SPEC-XXX} -- {title}
 - **Status:** {status}
 - **Progress:** {checked}/{total} criteria ({percentage}%)
 
@@ -195,6 +242,43 @@ Under Current Position, add:
 Resume with: `/sf:resume`
 ```
 
+**For orchestrated execution:**
+
+```
+---------------------------------------------------------
+ EXECUTION PAUSED
+---------------------------------------------------------
+
+Execution paused at Wave {N}, Group {G}.
+
+**Progress saved to:** .specflow/.continue-here
+**State file:** .specflow/execution/SPEC-XXX-state.json
+**Commits completed:** {count}
+
+---
+
+## Execution Progress
+
+- Wave 1: [checkmark] Complete (G1) - 2 commits
+- Wave 2: [lightning] In Progress
+  - G2: [checkmark] Complete - 1 commit
+  - G3: [circle] Paused here
+  - G4: [circle] Pending
+- Wave 3: [circle] Pending (G5)
+
+{If pending work was committed:}
+## Checkpoint Commit
+
+Created checkpoint commit: {hash}
+Message: "wip(sf-XXX): pause checkpoint at Wave {N}, Group {G}"
+
+---
+
+**Execution state preserved.**
+
+To resume: `/sf:resume`
+```
+
 </workflow>
 
 <success_criteria>
@@ -203,9 +287,12 @@ Resume with: `/sf:resume`
 - [ ] Active spec details loaded (if any)
 - [ ] Git state captured
 - [ ] Progress estimated
+- [ ] Orchestrated execution detected and handled specially
+- [ ] .continue-here created for orchestrated execution
+- [ ] Pending work committed if orchestrated (checkpoint commit)
 - [ ] User notes captured (optional)
 - [ ] Sessions directory created
-- [ ] PAUSE-{timestamp}.md created with full context
+- [ ] PAUSE-{timestamp}.md created with full context (single mode)
 - [ ] STATE.md updated with pause reference
 - [ ] Clear confirmation with resume instructions
 </success_criteria>
