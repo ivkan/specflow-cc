@@ -20,6 +20,7 @@ Execute the active specification by implementing all requirements. Creates atomi
 @.specflow/STATE.md
 @.specflow/PROJECT.md
 @~/.claude/specflow-cc/agents/spec-executor.md
+@~/.claude/specflow-cc/agents/spec-executor-orchestrator.md
 </context>
 
 <workflow>
@@ -101,6 +102,67 @@ Log in STATE.md Warnings table:
 | {date} | SPEC-XXX | Executed without audit approval |
 ```
 
+## Step 4.5: Check for Existing Execution State
+
+**For orchestrated execution only:**
+
+Check if execution state exists:
+```bash
+ls .specflow/execution/SPEC-XXX-state.json 2>/dev/null
+```
+
+**If state file exists:**
+
+Display progress summary:
+```
+Found interrupted execution for SPEC-XXX
+
+**Progress:**
+- Wave 1: [checkmark] Complete (G1)
+- Wave 2: [lightning] In Progress
+  - G2: [checkmark] Complete
+  - G3: [x] Failed (context limit)
+  - G4: [checkmark] Complete
+- Wave 3: [circle] Pending (G5)
+
+Previous execution found. Resume? [Y/n]
+```
+
+Use AskUserQuestion with options:
+- "Yes, resume from G3" -> pass `--resume` flag to orchestrator
+- "Restart Wave 2" -> clear Wave 2 results, re-run all Wave 2 groups
+- "Start fresh" -> delete state file, begin new execution
+- "Abort" -> clean up, mark failed, exit
+
+**If `--resume` flag passed explicitly:**
+- Skip this prompt
+- Automatically resume from last checkpoint
+
+## Step 4.6: Determine Execution Mode
+
+Check specification complexity to choose execution mode.
+
+**If `## Implementation Tasks` section exists in spec:**
+- Count task groups (G1, G2, G3, etc.)
+- Check for parallel opportunities (groups with no dependencies on each other)
+- If groups > 1 AND parallelism exists → use `orchestrated` mode
+
+**If no Implementation Tasks but large spec:**
+- Count requirements sections
+- Estimate scope from Files to Create/Modify counts
+- If total files > 5 OR requirements sections > 3 -> suggest running `/sf:audit` first to generate tasks
+
+**Mode selection logic:**
+
+| Condition | Mode |
+|-----------|------|
+| No Implementation Tasks section | single |
+| 1 task group only | single |
+| Multiple groups, no parallelism (all sequential) | single |
+| Multiple groups with parallel opportunities | orchestrated |
+
+**Note:** State management only applies to orchestrated mode. Single-mode execution does not create state files.
+
 ## Step 5: Pre-Execution Summary
 
 Display what will be implemented:
@@ -113,6 +175,12 @@ Display what will be implemented:
 **Title:** {spec title}
 **Type:** {feature|refactor|bugfix}
 **Complexity:** {small|medium|large}
+**Execution Mode:** {single|orchestrated}
+
+{If orchestrated:}
+- Task Groups: {count}
+- Waves: {count}
+- Parallelization: Wave {N} runs {count} workers simultaneously
 
 ### Scope
 
@@ -142,7 +210,9 @@ Update spec frontmatter:
 
 ## Step 7: Spawn Executor Agent
 
-Launch the spec-executor subagent:
+**If mode == "single":**
+
+Launch the spec-executor subagent (traditional single-agent execution):
 
 ```
 Task(prompt="
@@ -157,6 +227,62 @@ Task(prompt="
 Execute this specification following the spec-executor agent instructions.
 Implement all requirements with atomic commits.
 ", subagent_type="sf-spec-executor", description="Execute specification")
+```
+
+**If mode == "orchestrated":**
+
+Launch the orchestrator subagent (parallel multi-agent execution):
+
+**Normal execution (no --resume):**
+```
+Task(prompt="
+<specification>
+@.specflow/specs/SPEC-XXX.md
+</specification>
+
+<project_context>
+@.specflow/PROJECT.md
+</project_context>
+
+<execution_mode>fresh</execution_mode>
+
+Orchestrate execution of this large specification.
+Parse task groups from Implementation Tasks section.
+Determine execution waves based on dependencies.
+Create state file at .specflow/execution/SPEC-XXX-state.json
+Spawn worker subagents in parallel where possible.
+Update state after each wave/worker completes.
+Aggregate results and create final execution summary.
+Delete state file on successful completion.
+", subagent_type="sf-spec-executor-orchestrator", description="Orchestrate specification execution")
+```
+
+**Resume execution (--resume or user chose to resume):**
+```
+Task(prompt="
+<specification>
+@.specflow/specs/SPEC-XXX.md
+</specification>
+
+<project_context>
+@.specflow/PROJECT.md
+</project_context>
+
+<execution_state>
+@.specflow/execution/SPEC-XXX-state.json
+</execution_state>
+
+<execution_mode>resume</execution_mode>
+
+Resume interrupted orchestrated execution.
+1. Load existing state file
+2. Verify commits from completed groups exist (git log --oneline | grep {hash})
+3. Skip groups with verified commits
+4. Re-run groups with missing commits or failed status
+5. Continue with pending waves
+6. Update state after each wave/worker completes
+7. Delete state file on successful completion
+", subagent_type="sf-spec-executor-orchestrator", description="Resume specification execution")
 ```
 
 ## Step 8: Handle Agent Response
@@ -261,10 +387,13 @@ Append Execution Summary to spec.
 <success_criteria>
 - [ ] Active specification identified
 - [ ] Audit status checked (warning if not audited)
+- [ ] Existing execution state detected and handled (orchestrated mode)
 - [ ] All files created as specified
 - [ ] All files modified as specified
 - [ ] All files deleted as specified
 - [ ] Atomic commits created
+- [ ] State file created/updated during execution (orchestrated mode)
+- [ ] State file deleted on completion (orchestrated mode)
 - [ ] Execution Summary added to spec
 - [ ] STATE.md updated to "review"
 - [ ] Clear next step shown
