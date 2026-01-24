@@ -2,16 +2,16 @@
 
 ## Active Specification
 
-none
+SPEC-GSD-A
 
-**Status:** idle
-**Next Step:** /sf:new or /sf:next
+**Status:** review
+**Next Step:** /sf:review
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| 1 | SPEC-GSD-A | Goal-Backward Methodology | draft | medium | - |
+| 1 | SPEC-GSD-A | Goal-Backward Methodology | audited | medium | - |
 | 2 | SPEC-SUBAGENT-C | State Management & Reliability | draft | medium | SPEC-SUBAGENT-B |
 
 **Execution Order Rationale:**
@@ -43,6 +43,9 @@ none
 | 2026-01-24 | SPEC-GSD-C: Re-audited (v2) and APPROVED - all v1 recommendations addressed, ready for implementation |
 | 2026-01-24 | SPEC-GSD-C: Implementation reviewed (v1) and APPROVED - all 6 acceptance criteria met |
 | 2026-01-24 | SPEC-GSD-C: COMPLETED - Context % thresholds established for decomposition decisions |
+| 2026-01-24 | SPEC-GSD-A: Audited (v1) - NEEDS_REVISION - 2 critical issues (vague criterion 7, step numbering conflict) |
+| 2026-01-24 | SPEC-GSD-A: Revised (v1) - applied all 5 items (2 critical + 3 recommendations) |
+| 2026-01-24 | SPEC-GSD-A: Re-audited (v2) and APPROVED - all v1 issues resolved, ready for implementation |
 
 ## Notes
 
