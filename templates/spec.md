@@ -17,6 +17,43 @@ created: YYYY-MM-DD
 
 [What needs to be done — clear description of the work]
 
+## Goal Analysis
+
+> Optional for small specs. Recommended for medium/large specs.
+
+### Goal Statement
+{One sentence describing the outcome, not the task}
+
+### Observable Truths
+When this spec is complete, a user will observe:
+
+1. {User-visible behavior 1}
+2. {User-visible behavior 2}
+3. {User-visible behavior 3}
+
+### Required Artifacts
+Files that must exist to enable observable truths:
+
+| Artifact | Enables Truth # | Purpose |
+|----------|-----------------|---------|
+| src/auth/login.ts | 1, 2 | Login flow implementation |
+| src/components/LoginForm.tsx | 1 | UI for login |
+
+### Required Wiring
+How artifacts connect:
+
+| From | To | Connection Type |
+|------|-----|-----------------|
+| LoginForm.tsx | login.ts | Calls loginUser() |
+| login.ts | /api/auth | HTTP POST |
+
+### Key Links
+Critical connections that must work correctly:
+
+1. **{Link name}**: {Why it's critical}
+   - Risk: {What could go wrong}
+   - Verification: {How to verify it works}
+
 ## Requirements
 
 ### Interfaces (if applicable)
