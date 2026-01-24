@@ -2,16 +2,16 @@
 
 ## Active Specification
 
-none
+SPEC-GSD-C
 
-**Status:** idle
-**Next Step:** /sf:next
+**Status:** review
+**Next Step:** /sf:review
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| 1 | SPEC-GSD-C | Explicit Context Thresholds | draft | small | - |
+| 1 | SPEC-GSD-C | Explicit Context Thresholds | review | small | - |
 | 2 | SPEC-GSD-A | Goal-Backward Methodology | draft | medium | - |
 | 3 | SPEC-SUBAGENT-C | State Management & Reliability | draft | medium | SPEC-SUBAGENT-B |
 
@@ -39,6 +39,10 @@ none
 | 2026-01-24 | SPEC-SFNEXT-001: Audited (v1) and APPROVED - ready for implementation |
 | 2026-01-24 | SPEC-SFNEXT-001: Implementation reviewed (v1) and APPROVED - all 6 acceptance criteria met |
 | 2026-01-24 | SPEC-SFNEXT-001: COMPLETED - Queue position is now source of truth for /sf:next |
+| 2026-01-24 | SPEC-GSD-C: Audited (v1) and APPROVED - context % thresholds ready for implementation |
+| 2026-01-24 | SPEC-GSD-C: Applied all 3 audit v1 recommendations (worker overhead, warning thresholds, line estimation) |
+| 2026-01-24 | SPEC-GSD-C: Integrated GSD patterns (file count impact, task complexity tables, scope sanity thresholds) |
+| 2026-01-24 | SPEC-GSD-C: Re-audited (v2) and APPROVED - all v1 recommendations addressed, ready for implementation |
 
 ## Notes
 
@@ -58,7 +62,7 @@ none
 | Fresh subagent contexts | Implemented |
 | Wave-based execution | Implemented |
 | Pre-computed waves | Implemented (SPEC-GSD-B) - DONE |
-| Context % estimation | Pending (SPEC-GSD-C) |
+| Context % estimation | Implemented (SPEC-GSD-C) - In review |
 | Goal-backward | Pending (SPEC-GSD-A) |
 | Pause/Resume | Pending (SPEC-SUBAGENT-C) |
 
