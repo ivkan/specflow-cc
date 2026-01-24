@@ -28,5 +28,24 @@
 |------|---------------|--------|
 | — | — | — |
 
+## Execution Status
+
+Track orchestrated execution progress:
+
+| Spec ID | Mode | Progress | Last Updated |
+|---------|------|----------|--------------|
+| — | — | — | — |
+
+**Status indicators:**
+- `Wave X/Y (N%)` — orchestrated execution in progress
+- `Complete` — execution finished successfully
+- `Paused` — execution paused via /sf:pause
+- `Failed (Wave X)` — execution failed at wave X
+
+**Notes:**
+- This section only tracks orchestrated (multi-wave) executions
+- Single-mode executions do not create entries here
+- State file: `.specflow/execution/SPEC-XXX-state.json`
+
 ---
 *Last updated: [date]*
