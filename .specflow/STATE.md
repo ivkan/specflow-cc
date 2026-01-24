@@ -2,16 +2,16 @@
 
 ## Active Specification
 
-none
+SPEC-SUBAGENT-C
 
-**Status:** idle
-**Next Step:** /sf:new or /sf:next
+**Status:** review
+**Next Step:** /sf:review
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| 1 | SPEC-SUBAGENT-C | State Management & Reliability | draft | medium | SPEC-SUBAGENT-B |
+| 1 | SPEC-SUBAGENT-C | State Management & Reliability | review | medium | SPEC-SUBAGENT-B |
 
 **Execution Order Rationale:**
 - SPEC-SUBAGENT-C (state): Benefits from stable orchestrator
@@ -46,6 +46,7 @@ none
 | 2026-01-24 | SPEC-GSD-A: Re-audited (v2) and APPROVED - all v1 issues resolved, ready for implementation |
 | 2026-01-24 | SPEC-GSD-A: Implementation reviewed (v1) and APPROVED - all 7 acceptance criteria met |
 | 2026-01-24 | SPEC-GSD-A: COMPLETED - Goal-backward methodology established for SpecFlow |
+| 2026-01-24 | SPEC-SUBAGENT-C: Audited (v1) and APPROVED - state management and reliability spec ready for implementation |
 
 ## Notes
 
@@ -72,4 +73,4 @@ none
 | Pause/Resume | Pending (SPEC-SUBAGENT-C) |
 
 ---
-*Last updated: 2026-01-24*
+*Last updated: 2026-01-24 (SPEC-SUBAGENT-C implemented)*

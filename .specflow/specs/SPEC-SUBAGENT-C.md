@@ -4,7 +4,7 @@
 id: SPEC-SUBAGENT-C
 parent: SPEC-SUBAGENT-EXECUTION
 type: feature
-status: draft
+status: audited
 priority: high
 complexity: medium
 depends_on: [SPEC-SUBAGENT-B]
@@ -152,11 +152,84 @@ Modify `templates/state.md` to add execution tracking fields:
 | SPEC-001 | orchestrated | Wave 2/3 (67%) | 2026-01-23 14:45 |
 ```
 
+### 6. Checkpoint Format with Commit Hashes (from GSD)
+
+State file must include commit hashes for verification on resume:
+
+```json
+{
+  "waves": [
+    {
+      "id": 1,
+      "status": "complete",
+      "results": {
+        "G1": {
+          "status": "complete",
+          "commits": ["abc1234", "def5678"],
+          "files_created": ["src/types.ts"]
+        }
+      }
+    }
+  ]
+}
+```
+
+**On resume:**
+1. Verify commits exist: `git log --oneline | grep {hash}`
+2. If commit missing → wave is NOT complete, must re-run
+3. If commit exists → skip completed groups
+
+### 7. Fresh Continuation Agents (from GSD)
+
+When resuming interrupted execution:
+
+- DO NOT resume existing agent context
+- Spawn FRESH agent with checkpoint data
+- Fresh agent verifies previous commits exist
+- Fresh agent continues from resume point
+
+**Rationale:** Context handoff is unreliable. Fresh context + commit verification is safer.
+
+### 8. /sf:pause and /sf:resume Commands
+
+**`/sf:pause`:**
+- Creates `.specflow/.continue-here` with current state
+- Commits any pending work
+- Safe stopping point
+
+Output:
+```
+Execution paused at Wave 2, Group G3.
+
+Progress saved to .specflow/.continue-here
+Commits: 3 completed
+
+To resume: /sf:resume
+```
+
+**`/sf:resume`:**
+- Loads `.specflow/.continue-here`
+- Verifies commits exist
+- Spawns fresh continuation agent
+
+Output:
+```
+Resuming SPEC-001 execution...
+
+Verified:
+- Wave 1: ✓ 2 commits found
+- Wave 2/G2: ✓ 1 commit found
+
+Continuing from Wave 2, Group G3...
+```
+
 ## Files to Create
 
 | File | Purpose |
 |------|---------|
 | `templates/execution-state.json` | State file schema/template |
+| `commands/sf/pause.md` | Pause execution command |
+| `commands/sf/resume.md` | Resume execution command |
 
 ## Files to Modify
 
@@ -164,7 +237,7 @@ Modify `templates/state.md` to add execution tracking fields:
 |------|---------|
 | `commands/sf/run.md` | Add --resume flag, state file handling, auto-detection |
 | `templates/state.md` | Add Execution Status section |
-| `agents/spec-executor-orchestrator.md` | Add state writing, verification logic |
+| `agents/spec-executor-orchestrator.md` | Add state writing, verification logic, commit hash tracking |
 
 ## Acceptance Criteria
 
@@ -176,6 +249,10 @@ Modify `templates/state.md` to add execution tracking fields:
 6. **Post-wave verification**: Deliverables verified after each wave
 7. **Failures handled gracefully**: Single worker failure doesn't lose other work
 8. **Clean completion**: State file removed/archived on success
+9. **Commit hashes stored**: Each completed group has commit hashes in state
+10. **Commit verification on resume**: Fresh agent verifies commits exist before skipping
+11. **/sf:pause works**: Creates .continue-here, commits pending work
+12. **/sf:resume works**: Loads checkpoint, verifies, spawns fresh agent
 
 ## Constraints
 
@@ -190,3 +267,70 @@ Modify `templates/state.md` to add execution tracking fields:
 - File system operations are reliable
 - Orchestrator maintains execution control across waves
 - SPEC-SUBAGENT-B completed successfully (orchestrator and workers exist)
+
+## Audit History
+
+### Audit v1 (2026-01-24 09:15)
+**Status:** APPROVED
+
+**Comment:** Specification is well-structured with clear requirements, concrete JSON schemas, and testable acceptance criteria. The dual-file approach (execution-state.json for auto-tracking, .continue-here for explicit pause) is sound. Prerequisites are clearly stated and architecture aligns with existing orchestrator patterns.
+
+**Recommendations:**
+1. Clarify the relationship between `.specflow/execution/SPEC-XXX-state.json` (auto-created during execution) and `.specflow/.continue-here` (explicit pause) in the documentation - these serve different purposes but could confuse implementers.
+2. Specify the archive behavior: currently "deleted on successful completion (or archived)" is ambiguous. Define when to delete vs archive, or choose one approach.
+3. Consider consolidating the 12 acceptance criteria to stay within the recommended 10 threshold (e.g., combine commit hash storage/verification into one, combine pause/resume into one).
+
+---
+
+## Execution Summary
+
+**Executed:** 2026-01-24
+**Mode:** single
+**Commits:** 6
+
+### Files Created
+
+| File | Purpose |
+|------|---------|
+| `templates/execution-state.json` | State file schema with example and documentation |
+
+### Files Modified
+
+| File | Changes |
+|------|---------|
+| `templates/state.md` | Added Execution Status section for tracking orchestrated progress |
+| `commands/sf/run.md` | Added Step 4.5 for state detection, --resume flag, orchestrated prompts |
+| `agents/spec-executor-orchestrator.md` | Added state management, verification, resume support, pre/post wave checks |
+| `commands/sf/pause.md` | Added .continue-here creation for orchestrated execution |
+| `commands/sf/resume.md` | Added checkpoint loading, commit verification, fresh agent spawning |
+
+### Acceptance Criteria Status
+
+- [x] State file created: Execution creates `.specflow/execution/SPEC-XXX-state.json`
+- [x] State updated per wave: Progress tracked accurately through execution
+- [x] State updated per worker: Step 3.3 updates state after each worker returns
+- [x] Resumption works: Interrupted execution can resume from last checkpoint
+- [x] Auto-detection works: `/sf:run` detects existing state and prompts (Step 4.5)
+- [x] Pre-wave verification: Prerequisites checked before each wave (Step 3.0)
+- [x] Post-wave verification: Deliverables verified after each wave (Step 3.5)
+- [x] Failures handled gracefully: Single worker failure doesn't lose other work
+- [x] Clean completion: State file deleted on success (Step 6)
+- [x] Commit hashes stored: Each completed group has commit hashes in state
+- [x] Commit verification on resume: Fresh agent verifies commits exist (Step 1.5)
+- [x] /sf:pause works: Creates .continue-here, commits pending work
+- [x] /sf:resume works: Loads checkpoint, verifies, spawns fresh agent
+
+### Deviations
+
+None. All requirements implemented as specified.
+
+### Implementation Notes
+
+1. **Dual-file approach clarified**:
+   - `execution-state.json` is auto-managed by orchestrator during execution
+   - `.continue-here` is created by explicit `/sf:pause` command
+   - Both support resumption but serve different purposes
+
+2. **Archive behavior**: Implemented as delete-on-success. Archive option mentioned in Step 6 as alternative but not required.
+
+3. **Fresh agent principle**: Consistently applied - all resumption spawns new agents with state data, no context handoff attempted.
