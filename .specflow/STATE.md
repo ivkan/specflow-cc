@@ -2,20 +2,18 @@
 
 ## Active Specification
 
-SPEC-GSD-A
+none
 
-**Status:** review
-**Next Step:** /sf:review
+**Status:** idle
+**Next Step:** /sf:new or /sf:next
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| 1 | SPEC-GSD-A | Goal-Backward Methodology | audited | medium | - |
-| 2 | SPEC-SUBAGENT-C | State Management & Reliability | draft | medium | SPEC-SUBAGENT-B |
+| 1 | SPEC-SUBAGENT-C | State Management & Reliability | draft | medium | SPEC-SUBAGENT-B |
 
 **Execution Order Rationale:**
-- SPEC-GSD-A (goal-backward): Most complex, can evolve independently
 - SPEC-SUBAGENT-C (state): Benefits from stable orchestrator
 
 **Master Spec:** SPEC-GSD-IMPROVEMENTS (umbrella for GSD adoption)
@@ -46,6 +44,8 @@ SPEC-GSD-A
 | 2026-01-24 | SPEC-GSD-A: Audited (v1) - NEEDS_REVISION - 2 critical issues (vague criterion 7, step numbering conflict) |
 | 2026-01-24 | SPEC-GSD-A: Revised (v1) - applied all 5 items (2 critical + 3 recommendations) |
 | 2026-01-24 | SPEC-GSD-A: Re-audited (v2) and APPROVED - all v1 issues resolved, ready for implementation |
+| 2026-01-24 | SPEC-GSD-A: Implementation reviewed (v1) and APPROVED - all 7 acceptance criteria met |
+| 2026-01-24 | SPEC-GSD-A: COMPLETED - Goal-backward methodology established for SpecFlow |
 
 ## Notes
 
@@ -55,9 +55,10 @@ SPEC-GSD-A
 - SPEC-GSD-B: Pre-computed waves in auditor, simplified orchestrator
 - SPEC-SFNEXT-001: Queue position as source of truth for /sf:next
 - SPEC-GSD-C: Explicit context % thresholds for decomposition decisions
+- SPEC-GSD-A: Goal-backward methodology in spec creator and auditor
 
 ### In Progress
-- GSD-inspired improvements adoption (2 specs remaining in queue)
+- GSD-inspired improvements adoption (1 spec remaining in queue)
 
 ### Architecture Alignment with GSD
 | Aspect | SF Status |
@@ -67,7 +68,7 @@ SPEC-GSD-A
 | Wave-based execution | Implemented |
 | Pre-computed waves | Implemented (SPEC-GSD-B) - DONE |
 | Context % estimation | Implemented (SPEC-GSD-C) - DONE |
-| Goal-backward | Pending (SPEC-GSD-A) |
+| Goal-backward | Implemented (SPEC-GSD-A) - DONE |
 | Pause/Resume | Pending (SPEC-SUBAGENT-C) |
 
 ---
