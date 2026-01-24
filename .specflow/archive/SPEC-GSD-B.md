@@ -4,7 +4,7 @@
 id: SPEC-GSD-B
 parent: SPEC-GSD-IMPROVEMENTS
 type: refactor
-status: audited
+status: done
 priority: medium
 complexity: small
 depends_on: []
@@ -270,3 +270,38 @@ The error must include:
 - The auditor now has a complete flow: Step 3.5 (Execution Scope Check) determines if spec is large, Step 4 generates task groups, Step 4.5 computes waves
 - Orchestrator retains full backward compatibility via fallback algorithm for legacy specs
 - All step numbers after the new steps were renumbered (5, 6, 7, 8) to maintain proper ordering
+
+---
+
+## Review History
+
+### Review v1 (2026-01-24 17:30)
+**Result:** APPROVED
+**Reviewer:** impl-reviewer (subagent)
+
+**Findings:**
+
+**Passed:**
+- [x] **Auditor computes wave numbers** — Step 4.5 in `agents/spec-auditor.md` (lines 176-243) implements the complete wave assignment algorithm with proper iteration and progress tracking
+- [x] **Spec includes Wave column** — `templates/spec.md` (lines 54-59) shows the Task Groups table with Wave column in correct position
+- [x] **Spec includes Execution Plan** — `templates/spec.md` (lines 61-69) includes the Execution Plan table with Parallel? and Workers columns plus Total workers summary
+- [x] **Orchestrator reads waves without computing** — `agents/spec-executor-orchestrator.md` Step 2 (lines 104-147) reads pre-computed waves directly from the table
+- [x] **Orchestrator is simpler** — The orchestrator now only parses wave numbers from the table rather than building dependency graphs; the fallback algorithm (lines 127-145) is simpler than a full graph implementation
+- [x] **Backward compatible** — Orchestrator includes explicit fallback logic (lines 127-147) for legacy specs without Wave column, computing waves from dependencies at runtime
+- [x] **Circular dependency detection** — Auditor includes error format and detection guidance (lines 223-243) with required elements: cycle groups, dependency chain, resolution guidance
+- [x] **Step ordering correct** — Auditor steps flow logically: 1 (Load) -> 2 (Context) -> 3 (Audit) -> 3.5 (Scope) -> 4 (Tasks) -> 4.5 (Waves) -> 5 (Categorize) -> 6 (Status) -> 7 (Record) -> 8 (Update)
+- [x] **Deviation documented** — Added Step 4 is properly documented as a deviation with clear justification
+
+**Minor:**
+1. The Execution Plan format in the spec (Requirement 1, lines 70-76) uses a different format (text-based: "Wave 1: G1 (sequential)") than the final structured table format (Requirement 4, lines 135-145). The implementation correctly uses the structured table format, but the spec has this minor inconsistency.
+
+**Summary:** Implementation fully meets all 6 acceptance criteria. The auditor now computes waves during the planning phase with proper algorithm and circular dependency detection. The orchestrator is simplified to read pre-computed waves while maintaining backward compatibility. The deviation (adding Step 4) was necessary and properly documented. Code quality is high with clear examples and logical flow.
+
+---
+
+## Completion
+
+**Completed:** 2026-01-24 17:45
+**Total Commits:** 3
+**Audit Cycles:** 2
+**Review Cycles:** 1

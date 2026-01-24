@@ -2,25 +2,23 @@
 
 ## Active Specification
 
-`.specflow/specs/SPEC-GSD-B.md`
+none
 
-**Status:** review
-**Next Step:** /sf:review
+**Status:** idle
+**Next Step:** /sf:next or /sf:new
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| 1 | SPEC-GSD-B | Pre-Computed Waves | review | small | - |
-| 2 | SPEC-GSD-C | Explicit Context Thresholds | draft | small | - |
-| 3 | SPEC-GSD-A | Goal-Backward Methodology | draft | medium | - |
-| 4 | SPEC-SUBAGENT-C | State Management & Reliability | draft | medium | SPEC-SUBAGENT-B |
+| 1 | SPEC-GSD-C | Explicit Context Thresholds | draft | small | - |
+| 2 | SPEC-GSD-A | Goal-Backward Methodology | draft | medium | - |
+| 3 | SPEC-SUBAGENT-C | State Management & Reliability | draft | medium | SPEC-SUBAGENT-B |
 
 **Execution Order Rationale:**
-- SPEC-GSD-B (waves): Lowest effort, immediate simplification of orchestrator
 - SPEC-GSD-C (context %): Builds on task groups from auditor
 - SPEC-GSD-A (goal-backward): Most complex, can evolve independently
-- SPEC-SUBAGENT-C (state): Benefits from stable orchestrator (after B)
+- SPEC-SUBAGENT-C (state): Benefits from stable orchestrator
 
 **Master Spec:** SPEC-GSD-IMPROVEMENTS (umbrella for GSD adoption)
 
@@ -35,16 +33,18 @@
 | 2026-01-24 | SPEC-GSD-B: Audited and approved - pre-computed waves refactor |
 | 2026-01-24 | SPEC-GSD-B: Applied all 3 audit recommendations (markdown fix, step placement, error format) |
 | 2026-01-24 | SPEC-GSD-B: Re-audited (v2) and approved - ready for implementation |
+| 2026-01-24 | SPEC-GSD-B: Implementation reviewed and APPROVED - all 6 acceptance criteria met |
+| 2026-01-24 | SPEC-GSD-B: COMPLETED - Pre-computed waves pattern established for SpecFlow |
 
 ## Notes
 
 ### Completed
 - SPEC-SUBAGENT-A: Auditor detects large specs (NEEDS_DECOMPOSITION)
 - SPEC-SUBAGENT-B: Orchestrator/worker architecture for parallel execution
+- SPEC-GSD-B: Pre-computed waves in auditor, simplified orchestrator
 
 ### In Progress
-- GSD-inspired improvements adoption (4 specs in queue)
-- SPEC-GSD-B: Implemented, awaiting review
+- GSD-inspired improvements adoption (3 specs remaining in queue)
 
 ### Architecture Alignment with GSD
 | Aspect | SF Status |
@@ -52,7 +52,7 @@
 | Thin orchestrator | Implemented |
 | Fresh subagent contexts | Implemented |
 | Wave-based execution | Implemented |
-| Pre-computed waves | Implemented (SPEC-GSD-B) - REVIEW |
+| Pre-computed waves | Implemented (SPEC-GSD-B) - DONE |
 | Context % estimation | Pending (SPEC-GSD-C) |
 | Goal-backward | Pending (SPEC-GSD-A) |
 | Pause/Resume | Pending (SPEC-SUBAGENT-C) |
