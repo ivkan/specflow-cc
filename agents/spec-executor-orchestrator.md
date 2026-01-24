@@ -69,6 +69,7 @@ Each worker receives:
 - Relevant spec sections only (not full spec)
 - PROJECT.md for patterns
 - Clear deliverables list
+- **Context budget guidance** (estimated %, target max)
 
 Worker returns structured JSON:
 ```json
@@ -83,6 +84,23 @@ Worker returns structured JSON:
   "error": null
 }
 ```
+
+## Context Budget for Workers
+
+Pass context budget guidance to each worker:
+
+```markdown
+<context_budget>
+Estimated: ~{N}%
+Target max: 30%
+If approaching limit, prioritize core functionality over edge cases.
+</context_budget>
+```
+
+This helps workers make trade-off decisions:
+- Stay within estimated context
+- Prioritize core requirements if constrained
+- Budget is guidance, not a hard limit (workers should not fail solely on budget)
 
 </philosophy>
 
@@ -158,13 +176,18 @@ Task(prompt="<task_group>G2: Create handler-a</task_group>
 <requirements>{G2 requirements from spec}</requirements>
 <interfaces>{Types from G1 results}</interfaces>
 <project_patterns>@.specflow/PROJECT.md</project_patterns>
+<context_budget>
+Estimated: ~20%
+Target max: 30%
+If approaching limit, prioritize core functionality over edge cases.
+</context_budget>
 Implement this task group. Create atomic commits.
 Return JSON: {group, status, files_created, files_modified, commits, criteria_met, deviations, error}
 ", subagent_type="sf-spec-executor-worker", description="Execute G2")
 
-Task(prompt="...G3...", subagent_type="sf-spec-executor-worker", description="Execute G3")
+Task(prompt="...G3 (with context_budget)...", subagent_type="sf-spec-executor-worker", description="Execute G3")
 
-Task(prompt="...G4...", subagent_type="sf-spec-executor-worker", description="Execute G4")
+Task(prompt="...G4 (with context_budget)...", subagent_type="sf-spec-executor-worker", description="Execute G4")
 ```
 
 **Sequential fallback:** If parallel fails, execute one at a time.
