@@ -149,7 +149,100 @@ Evaluate execution complexity by counting items from the specification content:
 - Recommend `/sf:run --parallel` mode
 - Set status to NEEDS_DECOMPOSITION (if no critical issues) or note decomposition needed (if other issues)
 
-## Step 4: Categorize Issues
+## Step 4: Generate Implementation Tasks (for large specs)
+
+If scope is large, generate the Implementation Tasks section:
+
+### 4.1 Create Task Groups
+
+Group related work into logical task groups (G1, G2, G3, etc.):
+- Types/interfaces first (foundational)
+- Independent implementations (can run parallel)
+- Integration/wiring last (depends on implementations)
+
+### 4.2 Identify Dependencies
+
+For each group, identify which other groups must complete first:
+- `—` for no dependencies
+- `G1` for single dependency
+- `G2, G3` for multiple dependencies
+
+### 4.3 Estimate Context
+
+Estimate context usage per group:
+- Consider file count, complexity, and scope
+- Use percentage format: `~15%`, `~20%`
+
+## Step 4.5: Compute Execution Waves
+
+After generating task groups (or for any spec with Implementation Tasks):
+
+### Wave Assignment Algorithm
+
+1. Initialize all groups with wave = 0 (unassigned)
+2. For each group with no dependencies: wave = 1
+3. Repeat until all groups have waves:
+   - For each unassigned group:
+     - If all dependencies have assigned waves:
+       - wave = max(dependency waves) + 1
+4. Validate: no circular dependencies (see error format below)
+
+### Update Implementation Tasks Table
+
+Add Wave column to the Task Groups table:
+
+```markdown
+| Group | Wave | Tasks | Dependencies | Est. Context |
+|-------|------|-------|--------------|--------------|
+| G1 | 1 | Create types | — | ~10% |
+| G2 | 2 | Create handler | G1 | ~20% |
+| G3 | 2 | Create tests | G1 | ~15% |
+| G4 | 3 | Wire integration | G2, G3 | ~10% |
+```
+
+### Generate Execution Plan
+
+Add Execution Plan section showing parallel opportunities:
+
+```markdown
+### Execution Plan
+
+| Wave | Groups | Parallel? | Workers |
+|------|--------|-----------|---------|
+| 1 | G1 | No | 1 |
+| 2 | G2, G3 | Yes | 2 |
+| 3 | G4 | No | 1 |
+
+**Total workers needed:** 2 (max in any wave)
+```
+
+- **Parallel?**: "Yes" if wave has >1 group, "No" otherwise
+- **Workers**: Count of groups in the wave
+- **Total workers needed**: Maximum Workers value across all waves
+
+### Circular Dependency Detection
+
+If the algorithm cannot assign waves to all groups (no progress made but groups remain), a circular dependency exists.
+
+**Error format:**
+
+```
+AUDIT FAILED: Circular dependency detected
+
+Cycle involves groups: [G2, G3, G4]
+Dependency chain: G2 -> G3 -> G4 -> G2
+
+Resolution: Review and remove one dependency to break the cycle.
+```
+
+The error must include:
+- List of groups involved in the cycle
+- The dependency chain showing the circular path
+- Guidance to resolve
+
+If circular dependency detected: set status to NEEDS_REVISION with critical issue.
+
+## Step 5: Categorize Issues
 
 Separate findings into:
 
@@ -161,7 +254,7 @@ Separate findings into:
 - Numbered list continuing from critical
 - Can be addressed or ignored
 
-## Step 5: Determine Status
+## Step 6: Determine Status
 
 | Condition | Status |
 |-----------|--------|
@@ -169,7 +262,7 @@ Separate findings into:
 | No critical issues, large scope | NEEDS_DECOMPOSITION |
 | 1+ critical issues | NEEDS_REVISION |
 
-## Step 6: Record Audit
+## Step 7: Record Audit
 
 Append to specification's Audit History section:
 
@@ -195,7 +288,7 @@ N+1. [recommendation]
 **Comment:** [Brief positive note about spec quality]
 ```
 
-## Step 7: Update STATE.md
+## Step 8: Update STATE.md
 
 Update status:
 - If APPROVED: Status → "audited", Next Step → "/sf:run"
