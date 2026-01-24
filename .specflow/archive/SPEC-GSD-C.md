@@ -4,7 +4,7 @@
 id: SPEC-GSD-C
 parent: SPEC-GSD-IMPROVEMENTS
 type: refactor
-status: running
+status: done
 priority: high
 complexity: small
 depends_on: []
@@ -322,3 +322,37 @@ None. All requirements implemented as specified.
 - The context estimation is heuristic-based (estimates by file type/purpose without reading source files)
 - Worker overhead breakdown added: PROJECT.md (~2%), task parsing (~1%), JSON result (~1%), deviation buffer (~1%) = ~5% total
 - Both per-group (>30%) and cumulative (>60%) thresholds documented with different purposes and actions
+
+---
+
+## Review History
+
+### Review v1 (2026-01-24)
+**Result:** APPROVED
+**Reviewer:** impl-reviewer (subagent)
+
+**Findings:**
+
+**Passed:**
+- [x] **Auditor estimates context %** per task group — Comprehensive context estimation rules added to `agents/spec-auditor.md` (lines 63-119), including file type tables, operation-based estimates, complexity multipliers, and per-task-group breakdown tables (lines 224-235)
+- [x] **Quality curve shown** in audit output — Quality Projection table implemented at lines 52-62 (definition) and lines 211-220/447-458 (output templates) showing PEAK/GOOD/DEGRADING/POOR ranges
+- [x] **NEEDS_DECOMPOSITION at >50%** total estimated context — Decomposition Triggers section (lines 236-242) explicitly lists "Total estimated context >50%" as a trigger
+- [x] **Warning at >30%** per task group — Warning thresholds documented at lines 231-235 with clear guidance: "Per-group >30%: Single group too large -> split the group"
+- [x] **Workers receive budget guidance** from orchestrator — Complete context_budget section added to `agents/spec-executor-orchestrator.md` (lines 88-104) with template and worker spawn examples (lines 175-191)
+- [x] **Backward compatible** — Fallback for legacy specs explicitly handled in orchestrator (lines 146-165) with wave computation from dependencies
+
+**File Verification:**
+- [x] `agents/spec-auditor.md` — Context estimation rules, quality curve, scope sanity thresholds all present
+- [x] `agents/spec-executor-orchestrator.md` — Context budget guidance in worker protocol and example prompts
+- [x] `templates/spec.md` — Cumulative column in Task Groups table (line 54), context threshold documentation (lines 61-64)
+
+**Summary:** All 6 acceptance criteria are fully implemented. The implementation follows the specification precisely with no deviations. Code quality is good with clear documentation and proper integration with existing SpecFlow patterns.
+
+---
+
+## Completion
+
+**Completed:** 2026-01-24
+**Total Commits:** 3
+**Audit Cycles:** 2
+**Review Cycles:** 1

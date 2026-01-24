@@ -2,21 +2,19 @@
 
 ## Active Specification
 
-SPEC-GSD-C
+none
 
-**Status:** review
-**Next Step:** /sf:review
+**Status:** idle
+**Next Step:** /sf:new or /sf:next
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| 1 | SPEC-GSD-C | Explicit Context Thresholds | review | small | - |
-| 2 | SPEC-GSD-A | Goal-Backward Methodology | draft | medium | - |
-| 3 | SPEC-SUBAGENT-C | State Management & Reliability | draft | medium | SPEC-SUBAGENT-B |
+| 1 | SPEC-GSD-A | Goal-Backward Methodology | draft | medium | - |
+| 2 | SPEC-SUBAGENT-C | State Management & Reliability | draft | medium | SPEC-SUBAGENT-B |
 
 **Execution Order Rationale:**
-- SPEC-GSD-C (context %): Builds on task groups from auditor
 - SPEC-GSD-A (goal-backward): Most complex, can evolve independently
 - SPEC-SUBAGENT-C (state): Benefits from stable orchestrator
 
@@ -43,6 +41,8 @@ SPEC-GSD-C
 | 2026-01-24 | SPEC-GSD-C: Applied all 3 audit v1 recommendations (worker overhead, warning thresholds, line estimation) |
 | 2026-01-24 | SPEC-GSD-C: Integrated GSD patterns (file count impact, task complexity tables, scope sanity thresholds) |
 | 2026-01-24 | SPEC-GSD-C: Re-audited (v2) and APPROVED - all v1 recommendations addressed, ready for implementation |
+| 2026-01-24 | SPEC-GSD-C: Implementation reviewed (v1) and APPROVED - all 6 acceptance criteria met |
+| 2026-01-24 | SPEC-GSD-C: COMPLETED - Context % thresholds established for decomposition decisions |
 
 ## Notes
 
@@ -51,9 +51,10 @@ SPEC-GSD-C
 - SPEC-SUBAGENT-B: Orchestrator/worker architecture for parallel execution
 - SPEC-GSD-B: Pre-computed waves in auditor, simplified orchestrator
 - SPEC-SFNEXT-001: Queue position as source of truth for /sf:next
+- SPEC-GSD-C: Explicit context % thresholds for decomposition decisions
 
 ### In Progress
-- GSD-inspired improvements adoption (3 specs remaining in queue)
+- GSD-inspired improvements adoption (2 specs remaining in queue)
 
 ### Architecture Alignment with GSD
 | Aspect | SF Status |
@@ -62,7 +63,7 @@ SPEC-GSD-C
 | Fresh subagent contexts | Implemented |
 | Wave-based execution | Implemented |
 | Pre-computed waves | Implemented (SPEC-GSD-B) - DONE |
-| Context % estimation | Implemented (SPEC-GSD-C) - In review |
+| Context % estimation | Implemented (SPEC-GSD-C) - DONE |
 | Goal-backward | Pending (SPEC-GSD-A) |
 | Pause/Resume | Pending (SPEC-SUBAGENT-C) |
 
