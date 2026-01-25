@@ -201,6 +201,7 @@ Workflow: Spec → Audit → Revise → Run → Review → Fix → Done
 | /sf:revise   | Revise spec based on audit feedback     |
 | /sf:run      | Execute specification                   |
 | /sf:review   | Review implementation (fresh context)   |
+| /sf:verify   | Interactive human verification          |
 | /sf:fix      | Fix implementation based on review      |
 | /sf:done     | Finalize, commit, and archive           |
 
