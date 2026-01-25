@@ -3,7 +3,7 @@
 ---
 id: SPEC-PREDISCUSS-001
 type: feature
-status: draft
+status: running
 priority: medium
 complexity: medium
 created: 2026-01-25
@@ -52,7 +52,7 @@ When this spec is complete, a user will observe:
 1. Running `/sf:discuss --pre "add export feature"` starts a structured discussion with feature-type-specific questions
 2. Discussion identifies feature type (visual/API/CLI/data) and asks relevant gray-area questions
 3. Results saved to `.specflow/discussions/PRE-XXX.md` with structured decisions
-4. Running `/sf:new --context PRE-XXX "add export feature"` loads the discussion context
+4. Running `/sf:new --discuss PRE-XXX "add export feature"` loads the discussion context
 5. Created spec includes "Prior Discussion" section referencing PRE-XXX
 6. Spec creator uses discussion decisions to make fewer assumptions
 
@@ -62,7 +62,7 @@ When this spec is complete, a user will observe:
 |----------|-----------------|---------|
 | `commands/sf/discuss.md` (modify) | 1, 2, 3 | Add `--pre` mode |
 | `agents/discusser.md` (modify) | 2 | Add feature-type question banks |
-| `commands/sf/new.md` (modify) | 4, 5, 6 | Add `--context PRE-XXX` flag |
+| `commands/sf/new.md` (modify) | 4, 5, 6 | Add `--discuss PRE-XXX` flag |
 | `agents/spec-creator.md` (modify) | 6 | Use discussion context |
 
 ### Required Wiring
@@ -70,7 +70,7 @@ When this spec is complete, a user will observe:
 | From | To | Connection Type |
 |------|-----|-----------------|
 | discuss.md | PRE-XXX.md | Creates file |
-| new.md | PRE-XXX.md | Reads file (via --context) |
+| new.md | PRE-XXX.md | Reads file (via --discuss) |
 | spec-creator.md | PRE-XXX.md | Incorporates decisions |
 
 ### Key Links
@@ -99,6 +99,16 @@ Behavior:
 3. Ask 5-10 targeted questions
 4. Save results to `.specflow/discussions/PRE-XXX.md`
 
+### PRE-XXX ID Generation
+
+Follow DISC-XXX pattern for ID generation:
+
+1. Read all existing PRE-XXX files in `.specflow/discussions/`
+2. Extract numeric IDs (PRE-001 -> 1, PRE-002 -> 2)
+3. Find max ID, increment by 1
+4. Format as PRE-XXX (zero-padded to 3 digits)
+5. If no existing PRE files, start with PRE-001
+
 ### Feature Type Detection
 
 | Keyword Patterns | Feature Type | Question Focus |
@@ -108,6 +118,9 @@ Behavior:
 | command, CLI, flag, argument | cli | Flags, output format, error messages |
 | migration, transform, process | data | Rollback, validation, idempotency |
 | refactor, restructure, extract | refactor | Scope boundaries, backward compat |
+| (no match) | general | Generic feature questions |
+
+**Fallback:** If no keywords match, default to "general" feature type with generic question bank.
 
 ### Feature-Type Question Banks
 
@@ -154,6 +167,16 @@ Behavior:
 | Scope | What's explicitly out of scope? |
 | Dependencies | What other systems affected? |
 
+#### General Features
+
+| Category | Questions |
+|----------|-----------|
+| Scope | What's included and excluded? |
+| Users | Who will use this? |
+| Success | How do we know it works? |
+| Edge Cases | What could go wrong? |
+| Dependencies | What else needs to change? |
+
 ### PRE-XXX File Format
 
 ```markdown
@@ -192,15 +215,15 @@ used_by: null  # Updated when /sf:new uses this
 
 ## Next Step
 
-`/sf:new --context PRE-XXX "topic"` — create spec with this context
+`/sf:new --discuss PRE-XXX "topic"` — create spec with this context
 ```
 
 ### Integration with /sf:new
 
-Add `--context PRE-XXX` flag:
+Add `--discuss PRE-XXX` flag:
 
 ```
-/sf:new --context PRE-001 "add export feature"
+/sf:new --discuss PRE-001 "add export feature"
 ```
 
 Behavior:
@@ -225,21 +248,27 @@ When `<prior_discussion>` provided:
    - [etc.]
    ```
 
+### Model Profile
+
+Pre-spec discussion mode uses the **existing discusser agent model profile** without modification. No special profile needed for `--pre` mode.
+
 ## Acceptance Criteria
 
 1. `/sf:discuss --pre "topic"` enters pre-spec discussion mode
 2. Feature type auto-detected from topic (with user override option)
 3. Questions drawn from feature-type-specific bank (5-10 questions)
 4. Results saved to `.specflow/discussions/PRE-XXX.md` with correct format
-5. `/sf:new --context PRE-XXX "topic"` loads discussion context
-6. Created spec shows "Prior Discussion" section with link
-7. Spec creator skips questions already answered in PRE-XXX
-8. PRE-XXX.md updated with `used_by: SPEC-XXX` after spec creation
+5. PRE-XXX ID auto-generated following DISC-XXX pattern (max+1)
+6. `/sf:new --discuss PRE-XXX "topic"` loads discussion context
+7. Created spec shows "Prior Discussion" section with link
+8. Spec creator skips questions already answered in PRE-XXX
+9. PRE-XXX.md updated with `used_by: SPEC-XXX` after spec creation
+10. "general" feature type used when no keyword patterns match
 
 ## Constraints
 
 - DO NOT modify existing `requirements-gathering` mode behavior
-- DO NOT make --pre or --context mandatory (both are optional)
+- DO NOT make --pre or --discuss mandatory (both are optional)
 - DO NOT break backward compatibility with existing /sf:discuss or /sf:new
 - Question banks are extensible (agent can add project-specific questions)
 - Keep discussion to 5-10 questions max (not exhaustive)
@@ -255,4 +284,113 @@ When `<prior_discussion>` provided:
 
 ## Audit History
 
-<!-- Filled by /sf:audit -->
+### Audit v1 (2026-01-25)
+**Status:** APPROVED
+
+**Recommendations:**
+1. Consider using `--discuss PRE-XXX` instead of `--context PRE-XXX` for consistency with existing discuss.md line 185 pattern (`/sf:new --discuss DISC-XXX`)
+2. Add PRE-XXX ID generation logic (similar to DISC-XXX pattern in discusser.md Step 5)
+3. Add explicit "general" fallback to Feature Type Detection table when no keywords match
+4. Confirm model profile applies unchanged to pre-spec mode (uses existing discusser profile)
+
+**Comment:** Well-structured specification with clear goal-backward analysis. All 8 acceptance criteria are testable. The 4 files to modify are clearly identified with their integration points documented. Question banks are comprehensive and feature-type detection is practical with user override mitigation.
+
+### Response v1 (2026-01-25)
+**Applied:** All 4 recommendations
+
+**Changes:**
+1. [x] Flag naming consistency — Changed `--context PRE-XXX` to `--discuss PRE-XXX` throughout spec (Observable Truth #4, Integration with /sf:new section, Next Step in PRE-XXX file format, Acceptance Criterion #6)
+2. [x] PRE-XXX ID generation — Added new section "PRE-XXX ID Generation" with 5-step logic matching DISC-XXX pattern (read existing, extract numeric IDs, find max, increment, zero-pad to 3 digits)
+3. [x] General feature type fallback — Added "(no match) -> general" row to Feature Type Detection table and new "General Features" question bank with 5 generic questions
+4. [x] Model profile clarification — Added new subsection "Model Profile" confirming pre-spec mode uses existing discusser agent profile without modification
+
+**Additional updates:**
+- Updated Required Wiring table (line 73): Changed "via --context" to "via --discuss"
+- Updated Acceptance Criteria: Added #5 for ID generation, added #10 for general fallback, renumbered remaining (now 10 total)
+- Updated Observable Truths table entry for new.md: Changed to `--discuss PRE-XXX` flag
+
+### Audit v2 (2026-01-25)
+**Status:** APPROVED
+
+**Scope Assessment:**
+
+| Metric | Value | Threshold | Status |
+|--------|-------|-----------|--------|
+| Files to create | 0 | <=5 | OK |
+| Files to modify | 4 | <=3 | Warning |
+| Acceptance criteria | 10 | <=10 | OK |
+| Total requirements | 11 | <=15 | OK |
+
+**Estimated context:** medium (~50%)
+
+**Verification:**
+- All 4 recommendations from Audit v1 correctly applied
+- All 8 quality dimensions pass:
+  - Clarity: Title, context, and task are clear and specific
+  - Completeness: All artifacts, wiring, and formats specified
+  - Testability: All 10 acceptance criteria are measurable
+  - Scope: Clear constraints, no scope creep
+  - Feasibility: Follows established patterns
+  - Architecture fit: Aligns with existing discuss.md and new.md patterns
+  - Non-duplication: Extends existing modes, reuses discusser agent
+  - Cognitive load: Minimal new concepts, consistent naming
+
+**Comment:** Specification is well-prepared for implementation. The 4 files to modify slightly exceeds the threshold but the changes are well-scoped additions (new flags, new mode, question banks) rather than complex rewrites. Integration points are clearly documented and follow established patterns.
+
+---
+
+## Execution Summary
+
+**Executed:** 2026-01-25
+**Commits:** 4
+
+### Files Created
+None (all modifications to existing files)
+
+### Files Modified
+- `/Users/koristuvac/Projects/specflow-cc/commands/sf/discuss.md` — Added --pre flag and pre-spec mode (Case A), updated purpose and next step guidance
+- `/Users/koristuvac/Projects/specflow-cc/agents/discusser.md` — Added Pre-Spec Discussion Flow with feature type detection, question banks, PRE-XXX ID generation, and file format
+- `/Users/koristuvac/Projects/specflow-cc/commands/sf/new.md` — Added --discuss flag for PRE-XXX/DISC-XXX, prior_discussion context passing, and used_by field update
+- `/Users/koristuvac/Projects/specflow-cc/agents/spec-creator.md` — Integrated prior_discussion context, skip re-asking questions, add Prior Discussion section, update discussion file
+
+### Files Deleted
+None
+
+### Acceptance Criteria Status
+- [x] 1. `/sf:discuss --pre "topic"` enters pre-spec discussion mode
+- [x] 2. Feature type auto-detected from topic (with user override option)
+- [x] 3. Questions drawn from feature-type-specific bank (5-10 questions)
+- [x] 4. Results saved to `.specflow/discussions/PRE-XXX.md` with correct format
+- [x] 5. PRE-XXX ID auto-generated following DISC-XXX pattern (max+1)
+- [x] 6. `/sf:new --discuss PRE-XXX "topic"` loads discussion context
+- [x] 7. Created spec shows "Prior Discussion" section with link
+- [x] 8. Spec creator skips questions already answered in PRE-XXX
+- [x] 9. PRE-XXX.md updated with `used_by: SPEC-XXX` after spec creation
+- [x] 10. "general" feature type used when no keyword patterns match
+
+### Deviations
+None. All requirements implemented as specified.
+
+### Notes
+
+**Implementation approach:**
+- Unit 1: Modified discuss.md to add --pre mode parsing and documentation
+- Unit 2: Extended discusser.md with feature-type detection logic and comprehensive question banks
+- Unit 3: Updated new.md to support --discuss flag and pass prior_discussion context
+- Unit 4: Enhanced spec-creator.md to consume discussion context and avoid re-asking questions
+
+**Key implementation details:**
+1. Feature type detection uses keyword matching (visual/api/cli/data/refactor/general) with user confirmation
+2. Question banks provide 5-10 type-specific questions per feature type
+3. PRE-XXX ID generation follows existing DISC-XXX pattern (max+1 with zero-padding)
+4. Integration flow: discuss.md → discusser.md → PRE-XXX.md → new.md → spec-creator.md → SPEC-XXX.md
+5. Backward compatibility preserved: --pre and --discuss flags are optional, existing modes unchanged
+
+**All acceptance criteria verified:**
+- AC 1-5: Pre-spec mode implemented in discuss.md and discusser.md
+- AC 6-9: Integration with /sf:new implemented in new.md and spec-creator.md
+- AC 10: General feature type fallback included in feature type detection
+
+### Next Step
+
+`/sf:review` — audit implementation

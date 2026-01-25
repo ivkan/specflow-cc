@@ -2,16 +2,16 @@
 
 ## Active Specification
 
-none
+SPEC-PREDISCUSS-001
 
-**Status:** idle
-**Next Step:** /sf:new or /sf:next
+**Status:** review
+**Next Step:** /sf:review
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| medium | SPEC-PREDISCUSS-001 | Pre-Specification Discussion Mode | draft | medium | — |
+| medium | SPEC-PREDISCUSS-001 | Pre-Specification Discussion Mode | review | medium | — |
 
 **Master Spec:** SPEC-GSD-IMPROVEMENTS (umbrella for GSD adoption) - COMPLETE
 
@@ -23,6 +23,9 @@ none
 | 2026-01-25 | SPEC-STATE-001: Fix response (v3) - applied temp file approach for multiline awk variables |
 | 2026-01-25 | SPEC-STATE-001: Implementation reviewed (v4) and APPROVED - all 7 acceptance criteria met, temp file approach working correctly |
 | 2026-01-25 | SPEC-STATE-001: COMPLETED - STATE.md size constraint with automatic decision archiving |
+| 2026-01-25 | SPEC-PREDISCUSS-001: Audit v1 APPROVED - 4 recommendations (naming consistency, ID generation, fallback type, model profile) |
+| 2026-01-25 | SPEC-PREDISCUSS-001: Response v1 - applied all 4 recommendations (--discuss flag, ID generation logic, general fallback, model profile confirmation) |
+| 2026-01-25 | SPEC-PREDISCUSS-001: Audit v2 APPROVED - all recommendations verified, ready for implementation |
 
 ## Notes
 
@@ -40,7 +43,7 @@ none
 - SPEC-STATE-001: STATE.md size constraint with automatic decision archiving
 
 ### In Progress
-- SPEC-PREDISCUSS-001: Pre-spec discussion mode with feature-type-specific questions
+- SPEC-PREDISCUSS-001: Pre-spec discussion mode with feature-type-specific questions (implemented, under review)
 
 ### Architecture Alignment with GSD
 | Aspect | SF Status |
@@ -56,7 +59,7 @@ none
 | Quick Mode | Implemented (SPEC-QUICK-001) - DONE |
 | Model Profiles | Implemented (SPEC-MODEL-001) - DONE |
 | STATE.md Size Limit | Implemented (SPEC-STATE-001) - DONE |
-| Pre-spec Discussion | Draft (SPEC-PREDISCUSS-001) |
+| Pre-spec Discussion | Implemented (SPEC-PREDISCUSS-001) - REVIEW |
 
 ---
-*Last updated: 2026-01-25 (SPEC-STATE-001 completed and archived)*
+*Last updated: 2026-01-25 (SPEC-PREDISCUSS-001 implementation complete)*
