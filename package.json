@@ -1,6 +1,6 @@
 {
   "name": "specflow-cc",
-  "version": "1.5.3",
+  "version": "1.6.0",
   "description": "Spec-driven development system for Claude Code — quality-first workflow with explicit audit cycles",
   "bin": {
     "specflow-cc": "bin/install.js"

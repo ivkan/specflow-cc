@@ -5,6 +5,38 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-01-25
+
+### Added
+
+#### Commands
+- `/sf:quick` — Fast track for trivial tasks (skip full audit/review workflow)
+- `/sf:verify` — Interactive user acceptance testing after implementation
+- `/sf:discuss --pre "topic"` — Pre-specification discussion with feature-type-specific questions
+- `/sf:new --discuss PRE-XXX` — Create spec with prior discussion context
+
+#### Features
+- **Model profiles** — Control cost vs quality (`quality`, `balanced`, `budget`) in config.json
+- **Pre-spec discussion** — Identifies gray areas based on feature type (visual, API, CLI, data, refactor)
+- **Feature-type question banks** — 5-10 targeted questions per feature type
+- **STATE.md size management** — Automatic decision archiving when exceeding 100 lines
+- **Wave-based parallel execution** — Large specs auto-decompose into parallel waves
+- **Orchestrator/worker architecture** — Fresh context per execution task
+
+#### Agents
+- Enhanced `spec-executor-orchestrator` — Pre-computed waves, checkpoint support
+- Enhanced `spec-executor-worker` — Atomic commits, state verification
+- Enhanced `discusser` — Feature-type detection, question banks, PRE-XXX file format
+
+### Changed
+
+- README completely rewritten for better user experience
+- `/sf:done` workflow now includes optional `/sf:verify` step
+- Pause/resume supports orchestrated execution checkpoints
+- Queue position is now source of truth for `/sf:next`
+
+---
+
 ## [1.5.3] - 2026-01-22
 
 ### Changed
