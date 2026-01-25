@@ -97,6 +97,73 @@ Log in STATE.md Warnings table:
 | {date} | SPEC-XXX | Finalized without review approval |
 ```
 
+## Step 4.5: Check Verification Status
+
+Check if Verification History section exists in spec.
+
+**If no Verification History exists:**
+Note it but continue (verification is optional):
+```
+Note: No human verification was performed.
+Consider running `/sf:verify` for user acceptance testing.
+```
+Continue to Step 5.
+
+**If Verification History exists:**
+Parse the most recent verification entry (highest version number).
+
+**If result is PASSED:**
+Continue normally to Step 5.
+
+**If result is PARTIAL:**
+Show warning but allow proceed:
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ NOTE: Verification Incomplete
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Specification:** SPEC-XXX
+**Last Verification:** v{N} — PARTIAL
+
+Some criteria were skipped during verification.
+
+---
+```
+Continue to Step 5.
+
+**If result is FAILED:**
+Show warning and require confirmation:
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ WARNING: Verification Failed
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Specification:** SPEC-XXX
+**Last Verification:** v{N} — FAILED
+
+### Failed Criteria
+
+{List each failed criterion with notes}
+
+---
+
+Proceeding with failed verification may result in:
+- Features that don't work as expected
+- User-facing bugs
+
+Continue anyway?
+```
+
+Use AskUserQuestion with options:
+- "Yes, finalize anyway" → continue, log warning in STATE.md
+- "No, fix first" → exit with `/sf:fix` or `/sf:verify` suggestion
+
+**If user proceeds anyway:**
+Log in STATE.md Warnings table:
+```
+| {date} | SPEC-XXX | Finalized with failed verification |
+```
+
 ## Step 5: Create Archive Directory
 
 ```bash
