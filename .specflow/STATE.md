@@ -2,17 +2,20 @@
 
 ## Active Specification
 
-none
+SPEC-VERIFY-001
 
-**Status:** idle
-**Next Step:** /sf:new or /sf:next
+**Status:** review
+**Next Step:** /sf:review
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-
-*Queue is empty*
+| high | SPEC-VERIFY-001 | Interactive User Acceptance Testing | review | small | — |
+| high | SPEC-QUICK-001 | Quick Mode for Minor Tasks | draft | small | — |
+| medium | SPEC-MODEL-001 | Model Profiles for Cost-Efficient Agent Execution | draft | medium | — |
+| medium | SPEC-STATE-001 | STATE.md Size Constraint | draft | small | — |
+| medium | SPEC-PREDISCUSS-001 | Pre-Specification Discussion Mode | draft | medium | — |
 
 **Master Spec:** SPEC-GSD-IMPROVEMENTS (umbrella for GSD adoption) - COMPLETE
 
@@ -47,6 +50,13 @@ none
 | 2026-01-24 | SPEC-SUBAGENT-C: Audited (v1) and APPROVED - state management and reliability spec ready for implementation |
 | 2026-01-24 | SPEC-SUBAGENT-C: Implementation reviewed (v1) and APPROVED - all 12 acceptance criteria met |
 | 2026-01-24 | SPEC-SUBAGENT-C: COMPLETED - State management and reliability for orchestrated execution |
+| 2026-01-25 | SPEC-VERIFY-001: Created - interactive user acceptance testing command |
+| 2026-01-25 | SPEC-QUICK-001: Created - quick mode for minor tasks without full cycle |
+| 2026-01-25 | SPEC-MODEL-001: Created - model profiles for cost-efficient agent execution |
+| 2026-01-25 | SPEC-PREDISCUSS-001: Created - pre-specification discussion mode with feature-type question banks |
+| 2026-01-25 | SPEC-VERIFY-001: Audited (v1) and APPROVED - ready for implementation |
+| 2026-01-25 | SPEC-VERIFY-001: Revised (v1) - applied all 3 audit recommendations (wording consistency, help.md placement, criteria formats) |
+| 2026-01-25 | SPEC-VERIFY-001: Re-audited (v2) and APPROVED - all v1 recommendations verified, ready for implementation |
 
 ## Notes
 
@@ -60,7 +70,11 @@ none
 - SPEC-SUBAGENT-C: State management and reliability for orchestrated execution
 
 ### In Progress
-- None (GSD-inspired improvements adoption complete)
+- SPEC-VERIFY-001: Interactive user acceptance testing (/sf:verify command) - IMPLEMENTED, READY FOR REVIEW
+- SPEC-QUICK-001: Quick mode for minor tasks (/sf:quick command)
+- SPEC-MODEL-001: Model profiles for cost-efficient agent execution
+- SPEC-STATE-001: STATE.md size constraint with decision archiving
+- SPEC-PREDISCUSS-001: Pre-spec discussion mode with feature-type-specific questions
 
 ### Architecture Alignment with GSD
 | Aspect | SF Status |
@@ -72,6 +86,11 @@ none
 | Context % estimation | Implemented (SPEC-GSD-C) - DONE |
 | Goal-backward | Implemented (SPEC-GSD-A) - DONE |
 | Pause/Resume | Implemented (SPEC-SUBAGENT-C) - DONE |
+| Human UAT | Implemented (SPEC-VERIFY-001) |
+| Quick Mode | Draft (SPEC-QUICK-001) |
+| Model Profiles | Draft (SPEC-MODEL-001) |
+| STATE.md Size Limit | Draft (SPEC-STATE-001) |
+| Pre-spec Discussion | Draft (SPEC-PREDISCUSS-001) |
 
 ---
-*Last updated: 2026-01-24 (SPEC-SUBAGENT-C completed and archived)*
+*Last updated: 2026-01-25 (SPEC-VERIFY-001 implemented)*
