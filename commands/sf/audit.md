@@ -139,23 +139,33 @@ Historical decisions rotated from STATE.md to maintain compactness.
 EOF
         fi
 
+        # Write old decisions to temp file for awk to read (awk -v cannot handle multiline strings)
+        TEMP_OLD=$(mktemp)
+        echo "$OLD_DECISIONS" > "$TEMP_OLD"
+
         # Append old decisions to archive (insert after table header)
         TEMP_ARCHIVE=$(mktemp)
-        awk -v old="$OLD_DECISIONS" '
-            /^\| Date \| Decision \|$/ { print; getline; print; print old; next }
+        awk -v oldfile="$TEMP_OLD" '
+            /^\| Date \| Decision \|$/ { print; getline; print; while ((getline line < oldfile) > 0) print line; close(oldfile); next }
             {print}
         ' .specflow/DECISIONS_ARCHIVE.md > "$TEMP_ARCHIVE"
         mv "$TEMP_ARCHIVE" .specflow/DECISIONS_ARCHIVE.md
+        rm -f "$TEMP_OLD"
+
+        # Write recent decisions to temp file for awk to read
+        TEMP_RECENT=$(mktemp)
+        echo "$RECENT_DECISIONS" > "$TEMP_RECENT"
 
         # Update STATE.md with only recent decisions
         TEMP_STATE=$(mktemp)
-        awk -v recent="$RECENT_DECISIONS" '
+        awk -v recentfile="$TEMP_RECENT" '
             /^## Decisions$/ {
                 print
                 print ""
                 print "| Date | Decision |"
                 print "|------|----------|"
-                print recent
+                while ((getline line < recentfile) > 0) print line
+                close(recentfile)
                 in_decisions=1
                 next
             }
@@ -163,6 +173,7 @@ EOF
             !in_decisions || !/^\|/ { print }
         ' .specflow/STATE.md > "$TEMP_STATE"
         mv "$TEMP_STATE" .specflow/STATE.md
+        rm -f "$TEMP_RECENT"
 
         echo "Rotated $(echo "$OLD_DECISIONS" | grep -c '^|') old decisions to DECISIONS_ARCHIVE.md"
     fi
