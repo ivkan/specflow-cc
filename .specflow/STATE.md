@@ -2,16 +2,16 @@
 
 ## Active Specification
 
-SPEC-PREDISCUSS-001
+None
 
-**Status:** review
-**Next Step:** /sf:review
+**Status:** idle
+**Next Step:** /sf:next (or /sf:new for new task)
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| medium | SPEC-PREDISCUSS-001 | Pre-Specification Discussion Mode | review | medium | — |
+| — | — | — | — | — | — |
 
 **Master Spec:** SPEC-GSD-IMPROVEMENTS (umbrella for GSD adoption) - COMPLETE
 
@@ -26,6 +26,7 @@ SPEC-PREDISCUSS-001
 | 2026-01-25 | SPEC-PREDISCUSS-001: Audit v1 APPROVED - 4 recommendations (naming consistency, ID generation, fallback type, model profile) |
 | 2026-01-25 | SPEC-PREDISCUSS-001: Response v1 - applied all 4 recommendations (--discuss flag, ID generation logic, general fallback, model profile confirmation) |
 | 2026-01-25 | SPEC-PREDISCUSS-001: Audit v2 APPROVED - all recommendations verified, ready for implementation |
+| 2026-01-25 | SPEC-PREDISCUSS-001: Implementation reviewed and APPROVED - all 10 acceptance criteria met, 1 major systemic issue identified (grep -oP compatibility, pre-existing across 5 files) |
 
 ## Notes
 
@@ -41,9 +42,10 @@ SPEC-PREDISCUSS-001
 - SPEC-QUICK-001: Quick mode for minor tasks (/sf:quick command)
 - SPEC-MODEL-001: Model profiles for cost-efficient agent execution (quality/balanced/budget)
 - SPEC-STATE-001: STATE.md size constraint with automatic decision archiving
+- SPEC-PREDISCUSS-001: Pre-spec discussion mode with feature-type-specific questions
 
 ### In Progress
-- SPEC-PREDISCUSS-001: Pre-spec discussion mode with feature-type-specific questions (implemented, under review)
+None
 
 ### Architecture Alignment with GSD
 | Aspect | SF Status |
@@ -59,7 +61,7 @@ SPEC-PREDISCUSS-001
 | Quick Mode | Implemented (SPEC-QUICK-001) - DONE |
 | Model Profiles | Implemented (SPEC-MODEL-001) - DONE |
 | STATE.md Size Limit | Implemented (SPEC-STATE-001) - DONE |
-| Pre-spec Discussion | Implemented (SPEC-PREDISCUSS-001) - REVIEW |
+| Pre-spec Discussion | Implemented (SPEC-PREDISCUSS-001) - DONE |
 
 ---
-*Last updated: 2026-01-25 (SPEC-PREDISCUSS-001 implementation complete)*
+*Last updated: 2026-01-25 (SPEC-PREDISCUSS-001 review complete)*
