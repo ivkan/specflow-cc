@@ -3,7 +3,7 @@
 ---
 id: SPEC-STATE-001
 type: refactor
-status: draft
+status: review
 priority: medium
 complexity: small
 created: 2026-01-25
@@ -85,11 +85,14 @@ When this spec is complete, a user will observe:
 
 ### Rotation Trigger
 
-After any STATE.md modification, check:
+After writing STATE.md, check line count. If >100, perform rotation and rewrite the file:
 
 ```
-IF line_count(STATE.md) > 100:
+WRITE STATE.md
+line_count = count_lines(STATE.md)
+IF line_count > 100:
     rotate_oldest_decisions()
+    REWRITE STATE.md
 ```
 
 ### Rotation Logic
@@ -126,6 +129,20 @@ Historical decisions rotated from STATE.md to maintain compactness.
 | `commands/sf/review.md` | Add rotation check if decision added |
 | `commands/sf/history.md` | Add `--decisions` flag to show archived decisions |
 
+### `/sf:history --decisions` Flag Behavior
+
+The `--decisions` flag displays archived decisions. It interacts with the existing `[ID]` argument as follows:
+
+| Command | Behavior |
+|---------|----------|
+| `/sf:history --decisions` | Display all archived decisions from DECISIONS_ARCHIVE.md |
+| `/sf:history [ID]` | Display execution history for specific specification (existing behavior) |
+| `/sf:history [ID] --decisions` | Invalid combination — show error: "Cannot combine [ID] with --decisions flag. Use `/sf:history --decisions` to view all archived decisions or `/sf:history [ID]` for spec history." |
+
+The flags are mutually exclusive because:
+- `--decisions` operates on the global DECISIONS_ARCHIVE.md
+- `[ID]` operates on spec-specific HISTORY files
+
 ### Files to Create
 
 | File | Purpose |
@@ -147,7 +164,7 @@ Historical decisions rotated from STATE.md to maintain compactness.
 
 1. STATE.md line count checked after every modification by done/audit/run/review commands
 2. When STATE.md exceeds 100 lines, oldest decisions automatically moved to archive
-3. Exactly 5 most recent decisions retained in STATE.md after rotation
+3. 5-7 most recent decisions retained in STATE.md after rotation (5 preferred, up to 7 if line count permits)
 4. DECISIONS_ARCHIVE.md created automatically on first rotation
 5. Archived decisions preserved in chronological order (oldest first)
 6. `/sf:history --decisions` displays all archived decisions
@@ -173,4 +190,99 @@ Historical decisions rotated from STATE.md to maintain compactness.
 
 ## Audit History
 
-<!-- Filled by /sf:audit -->
+### Audit v1 (2026-01-25 14:30)
+**Status:** NEEDS_REVISION
+
+**Critical:**
+1. Observable Truth #2 states "5-7 most recent decisions" but Acceptance Criterion #3 requires "Exactly 5 most recent decisions." This contradiction must be resolved. Recommend: change Criterion #3 to "5-7 most recent decisions retained (5 preferred, up to 7 if line count permits)" to match Observable Truth #2 and the Requirements section.
+
+**Recommendations:**
+2. Clarify `/sf:history --decisions` integration with existing `[ID]` argument. Specify behavior: is `--decisions` mutually exclusive with ID, or can they combine? Example: `/sf:history --decisions` (list all archived) vs `/sf:history SPEC-001 --decisions` (show decisions for specific spec).
+3. Specify rotation trigger timing: "After writing STATE.md, check line count. If >100, perform rotation and rewrite the file."
+
+### Response v1 (2026-01-25 14:45)
+**Applied:** All 3 items (1 critical + 2 recommendations)
+
+**Changes:**
+1. [✓] Observable Truth vs Acceptance Criterion contradiction — Updated Criterion #3 from "Exactly 5 most recent decisions retained" to "5-7 most recent decisions retained in STATE.md after rotation (5 preferred, up to 7 if line count permits)" to match Observable Truth #2 and Requirements section.
+
+2. [✓] `/sf:history --decisions` integration — Added new "Flag Behavior" subsection under Requirements clarifying that `--decisions` and `[ID]` are mutually exclusive. Specified three scenarios: `--decisions` alone (show all archived), `[ID]` alone (existing behavior), and `[ID] --decisions` (error with helpful message). Documented rationale: flags operate on different data sources.
+
+3. [✓] Rotation trigger timing — Updated "Rotation Trigger" section to specify exact timing: "After writing STATE.md, check line count. If >100, perform rotation and rewrite the file." Added pseudocode showing WRITE → COUNT → IF >100 → ROTATE → REWRITE sequence.
+
+**Skipped:** None
+
+### Audit v2 (2026-01-25 15:00)
+**Status:** APPROVED
+
+**Verification of v1 Issues:**
+- Critical #1 (decision count contradiction): RESOLVED — Observable Truth #2, Acceptance Criterion #3, and Requirements section all now consistently specify "5-7 decisions"
+- Recommendation #2 (flag behavior): RESOLVED — New subsection added with clear mutual exclusivity rules and error message
+- Recommendation #3 (rotation timing): RESOLVED — Pseudocode added showing WRITE -> COUNT -> ROTATE -> REWRITE sequence
+
+**Scope Check:**
+
+| Metric | Value | Threshold | Status |
+|--------|-------|-----------|--------|
+| Files to create | 1 | <=5 | OK |
+| Files to modify | 6 | <=3 | Note |
+| Acceptance criteria | 7 | <=10 | OK |
+| Total requirements | 8 | <=15 | OK |
+
+Note: File modification count exceeds threshold but modifications are small and repetitive (adding same rotation check to 4 commands). Appropriate for "small" complexity.
+
+**Comment:** Well-structured specification with clear GSD alignment. All v1 issues properly addressed. Requirements are consistent, testable, and implementable. Ready for execution.
+
+---
+
+## Execution Summary
+
+**Executed:** 2026-01-25 18:00
+**Commits:** 5
+
+### Files Created
+- `/Users/koristuvac/.claude/specflow-cc/templates/decisions-archive.md` — Template for DECISIONS_ARCHIVE.md file
+
+### Files Modified
+- `/Users/koristuvac/.claude/specflow-cc/templates/state.md` — Added size constraint comment
+- `/Users/koristuvac/.claude/commands/sf/done.md` — Added rotation check in Step 9
+- `/Users/koristuvac/.claude/commands/sf/audit.md` — Added rotation check in new Step 7
+- `/Users/koristuvac/.claude/commands/sf/run.md` — Added rotation check in Step 7
+- `/Users/koristuvac/.claude/commands/sf/review.md` — Added rotation check in new Step 7.5
+- `/Users/koristuvac/.claude/commands/sf/history.md` — Added --decisions flag support with new Step 4c
+
+### Files Deleted
+None
+
+### Acceptance Criteria Status
+- [x] STATE.md line count checked after every modification by done/audit/run/review commands
+- [x] When STATE.md exceeds 100 lines, oldest decisions automatically moved to archive
+- [x] 5-7 most recent decisions retained in STATE.md after rotation (5 preferred, up to 7 if line count permits)
+- [x] DECISIONS_ARCHIVE.md created automatically on first rotation
+- [x] Archived decisions preserved in chronological order (oldest first)
+- [x] `/sf:history --decisions` displays all archived decisions
+- [x] Rotation is idempotent (running twice produces same result)
+
+### Deviations
+None
+
+### Implementation Notes
+
+**Rotation Logic:**
+All four commands (done.md, audit.md, run.md, review.md) now include identical rotation logic that:
+1. Counts lines in STATE.md after modification
+2. If >100 lines, extracts all decisions from Decisions table
+3. If >7 decisions, keeps 5 most recent and moves rest to archive
+4. Creates DECISIONS_ARCHIVE.md from template on first rotation
+5. Uses awk to safely manipulate both files
+
+**Flag Behavior:**
+The `/sf:history --decisions` flag is mutually exclusive with [ID] argument. Error message guides users to correct usage. New Step 4c displays all archived decisions in chronological order.
+
+**Idempotency:**
+The awk-based logic ensures rotation is idempotent - running multiple times on the same state produces the same result. Old decisions are inserted at the correct position in the archive table.
+
+**File Locations:**
+- Command files are in `/Users/koristuvac/.claude/commands/sf/` (used by SpecFlow runtime)
+- Template files are in `/Users/koristuvac/.claude/specflow-cc/templates/` (used by SpecFlow init and rotation)
+- User's STATE.md and DECISIONS_ARCHIVE.md will be in `.specflow/` directory of their project
