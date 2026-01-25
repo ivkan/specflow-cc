@@ -2,16 +2,15 @@
 
 ## Active Specification
 
-SPEC-VERIFY-001
+none
 
-**Status:** review
-**Next Step:** /sf:review
+**Status:** idle
+**Next Step:** /sf:new or /sf:next
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| high | SPEC-VERIFY-001 | Interactive User Acceptance Testing | review | small | — |
 | high | SPEC-QUICK-001 | Quick Mode for Minor Tasks | draft | small | — |
 | medium | SPEC-MODEL-001 | Model Profiles for Cost-Efficient Agent Execution | draft | medium | — |
 | medium | SPEC-STATE-001 | STATE.md Size Constraint | draft | small | — |
@@ -57,6 +56,8 @@ SPEC-VERIFY-001
 | 2026-01-25 | SPEC-VERIFY-001: Audited (v1) and APPROVED - ready for implementation |
 | 2026-01-25 | SPEC-VERIFY-001: Revised (v1) - applied all 3 audit recommendations (wording consistency, help.md placement, criteria formats) |
 | 2026-01-25 | SPEC-VERIFY-001: Re-audited (v2) and APPROVED - all v1 recommendations verified, ready for implementation |
+| 2026-01-25 | SPEC-VERIFY-001: Implementation reviewed (v1) and APPROVED - all 7 acceptance criteria met |
+| 2026-01-25 | SPEC-VERIFY-001: COMPLETED - Interactive user acceptance testing (/sf:verify command) |
 
 ## Notes
 
@@ -68,9 +69,9 @@ SPEC-VERIFY-001
 - SPEC-GSD-C: Explicit context % thresholds for decomposition decisions
 - SPEC-GSD-A: Goal-backward methodology in spec creator and auditor
 - SPEC-SUBAGENT-C: State management and reliability for orchestrated execution
+- SPEC-VERIFY-001: Interactive user acceptance testing (/sf:verify command)
 
 ### In Progress
-- SPEC-VERIFY-001: Interactive user acceptance testing (/sf:verify command) - IMPLEMENTED, READY FOR REVIEW
 - SPEC-QUICK-001: Quick mode for minor tasks (/sf:quick command)
 - SPEC-MODEL-001: Model profiles for cost-efficient agent execution
 - SPEC-STATE-001: STATE.md size constraint with decision archiving
@@ -86,11 +87,11 @@ SPEC-VERIFY-001
 | Context % estimation | Implemented (SPEC-GSD-C) - DONE |
 | Goal-backward | Implemented (SPEC-GSD-A) - DONE |
 | Pause/Resume | Implemented (SPEC-SUBAGENT-C) - DONE |
-| Human UAT | Implemented (SPEC-VERIFY-001) |
+| Human UAT | Implemented (SPEC-VERIFY-001) - DONE |
 | Quick Mode | Draft (SPEC-QUICK-001) |
 | Model Profiles | Draft (SPEC-MODEL-001) |
 | STATE.md Size Limit | Draft (SPEC-STATE-001) |
 | Pre-spec Discussion | Draft (SPEC-PREDISCUSS-001) |
 
 ---
-*Last updated: 2026-01-25 (SPEC-VERIFY-001 implemented)*
+*Last updated: 2026-01-25 (SPEC-VERIFY-001 completed)*
