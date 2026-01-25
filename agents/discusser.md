@@ -54,6 +54,10 @@ Discussion records should:
 - Skip to Direct Question Flow (below)
 - Single question, single answer, quick documentation
 
+**If mode is `pre-spec`:**
+- Skip to Pre-Spec Discussion Flow (below)
+- Feature-type-specific gray area questions
+
 **Otherwise:** Continue with standard flow.
 
 ---
@@ -93,6 +97,179 @@ options:
 
 ### File
 .specflow/discussions/DISC-XXX.md
+```
+
+---
+
+## Pre-Spec Discussion Flow
+
+For pre-specification discussions (mode is `pre-spec`):
+
+### Step 1: Detect Feature Type
+
+Analyze the topic description for keywords:
+
+| Keywords | Feature Type |
+|----------|--------------|
+| UI, component, page, form, modal, layout | visual |
+| API, endpoint, route, REST, GraphQL | api |
+| command, CLI, flag, argument | cli |
+| migration, transform, process | data |
+| refactor, restructure, extract | refactor |
+| (no match) | general |
+
+### Step 2: Confirm Feature Type
+
+Ask user to confirm detected type (allows override):
+
+```
+header: "Feature Type"
+question: "I detected this as a '{type}' feature. Is that correct?"
+options:
+  - label: "Yes, {type}"
+    description: "Proceed with {type}-specific questions"
+  - label: "Visual"
+    description: "UI/layout feature"
+  - label: "API"
+    description: "Backend/endpoint feature"
+  - label: "CLI"
+    description: "Command-line feature"
+  - label: "Data/Refactor"
+    description: "Migration or restructuring"
+  - label: "General"
+    description: "Generic feature questions"
+```
+
+### Step 3: Load Question Bank
+
+Based on confirmed feature type, use appropriate question bank:
+
+**Visual Features (5-10 questions):**
+- Layout: How should content be arranged? (list/grid/tabs/custom)
+- Density: How many items visible without scrolling?
+- Empty States: What shows when no data?
+- Loading: Skeleton, spinner, or progressive loading?
+- Interactions: Hover effects, click feedback?
+- Responsive: Mobile behavior?
+- Accessibility: Screen reader support needed?
+- Animations: Transitions or animations?
+
+**API Features (5-10 questions):**
+- Response Format: JSON structure? Pagination style?
+- Status Codes: Which codes for which scenarios?
+- Validation: Client-side, server-side, or both?
+- Error Format: Error response structure?
+- Auth: Token type, refresh strategy?
+- Rate Limiting: Limits and response when exceeded?
+- Versioning: API version strategy?
+- Caching: Cache headers and strategy?
+
+**CLI Features (5-10 questions):**
+- Flags: Required vs optional? Short forms?
+- Output Format: Human-readable, JSON, or both?
+- Progress: Progress bars for long operations?
+- Errors: stderr format, exit codes?
+- Confirmation: Destructive ops need confirmation?
+- Config: File-based config support?
+- Help: Auto-generated help text?
+- Interactivity: Prompts or non-interactive?
+
+**Data/Refactor Features (5-10 questions):**
+- Rollback: How to undo if something fails?
+- Validation: How to verify data integrity?
+- Idempotency: Safe to run multiple times?
+- Scope: What's explicitly out of scope?
+- Dependencies: What other systems affected?
+- Backward Compatibility: Must old code still work?
+- Migration Path: Gradual or all-at-once?
+- Testing: How to verify migration success?
+
+**General Features (5-10 questions):**
+- Scope: What's included and excluded?
+- Users: Who will use this?
+- Success: How do we know it works?
+- Edge Cases: What could go wrong?
+- Dependencies: What else needs to change?
+- Performance: Any performance concerns?
+- Security: Any security considerations?
+
+### Step 4: Ask Questions
+
+Select 5-10 questions from the appropriate bank:
+- Prioritize most impactful questions
+- Skip questions clearly answered in topic
+- Use AskUserQuestion for each with clear options
+- Adapt questions based on previous answers
+
+### Step 5: Generate PRE-XXX ID
+
+```bash
+mkdir -p .specflow/discussions
+LAST=$(ls .specflow/discussions/PRE-*.md 2>/dev/null | grep -oP 'PRE-\K\d+' | sort -n | tail -1)
+NEXT=$(printf "%03d" $((${LAST:-0} + 1)))
+echo "PRE-$NEXT"
+```
+
+### Step 6: Write PRE-XXX File
+
+Create `.specflow/discussions/PRE-XXX.md`:
+
+```markdown
+---
+id: PRE-XXX
+topic: [topic description]
+feature_type: [visual | api | cli | data | refactor | general]
+created: YYYY-MM-DD
+used_by: null
+---
+
+# Pre-Spec Discussion: [Topic]
+
+## Feature Type
+
+**Detected:** [initial detection]
+**Confirmed:** [final confirmed type]
+
+## Decisions
+
+### [Category 1]
+- **[Question]:** [Decision with details]
+
+### [Category 2]
+- **[Question]:** [Decision with details]
+
+...
+
+## Summary
+
+[2-3 sentences summarizing key decisions and their impact]
+
+## Next Step
+
+`/sf:new --discuss PRE-XXX "[topic]"` — create spec with this context
+```
+
+### Step 7: Return Result
+
+```
+## PRE-SPEC DISCUSSION COMPLETE
+
+**ID:** PRE-XXX
+**Topic:** [topic]
+**Feature Type:** [type]
+**Questions Asked:** [count]
+
+### Key Decisions
+
+1. **[Category]:** [Decision summary]
+2. **[Category]:** [Decision summary]
+3. **[Category]:** [Decision summary]
+
+### File
+.specflow/discussions/PRE-XXX.md
+
+### Next Step
+`/sf:new --discuss PRE-XXX "[topic]"` — create spec with this context
 ```
 
 ---
