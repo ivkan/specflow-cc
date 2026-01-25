@@ -2,16 +2,16 @@
 
 ## Active Specification
 
-none
+SPEC-STATE-001
 
-**Status:** idle
-**Next Step:** /sf:new or /sf:next
+**Status:** review
+**Next Step:** /sf:review
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| medium | SPEC-STATE-001 | STATE.md Size Constraint | draft | small | — |
+| medium | SPEC-STATE-001 | STATE.md Size Constraint | audited | small | — |
 | medium | SPEC-PREDISCUSS-001 | Pre-Specification Discussion Mode | draft | medium | — |
 
 **Master Spec:** SPEC-GSD-IMPROVEMENTS (umbrella for GSD adoption) - COMPLETE
@@ -64,6 +64,9 @@ none
 | 2026-01-25 | SPEC-MODEL-001: Audited (v1) - NEEDS_DECOMPOSITION - scope exceeds thresholds (13 files to modify), use orchestrated execution |
 | 2026-01-25 | SPEC-MODEL-001: Implementation reviewed (v1) and APPROVED - all 7 acceptance criteria met, ready for finalization |
 | 2026-01-25 | SPEC-MODEL-001: COMPLETED - Model profiles for cost-efficient agent execution (quality/balanced/budget) |
+| 2026-01-25 | SPEC-STATE-001: Audited (v1) - NEEDS_REVISION - 1 critical issue (contradictory decision count: 5-7 vs exactly 5) |
+| 2026-01-25 | SPEC-STATE-001: Revised (v1) - applied all 3 items (1 critical + 2 recommendations: decision count, /sf:history flag behavior, rotation timing) |
+| 2026-01-25 | SPEC-STATE-001: Re-audited (v2) and APPROVED - all v1 issues resolved, ready for implementation |
 
 ## Notes
 
@@ -79,7 +82,7 @@ none
 - SPEC-QUICK-001: Quick mode for minor tasks (/sf:quick command)
 - SPEC-MODEL-001: Model profiles for cost-efficient agent execution (quality/balanced/budget)
 ### In Progress
-- SPEC-STATE-001: STATE.md size constraint with decision archiving
+- SPEC-STATE-001: STATE.md size constraint with decision archiving (audited v2, ready for implementation)
 - SPEC-PREDISCUSS-001: Pre-spec discussion mode with feature-type-specific questions
 
 ### Architecture Alignment with GSD
@@ -95,8 +98,8 @@ none
 | Human UAT | Implemented (SPEC-VERIFY-001) - DONE |
 | Quick Mode | Implemented (SPEC-QUICK-001) - DONE |
 | Model Profiles | Implemented (SPEC-MODEL-001) - DONE |
-| STATE.md Size Limit | Draft (SPEC-STATE-001) |
+| STATE.md Size Limit | Audited (SPEC-STATE-001) - ready for /sf:run |
 | Pre-spec Discussion | Draft (SPEC-PREDISCUSS-001) |
 
 ---
-*Last updated: 2026-01-25 (SPEC-MODEL-001 completed and archived)*
+*Last updated: 2026-01-25 (SPEC-STATE-001 re-audited v2 - APPROVED)*
