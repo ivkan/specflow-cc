@@ -1,7 +1,7 @@
 ---
 name: sf:new
 description: Create a new specification from task description
-argument-hint: "[--research RES-XXX] <task description>"
+argument-hint: "[--research RES-XXX] [--discuss PRE-XXX | DISC-XXX] <task description>"
 allowed-tools:
   - Read
   - Write
@@ -43,6 +43,7 @@ Exit.
 
 Extract from command arguments:
 - `--research RES-XXX` — optional research document to include as context
+- `--discuss PRE-XXX` or `--discuss DISC-XXX` — optional prior discussion to include as context
 - Task description — what to build
 
 **If --research provided:**
@@ -51,6 +52,13 @@ Extract from command arguments:
 ```
 
 If NOT_FOUND, warn user and continue without research context.
+
+**If --discuss provided:**
+```bash
+[ -f .specflow/discussions/PRE-XXX.md ] && echo "FOUND" || [ -f .specflow/discussions/DISC-XXX.md ] && echo "FOUND" || echo "NOT_FOUND"
+```
+
+If NOT_FOUND, warn user and continue without discussion context.
 
 **If no description provided:**
 Use AskUserQuestion:
@@ -99,8 +107,14 @@ Task(prompt="
 @.specflow/research/RES-XXX.md
 </research_context>
 
+{If --discuss provided:}
+<prior_discussion>
+@.specflow/discussions/{PRE-XXX or DISC-XXX}.md
+</prior_discussion>
+
 Create a specification following the spec-creator agent instructions.
 {If research provided, add: "Use the research findings to inform the specification."}
+{If discussion provided, add: "Use the prior discussion decisions to inform the specification. Do not re-ask questions already decided."}
 ", subagent_type="sf-spec-creator", model="{profile_model}", description="Create specification")
 ```
 
@@ -108,9 +122,10 @@ Create a specification following the spec-creator agent instructions.
 
 The agent will:
 1. Ask critical questions (0-3) if needed
-2. Create SPEC-XXX.md
+2. Create SPEC-XXX.md (with Prior Discussion section if --discuss was provided)
 3. Update STATE.md
-4. Return structured result
+4. Update PRE-XXX.md or DISC-XXX.md `used_by` field if --discuss was provided
+5. Return structured result
 
 ## Step 6: Display Result
 
