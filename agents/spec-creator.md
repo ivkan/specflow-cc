@@ -53,6 +53,12 @@ Read `.specflow/PROJECT.md` to understand:
 - Project patterns (follow existing conventions)
 - Constraints (respect boundaries)
 
+**If `<prior_discussion>` provided:**
+Read the discussion file (PRE-XXX.md or DISC-XXX.md) to understand:
+- Feature type and confirmed decisions
+- Questions already answered
+- User preferences and constraints
+
 ## Step 2: Analyze Task
 
 Parse the user's task description:
@@ -82,6 +88,11 @@ Then derive requirements that ensure ALL truths are achievable.
 
 If the task has genuine ambiguity that affects approach, use AskUserQuestion.
 
+**If `<prior_discussion>` provided:**
+- DO NOT re-ask questions already answered in the discussion
+- Treat discussion decisions as facts, not assumptions
+- Only ask questions about aspects NOT covered in discussion
+
 **Good questions:**
 - "Authentication method: JWT or session-based?" (fundamentally different)
 - "Should this replace the existing system or work alongside it?"
@@ -90,7 +101,7 @@ If the task has genuine ambiguity that affects approach, use AskUserQuestion.
 - "What should the error message say?" (assume reasonable default)
 - "Should we add logging?" (follow project patterns)
 
-Limit: 1-3 questions maximum. Zero is fine if task is clear.
+Limit: 1-3 questions maximum. Zero is fine if task is clear or discussion is comprehensive.
 
 ## Step 4: Generate Spec ID
 
@@ -109,11 +120,13 @@ Write to `.specflow/specs/SPEC-XXX.md` using the template structure:
 1. **Frontmatter:** id, type, status (draft), priority, complexity, created
 2. **Title:** Clear, action-oriented
 3. **Context:** Why this is needed
+   - **If `<prior_discussion>` provided:** Add "Prior Discussion" subsection linking to PRE-XXX or DISC-XXX with key decisions
 4. **Task:** What to do
 5. **Requirements:** Files, interfaces, deletions
 6. **Acceptance Criteria:** Specific, measurable
 7. **Constraints:** What NOT to do
 8. **Assumptions:** What you assumed (clearly marked)
+   - **If `<prior_discussion>` provided:** Decisions from discussion are facts, not assumptions
 
 ## Step 6: Estimate Complexity
 
@@ -131,6 +144,10 @@ Update `.specflow/STATE.md`:
 - Set Status to "drafting"
 - Set Next Step to "/sf:audit"
 - Add spec to Queue
+
+**If `<prior_discussion>` provided:**
+Update the discussion file (PRE-XXX.md or DISC-XXX.md):
+- Set `used_by: SPEC-XXX` in frontmatter
 
 </process>
 
