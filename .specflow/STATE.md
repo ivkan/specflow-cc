@@ -2,16 +2,16 @@
 
 ## Active Specification
 
-none
+SPEC-QUICK-001
 
-**Status:** idle
-**Next Step:** /sf:new or /sf:next
+**Status:** review
+**Next Step:** /sf:review
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| high | SPEC-QUICK-001 | Quick Mode for Minor Tasks | draft | small | — |
+| high | SPEC-QUICK-001 | Quick Mode for Minor Tasks | review | small | — |
 | medium | SPEC-MODEL-001 | Model Profiles for Cost-Efficient Agent Execution | draft | medium | — |
 | medium | SPEC-STATE-001 | STATE.md Size Constraint | draft | small | — |
 | medium | SPEC-PREDISCUSS-001 | Pre-Specification Discussion Mode | draft | medium | — |
@@ -58,6 +58,9 @@ none
 | 2026-01-25 | SPEC-VERIFY-001: Re-audited (v2) and APPROVED - all v1 recommendations verified, ready for implementation |
 | 2026-01-25 | SPEC-VERIFY-001: Implementation reviewed (v1) and APPROVED - all 7 acceptance criteria met |
 | 2026-01-25 | SPEC-VERIFY-001: COMPLETED - Interactive user acceptance testing (/sf:verify command) |
+| 2026-01-25 | SPEC-QUICK-001: Audited (v1) and APPROVED - ready for implementation |
+| 2026-01-25 | SPEC-QUICK-001: Revised (v1) - applied all 4 audit recommendations (keyword heuristics, task-type commits, init check, help.md placement) |
+| 2026-01-25 | SPEC-QUICK-001: Re-audited (v2) and APPROVED - all v1 recommendations verified, ready for implementation |
 
 ## Notes
 
@@ -72,7 +75,7 @@ none
 - SPEC-VERIFY-001: Interactive user acceptance testing (/sf:verify command)
 
 ### In Progress
-- SPEC-QUICK-001: Quick mode for minor tasks (/sf:quick command)
+- SPEC-QUICK-001: Quick mode for minor tasks (/sf:quick command) - IMPLEMENTED, ready for review
 - SPEC-MODEL-001: Model profiles for cost-efficient agent execution
 - SPEC-STATE-001: STATE.md size constraint with decision archiving
 - SPEC-PREDISCUSS-001: Pre-spec discussion mode with feature-type-specific questions
@@ -88,10 +91,10 @@ none
 | Goal-backward | Implemented (SPEC-GSD-A) - DONE |
 | Pause/Resume | Implemented (SPEC-SUBAGENT-C) - DONE |
 | Human UAT | Implemented (SPEC-VERIFY-001) - DONE |
-| Quick Mode | Draft (SPEC-QUICK-001) |
+| Quick Mode | Implemented (SPEC-QUICK-001) - Ready for /sf:review |
 | Model Profiles | Draft (SPEC-MODEL-001) |
 | STATE.md Size Limit | Draft (SPEC-STATE-001) |
 | Pre-spec Discussion | Draft (SPEC-PREDISCUSS-001) |
 
 ---
-*Last updated: 2026-01-25 (SPEC-VERIFY-001 completed)*
+*Last updated: 2026-01-25 (SPEC-QUICK-001 implemented - ready for review)*
