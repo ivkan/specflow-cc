@@ -250,7 +250,7 @@ if [ $LINE_COUNT -gt 100 ]; then
     echo "STATE.md exceeds 100 lines ($LINE_COUNT), rotating old decisions..."
 
     # Parse decisions table and extract all decisions
-    DECISIONS=$(awk '/^## Decisions$/,/^## / {print}' .specflow/STATE.md | grep -E '^\| [0-9]{4}-' || true)
+    DECISIONS=$(awk '/^## Decisions$/ { found=1; next } /^## / && found { exit } found { print }' .specflow/STATE.md | grep -E '^\| [0-9]{4}-' || true)
     DECISION_COUNT=$(echo "$DECISIONS" | grep -c '^|' || echo 0)
 
     if [ "$DECISION_COUNT" -gt 7 ]; then
