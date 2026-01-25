@@ -1,5 +1,7 @@
 # STATE.md Template
 
+<!-- This file is kept compact (<100 lines). Old decisions are automatically rotated to DECISIONS_ARCHIVE.md. -->
+
 ## Current Position
 
 - **Active Specification:** [none | SPEC-XXX]
@@ -14,9 +16,9 @@
 
 ## Decisions
 
-| Date | Specification | Decision |
-|------|---------------|----------|
-| — | — | — |
+| Date | Decision |
+|------|----------|
+| — | — |
 
 ## Project Patterns
 

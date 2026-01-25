@@ -124,6 +124,69 @@ The agent will:
 5. Append Review v[N] to spec
 6. Update STATE.md
 
+## Step 7.5: Check STATE.md Size and Rotate if Needed
+
+After the agent updates STATE.md, check if rotation is needed:
+
+```bash
+LINE_COUNT=$(wc -l < .specflow/STATE.md)
+if [ $LINE_COUNT -gt 100 ]; then
+    echo "STATE.md exceeds 100 lines ($LINE_COUNT), rotating old decisions..."
+
+    # Parse decisions table and extract all decisions
+    DECISIONS=$(awk '/^## Decisions$/,/^## / {print}' .specflow/STATE.md | grep -E '^\| [0-9]{4}-' || true)
+    DECISION_COUNT=$(echo "$DECISIONS" | grep -c '^|' || echo 0)
+
+    if [ "$DECISION_COUNT" -gt 7 ]; then
+        # Keep only 5 most recent decisions
+        RECENT_DECISIONS=$(echo "$DECISIONS" | tail -5)
+        OLD_DECISION_COUNT=$((DECISION_COUNT - 5))
+        OLD_DECISIONS=$(echo "$DECISIONS" | head -n $OLD_DECISION_COUNT)
+
+        # Create or append to archive
+        if [ ! -f .specflow/DECISIONS_ARCHIVE.md ]; then
+            cat > .specflow/DECISIONS_ARCHIVE.md << 'EOF'
+# SpecFlow Decisions Archive
+
+Historical decisions rotated from STATE.md to maintain compactness.
+
+## Archived Decisions
+
+| Date | Decision |
+|------|----------|
+EOF
+        fi
+
+        # Append old decisions to archive (insert after table header)
+        TEMP_ARCHIVE=$(mktemp)
+        awk -v old="$OLD_DECISIONS" '
+            /^\| Date \| Decision \|$/ { print; getline; print; print old; next }
+            {print}
+        ' .specflow/DECISIONS_ARCHIVE.md > "$TEMP_ARCHIVE"
+        mv "$TEMP_ARCHIVE" .specflow/DECISIONS_ARCHIVE.md
+
+        # Update STATE.md with only recent decisions
+        TEMP_STATE=$(mktemp)
+        awk -v recent="$RECENT_DECISIONS" '
+            /^## Decisions$/ {
+                print
+                print ""
+                print "| Date | Decision |"
+                print "|------|----------|"
+                print recent
+                in_decisions=1
+                next
+            }
+            /^## / && in_decisions { in_decisions=0 }
+            !in_decisions || !/^\|/ { print }
+        ' .specflow/STATE.md > "$TEMP_STATE"
+        mv "$TEMP_STATE" .specflow/STATE.md
+
+        echo "Rotated $(echo "$OLD_DECISIONS" | grep -c '^|') old decisions to DECISIONS_ARCHIVE.md"
+    fi
+fi
+```
+
 ## Step 8: Display Result
 
 ### If APPROVED (no minor issues):

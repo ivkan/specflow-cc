@@ -19,6 +19,7 @@ Display completed specifications from the archive. Shows completion dates, audit
 
 <arguments>
 - `[ID]` — Specification ID to show details for (e.g., SPEC-001). Optional — shows list if omitted.
+- `--decisions` — Display archived decisions from DECISIONS_ARCHIVE.md. Cannot be combined with [ID].
 </arguments>
 
 <workflow>
@@ -60,8 +61,22 @@ Complete your first spec to see it here.
 ```
 Exit.
 
-## Step 3: Branch Based on Arguments
+## Step 3: Parse Arguments
 
+Check if `--decisions` flag is present in the arguments.
+
+**If both [ID] and --decisions provided:**
+```
+Cannot combine [ID] with --decisions flag.
+
+Use `/sf:history --decisions` to view all archived decisions
+or `/sf:history [ID]` for spec history.
+```
+Exit.
+
+## Step 4: Branch Based on Arguments
+
+**If --decisions flag provided:** Go to Step 4c (Archived Decisions View)
 **If specific ID provided:** Go to Step 4a (Detailed View)
 **If no ID provided:** Go to Step 4b (List View)
 
@@ -252,6 +267,54 @@ Most recent first.
 
 {If all metrics good:}
 - Great spec quality! Keep up the discipline.
+```
+
+## Step 4c: Archived Decisions View
+
+### Check Archive Exists
+
+```bash
+[ -f ".specflow/DECISIONS_ARCHIVE.md" ] && echo "FOUND" || echo "NOT_FOUND"
+```
+
+**If NOT_FOUND:**
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ARCHIVED DECISIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+No archived decisions yet.
+
+Decisions are automatically rotated from STATE.md when it exceeds 100 lines.
+
+**Current decisions:** Use `/sf:status` to see recent decisions in STATE.md
+```
+Exit.
+
+### Parse and Display Archived Decisions
+
+Read `.specflow/DECISIONS_ARCHIVE.md` and extract all decisions from the table.
+
+Count total archived decisions.
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ARCHIVED DECISIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Historical decisions rotated from STATE.md (oldest first).
+
+| Date | Decision |
+|------|----------|
+{All decisions from archive}
+
+---
+
+**Total archived:** {count} decisions
+
+**Recent decisions:** Use `/sf:status` to see the 5-7 most recent decisions in STATE.md
+
+📄 File: .specflow/DECISIONS_ARCHIVE.md
 ```
 
 </workflow>
