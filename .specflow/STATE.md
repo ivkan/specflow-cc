@@ -2,16 +2,15 @@
 
 ## Active Specification
 
-SPEC-STATE-001
+none
 
-**Status:** review
-**Next Step:** /sf:review
+**Status:** idle
+**Next Step:** /sf:new or /sf:next
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| medium | SPEC-STATE-001 | STATE.md Size Constraint | review | small | — |
 | medium | SPEC-PREDISCUSS-001 | Pre-Specification Discussion Mode | draft | medium | — |
 
 **Master Spec:** SPEC-GSD-IMPROVEMENTS (umbrella for GSD adoption) - COMPLETE
@@ -20,55 +19,10 @@ SPEC-STATE-001
 
 | Date | Decision |
 |------|----------|
-| 2026-01-23 | Split SPEC-SUBAGENT-EXECUTION into 3 parts (A: Foundation, B: Core, C: Reliability) |
-| 2026-01-23 | SPEC-SUBAGENT-A: Established NEEDS_DECOMPOSITION audit status for large specs |
-| 2026-01-23 | SPEC-SUBAGENT-B: Established orchestrator/worker architecture for parallel execution of large specs |
-| 2026-01-24 | Adopt GSD patterns: goal-backward methodology, pre-computed waves, context % thresholds |
-| 2026-01-24 | SPEC-GSD-B: Audited and approved - pre-computed waves refactor |
-| 2026-01-24 | SPEC-GSD-B: Applied all 3 audit recommendations (markdown fix, step placement, error format) |
-| 2026-01-24 | SPEC-GSD-B: Re-audited (v2) and approved - ready for implementation |
-| 2026-01-24 | SPEC-GSD-B: Implementation reviewed and APPROVED - all 6 acceptance criteria met |
-| 2026-01-24 | SPEC-GSD-B: COMPLETED - Pre-computed waves pattern established for SpecFlow |
-| 2026-01-24 | SPEC-SFNEXT-001: Created - fix /sf:next to use Queue position as source of truth |
-| 2026-01-24 | SPEC-SFNEXT-001: Audited (v1) and APPROVED - ready for implementation |
-| 2026-01-24 | SPEC-SFNEXT-001: Implementation reviewed (v1) and APPROVED - all 6 acceptance criteria met |
-| 2026-01-24 | SPEC-SFNEXT-001: COMPLETED - Queue position is now source of truth for /sf:next |
-| 2026-01-24 | SPEC-GSD-C: Audited (v1) and APPROVED - context % thresholds ready for implementation |
-| 2026-01-24 | SPEC-GSD-C: Applied all 3 audit v1 recommendations (worker overhead, warning thresholds, line estimation) |
-| 2026-01-24 | SPEC-GSD-C: Integrated GSD patterns (file count impact, task complexity tables, scope sanity thresholds) |
-| 2026-01-24 | SPEC-GSD-C: Re-audited (v2) and APPROVED - all v1 recommendations addressed, ready for implementation |
-| 2026-01-24 | SPEC-GSD-C: Implementation reviewed (v1) and APPROVED - all 6 acceptance criteria met |
-| 2026-01-24 | SPEC-GSD-C: COMPLETED - Context % thresholds established for decomposition decisions |
-| 2026-01-24 | SPEC-GSD-A: Audited (v1) - NEEDS_REVISION - 2 critical issues (vague criterion 7, step numbering conflict) |
-| 2026-01-24 | SPEC-GSD-A: Revised (v1) - applied all 5 items (2 critical + 3 recommendations) |
-| 2026-01-24 | SPEC-GSD-A: Re-audited (v2) and APPROVED - all v1 issues resolved, ready for implementation |
-| 2026-01-24 | SPEC-GSD-A: Implementation reviewed (v1) and APPROVED - all 7 acceptance criteria met |
-| 2026-01-24 | SPEC-GSD-A: COMPLETED - Goal-backward methodology established for SpecFlow |
-| 2026-01-24 | SPEC-SUBAGENT-C: Audited (v1) and APPROVED - state management and reliability spec ready for implementation |
-| 2026-01-24 | SPEC-SUBAGENT-C: Implementation reviewed (v1) and APPROVED - all 12 acceptance criteria met |
-| 2026-01-24 | SPEC-SUBAGENT-C: COMPLETED - State management and reliability for orchestrated execution |
-| 2026-01-25 | SPEC-VERIFY-001: Created - interactive user acceptance testing command |
-| 2026-01-25 | SPEC-QUICK-001: Created - quick mode for minor tasks without full cycle |
-| 2026-01-25 | SPEC-MODEL-001: Created - model profiles for cost-efficient agent execution |
-| 2026-01-25 | SPEC-PREDISCUSS-001: Created - pre-specification discussion mode with feature-type question banks |
-| 2026-01-25 | SPEC-VERIFY-001: Audited (v1) and APPROVED - ready for implementation |
-| 2026-01-25 | SPEC-VERIFY-001: Revised (v1) - applied all 3 audit recommendations (wording consistency, help.md placement, criteria formats) |
-| 2026-01-25 | SPEC-VERIFY-001: Re-audited (v2) and APPROVED - all v1 recommendations verified, ready for implementation |
-| 2026-01-25 | SPEC-VERIFY-001: Implementation reviewed (v1) and APPROVED - all 7 acceptance criteria met |
-| 2026-01-25 | SPEC-VERIFY-001: COMPLETED - Interactive user acceptance testing (/sf:verify command) |
-| 2026-01-25 | SPEC-QUICK-001: Audited (v1) and APPROVED - ready for implementation |
-| 2026-01-25 | SPEC-QUICK-001: Revised (v1) - applied all 4 audit recommendations (keyword heuristics, task-type commits, init check, help.md placement) |
-| 2026-01-25 | SPEC-QUICK-001: Re-audited (v2) and APPROVED - all v1 recommendations verified, ready for implementation |
-| 2026-01-25 | SPEC-QUICK-001: Implementation reviewed (v1) and APPROVED - all 8 acceptance criteria met |
-| 2026-01-25 | SPEC-QUICK-001: COMPLETED - Quick mode for minor tasks (/sf:quick command) |
-| 2026-01-25 | SPEC-MODEL-001: Audited (v1) - NEEDS_DECOMPOSITION - scope exceeds thresholds (13 files to modify), use orchestrated execution |
-| 2026-01-25 | SPEC-MODEL-001: Implementation reviewed (v1) and APPROVED - all 7 acceptance criteria met, ready for finalization |
-| 2026-01-25 | SPEC-MODEL-001: COMPLETED - Model profiles for cost-efficient agent execution (quality/balanced/budget) |
-| 2026-01-25 | SPEC-STATE-001: Audited (v1) - NEEDS_REVISION - 1 critical issue (contradictory decision count: 5-7 vs exactly 5) |
-| 2026-01-25 | SPEC-STATE-001: Revised (v1) - applied all 3 items (1 critical + 2 recommendations: decision count, /sf:history flag behavior, rotation timing) |
-| 2026-01-25 | SPEC-STATE-001: Re-audited (v2) and APPROVED - all v1 issues resolved, ready for implementation |
-| 2026-01-25 | SPEC-STATE-001: Implementation reviewed (v1) - CHANGES_REQUESTED - 2 critical issues (non-portable head -n -1 syntax, template format mismatch) |
-| 2026-01-25 | SPEC-STATE-001: Fix response (v1) - applied all 3 items (portable shell syntax, template format fix, re-implemented in repo) |
+| 2026-01-25 | SPEC-STATE-001: Implementation reviewed (v3) - CHANGES_REQUESTED - 1 critical issue (awk -v cannot handle multiline strings for STATE.md update) |
+| 2026-01-25 | SPEC-STATE-001: Fix response (v3) - applied temp file approach for multiline awk variables |
+| 2026-01-25 | SPEC-STATE-001: Implementation reviewed (v4) and APPROVED - all 7 acceptance criteria met, temp file approach working correctly |
+| 2026-01-25 | SPEC-STATE-001: COMPLETED - STATE.md size constraint with automatic decision archiving |
 
 ## Notes
 
@@ -83,8 +37,9 @@ SPEC-STATE-001
 - SPEC-VERIFY-001: Interactive user acceptance testing (/sf:verify command)
 - SPEC-QUICK-001: Quick mode for minor tasks (/sf:quick command)
 - SPEC-MODEL-001: Model profiles for cost-efficient agent execution (quality/balanced/budget)
+- SPEC-STATE-001: STATE.md size constraint with automatic decision archiving
+
 ### In Progress
-- SPEC-STATE-001: STATE.md size constraint with decision archiving (fixes applied, ready for re-review)
 - SPEC-PREDISCUSS-001: Pre-spec discussion mode with feature-type-specific questions
 
 ### Architecture Alignment with GSD
@@ -100,8 +55,8 @@ SPEC-STATE-001
 | Human UAT | Implemented (SPEC-VERIFY-001) - DONE |
 | Quick Mode | Implemented (SPEC-QUICK-001) - DONE |
 | Model Profiles | Implemented (SPEC-MODEL-001) - DONE |
-| STATE.md Size Limit | In Review (SPEC-STATE-001) - fixes applied |
+| STATE.md Size Limit | Implemented (SPEC-STATE-001) - DONE |
 | Pre-spec Discussion | Draft (SPEC-PREDISCUSS-001) |
 
 ---
-*Last updated: 2026-01-25 (SPEC-STATE-001 fixes v1 applied - ready for re-review)*
+*Last updated: 2026-01-25 (SPEC-STATE-001 completed and archived)*

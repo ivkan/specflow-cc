@@ -3,7 +3,7 @@
 ---
 id: SPEC-STATE-001
 type: refactor
-status: review
+status: done
 priority: medium
 complexity: small
 created: 2026-01-25
@@ -353,3 +353,174 @@ The implementation has solid architectural design and follows the specification 
 **Additional:** Created `templates/decisions-archive.md` template that was specified but missing from repo.
 
 **Skipped:** None
+
+### Review v2 (2026-01-25 20:00)
+**Result:** CHANGES_REQUESTED
+**Reviewer:** impl-reviewer (subagent)
+
+**Verification of v1 Fixes:**
+
+1. [✓] Review v1 Critical #1 (head -n -1) — Removed and replaced with portable syntax
+2. [✓] Review v1 Critical #2 (template format) — Fixed to 2-column format
+3. [✓] Review v1 Major #3 (implementation location) — All files in correct repo location
+
+**Critical:**
+
+1. **Broken awk Range Pattern for Decision Extraction**
+   - Files: `commands/sf/done.md:237`, `commands/sf/audit.md:119`, `commands/sf/run.md:253`, `commands/sf/review.md:137`
+   - Issue: The pattern `awk '/^## Decisions$/,/^## / {print}'` is fundamentally broken. It matches "## Decisions" as the start line, then immediately matches the SAME line with the end pattern `/^## /`, so the range begins and ends on the same line. This extracts only the header "## Decisions" and 0 decision rows. Tested on current STATE.md (107 lines, 49 decisions): extracts 0 decisions instead of 49.
+   - Impact: Rotation will never trigger because `DECISION_COUNT` will always be 0.
+   - Fix: Change extraction pattern to:
+     ```bash
+     DECISIONS=$(awk '/^## Decisions$/ { found=1; next } /^## / && found { exit } found { print }' .specflow/STATE.md | grep -E '^\| [0-9]{4}-' || true)
+     ```
+
+**Passed:**
+
+- [✓] Line count check present in all 4 commands (done, audit, run, review)
+- [✓] 100-line threshold used consistently
+- [✓] Decision retention logic correct (keep 5 if >7 decisions)
+- [✓] Archive creation uses inline template (correct format)
+- [✓] Archive insertion logic sound (inserts after table header)
+- [✓] STATE.md update logic sound (replaces Decisions section)
+- [✓] Template file created at `/Users/koristuvac/Projects/specflow-cc/templates/decisions-archive.md`
+- [✓] Template format matches specification (2-column: Date | Decision)
+- [✓] State template includes size constraint comment
+- [✓] `/sf:history --decisions` flag implemented in Step 4c
+- [✓] Mutual exclusivity check present (cannot combine [ID] with --decisions)
+- [✓] Relative paths used (`.specflow/` prefix)
+
+**Summary:**
+
+Review v1 fixes were correctly applied - the portable shell syntax, template format, and repo location issues are all resolved. However, a new critical bug exists in the awk pattern used for decision extraction. The range pattern `/^## Decisions$/,/^## /` matches both the start AND end on the same line, extracting 0 decisions. This completely breaks rotation. The fix is to use a state-based awk pattern that skips the header and exits on the next section.
+
+### Fix Response v2 (2026-01-25 20:15)
+**Applied:** All critical issues from Review v2
+
+**Fixes:**
+
+1. [✓] **Broken awk Range Pattern for Decision Extraction** — Replaced broken range pattern `/^## Decisions$/,/^## /` with state-based pattern `'/^## Decisions$/ { found=1; next } /^## / && found { exit } found { print }'`
+   - Commit: 51826b6
+   - Files fixed: done.md, audit.md, run.md, review.md
+   - Verified: Pattern now correctly extracts 50 decisions from current STATE.md (vs 0 with old pattern)
+
+**Skipped:** None
+
+### Review v3 (2026-01-25 21:00)
+**Result:** CHANGES_REQUESTED
+**Reviewer:** impl-reviewer (subagent)
+
+**Verification of v2 Fixes:**
+
+1. [✓] Review v2 Critical #1 (broken awk extraction pattern) — State-based pattern correctly extracts all 51 decisions from STATE.md
+
+**Critical:**
+
+1. **Broken AWK Variable Passing for STATE.md Update**
+   - Files: `commands/sf/done.md:270`, `commands/sf/audit.md:152`, `commands/sf/run.md:286`, `commands/sf/review.md:170`
+   - Issue: The code uses `awk -v recent="$RECENT_DECISIONS"` where `$RECENT_DECISIONS` contains multiple lines (output of `tail -5`). AWK's `-v` flag cannot handle multiline strings - it throws error "awk: newline in string" and fails completely. This breaks the entire STATE.md update step of rotation.
+   - Impact: Archive file will be created and populated, but STATE.md will not be updated to remove old decisions, leaving it in an inconsistent state.
+   - Fix: Use a temp file approach - write `$RECENT_DECISIONS` to a temp file, then use awk to read from it when reconstructing STATE.md.
+
+**Passed:**
+
+- [✓] Decision extraction logic (Review v2 fix) - working correctly with state-based awk pattern
+- [✓] Line count check present in all 4 commands
+- [✓] 100-line threshold used consistently
+- [✓] Decision retention logic correct (keep 5 if >7 decisions)
+- [✓] Archive creation logic correct (inline template with proper format)
+- [✓] Archive insertion logic uses correct awk pattern
+- [✓] `/sf:history --decisions` flag implemented with mutual exclusivity check
+- [✓] All 7 required files exist and verified
+- [✓] Templates have correct format (2-column: Date | Decision)
+- [✓] Relative paths used throughout
+
+**Summary:**
+
+Review v2's critical fix (state-based awk pattern) is correctly implemented. However, a new critical issue exists in the STATE.md update logic. The `awk -v recent="$RECENT_DECISIONS"` pattern cannot handle multiline strings, causing failure when rotation is triggered. Extraction works, archive creation works, but STATE.md update will crash.
+
+### Fix Response v3 (2026-01-25 21:15)
+**Applied:** All critical issues from Review v3
+
+**Fixes:**
+
+1. [✓] **Broken AWK Variable Passing for STATE.md Update** — Replaced `awk -v` with temp file approach
+   - Commit: 0061f3f
+   - Files fixed: done.md, audit.md, run.md, review.md
+   - Solution: Write multiline decisions to temp file, use `getline` in awk to read from file, clean up temp files after use
+
+**Skipped:** None
+
+### Review v4 (2026-01-25 21:30)
+**Result:** APPROVED
+**Reviewer:** impl-reviewer (subagent)
+
+**Verification of v3 Fixes:**
+
+1. [✓] Review v3 Critical #1 (awk -v multiline variable) — Temp file approach correctly implemented in all 4 command files
+
+**Implementation Verification:**
+
+**Decision Extraction (State-based awk pattern):**
+- [✓] Pattern correctly extracts decisions from STATE.md (verified: 53 decisions extracted from current 111-line STATE.md)
+- [✓] Pattern skips the "## Decisions" header line using `next`
+- [✓] Pattern exits on next section header using `/^## / && found { exit }`
+- [✓] Consistent across all 4 command files (done.md:237, audit.md:119, run.md:253, review.md:137)
+
+**Temp File Approach for Archive:**
+- [✓] Old decisions written to temp file using `mktemp` (done.md:261-262)
+- [✓] Temp file passed to awk via `-v oldfile="$TEMP_OLD"` (done.md:266)
+- [✓] Awk reads from temp file using `getline line < oldfile` loop (done.md:267)
+- [✓] Archive insertion logic inserts after table header row (done.md:267)
+- [✓] Temp file cleaned up with `rm -f "$TEMP_OLD"` (done.md:271)
+
+**Temp File Approach for STATE.md Update:**
+- [✓] Recent decisions written to temp file using `mktemp` (done.md:274-275)
+- [✓] Temp file passed to awk via `-v recentfile="$TEMP_RECENT"` (done.md:279)
+- [✓] Awk reads from temp file using `getline line < recentfile` loop (done.md:285)
+- [✓] STATE.md reconstruction logic replaces entire Decisions section (done.md:280-291)
+- [✓] Temp file cleaned up with `rm -f "$TEMP_RECENT"` (done.md:294)
+
+**Rotation Logic:**
+- [✓] Line count check triggers at >100 lines (done.md:233)
+- [✓] Decision count check triggers at >7 decisions (done.md:240)
+- [✓] Keeps 5 most recent decisions using `tail -5` (done.md:242)
+- [✓] Archive file creation uses inline heredoc template (done.md:248-257)
+- [✓] Rotation message reports number of archived decisions (done.md:296)
+
+**Passed:**
+
+- [✓] All 7 acceptance criteria met
+- [✓] Temp file approach eliminates awk multiline variable issue
+- [✓] Decision extraction works correctly (53 decisions from 111-line STATE.md)
+- [✓] Archive insertion logic correct (inserts after table header)
+- [✓] STATE.md update logic correct (replaces Decisions section)
+- [✓] Temp files properly cleaned up (no leaks)
+- [✓] Logic consistent across all 4 command files
+- [✓] `/sf:history --decisions` flag implemented with Step 4c (history.md:272-311)
+- [✓] Mutual exclusivity check for [ID] and --decisions flags (history.md:68-75)
+- [✓] Template files exist with correct format (2-column: Date | Decision)
+- [✓] State template includes size constraint comment (state.md:3)
+- [✓] Relative paths used throughout (`.specflow/` prefix)
+- [✓] Idempotent design (multiple runs produce same result)
+
+**Summary:**
+
+Fix Response v3 correctly implemented the temp file approach to replace the broken `awk -v` multiline variable passing. All rotation logic now works correctly:
+
+1. Decision extraction uses state-based awk pattern (extracts 53 decisions from current STATE.md)
+2. Archive population uses temp file + getline (no multiline variable issues)
+3. STATE.md update uses temp file + getline (no multiline variable issues)
+4. Temp files are properly created, used, and cleaned up
+5. Logic is consistent across all 4 command files
+
+The implementation is now production-ready. All critical issues from Reviews v1, v2, and v3 have been resolved. The rotation logic will correctly trigger when STATE.md exceeds 100 lines and properly archive old decisions while retaining the 5 most recent.
+
+---
+
+## Completion
+
+**Completed:** 2026-01-25 22:00
+**Total Commits:** 5
+**Audit Cycles:** 2
+**Review Cycles:** 4
