@@ -174,6 +174,18 @@ Read the command file and extract:
 ```
 ```
 
+**For `/sf:quick`:**
+```
+## Examples
+
+```
+/sf:quick "fix typo in README header"
+/sf:quick "add --verbose flag to sf:status"
+/sf:quick "update error message in auth.ts"
+/sf:quick "fix indentation in config.json"
+```
+```
+
 Exit.
 
 ## Step 2b: Overview Help
@@ -204,6 +216,12 @@ Workflow: Spec → Audit → Revise → Run → Review → Fix → Done
 | /sf:verify   | Interactive human verification          |
 | /sf:fix      | Fix implementation based on review      |
 | /sf:done     | Finalize, commit, and archive           |
+
+## Quick Execution
+
+| Command      | Description                             |
+|--------------|-----------------------------------------|
+| /sf:quick    | Execute minor tasks (1-3 files) fast    |
 
 ## Navigation
 
