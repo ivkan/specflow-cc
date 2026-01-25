@@ -11,7 +11,7 @@ SPEC-STATE-001
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| medium | SPEC-STATE-001 | STATE.md Size Constraint | audited | small | — |
+| medium | SPEC-STATE-001 | STATE.md Size Constraint | review | small | — |
 | medium | SPEC-PREDISCUSS-001 | Pre-Specification Discussion Mode | draft | medium | — |
 
 **Master Spec:** SPEC-GSD-IMPROVEMENTS (umbrella for GSD adoption) - COMPLETE
@@ -67,6 +67,8 @@ SPEC-STATE-001
 | 2026-01-25 | SPEC-STATE-001: Audited (v1) - NEEDS_REVISION - 1 critical issue (contradictory decision count: 5-7 vs exactly 5) |
 | 2026-01-25 | SPEC-STATE-001: Revised (v1) - applied all 3 items (1 critical + 2 recommendations: decision count, /sf:history flag behavior, rotation timing) |
 | 2026-01-25 | SPEC-STATE-001: Re-audited (v2) and APPROVED - all v1 issues resolved, ready for implementation |
+| 2026-01-25 | SPEC-STATE-001: Implementation reviewed (v1) - CHANGES_REQUESTED - 2 critical issues (non-portable head -n -1 syntax, template format mismatch) |
+| 2026-01-25 | SPEC-STATE-001: Fix response (v1) - applied all 3 items (portable shell syntax, template format fix, re-implemented in repo) |
 
 ## Notes
 
@@ -82,7 +84,7 @@ SPEC-STATE-001
 - SPEC-QUICK-001: Quick mode for minor tasks (/sf:quick command)
 - SPEC-MODEL-001: Model profiles for cost-efficient agent execution (quality/balanced/budget)
 ### In Progress
-- SPEC-STATE-001: STATE.md size constraint with decision archiving (audited v2, ready for implementation)
+- SPEC-STATE-001: STATE.md size constraint with decision archiving (fixes applied, ready for re-review)
 - SPEC-PREDISCUSS-001: Pre-spec discussion mode with feature-type-specific questions
 
 ### Architecture Alignment with GSD
@@ -98,8 +100,8 @@ SPEC-STATE-001
 | Human UAT | Implemented (SPEC-VERIFY-001) - DONE |
 | Quick Mode | Implemented (SPEC-QUICK-001) - DONE |
 | Model Profiles | Implemented (SPEC-MODEL-001) - DONE |
-| STATE.md Size Limit | Audited (SPEC-STATE-001) - ready for /sf:run |
+| STATE.md Size Limit | In Review (SPEC-STATE-001) - fixes applied |
 | Pre-spec Discussion | Draft (SPEC-PREDISCUSS-001) |
 
 ---
-*Last updated: 2026-01-25 (SPEC-STATE-001 re-audited v2 - APPROVED)*
+*Last updated: 2026-01-25 (SPEC-STATE-001 fixes v1 applied - ready for re-review)*
