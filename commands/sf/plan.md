@@ -99,7 +99,25 @@ Use `/sf:todos` to see available items.
 ```
 Exit.
 
-## Step 5: Spawn Spec Creator Agent
+## Step 5: Determine Model Profile
+
+Check `.specflow/config.json` for model profile setting:
+
+```bash
+[ -f .specflow/config.json ] && cat .specflow/config.json | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | cut -d'"' -f4 || echo "balanced"
+```
+
+**Profile Table:**
+
+| Profile | spec-creator | spec-auditor | spec-splitter | discusser | spec-executor | spec-executor-orchestrator | spec-executor-worker | impl-reviewer | spec-reviser | researcher | codebase-scanner |
+|---------|--------------|--------------|---------------|-----------|---------------|---------------------------|---------------------|---------------|--------------|------------|-----------------|
+| quality | opus | opus | opus | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet |
+| balanced | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet |
+| budget | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | haiku | sonnet | haiku | haiku |
+
+Use model for `spec-creator` from selected profile (default: balanced = opus).
+
+## Step 6: Spawn Spec Creator Agent
 
 Launch the spec-creator subagent with todo context:
 
@@ -125,10 +143,10 @@ Task(prompt="
 
 Create a specification following the spec-creator agent instructions.
 Use the priority from the todo as the spec's initial priority.
-", subagent_type="sf-spec-creator", description="Create specification from todo")
+", subagent_type="sf-spec-creator", model="{profile_model}", description="Create specification from todo")
 ```
 
-## Step 6: Remove Todo from List
+## Step 7: Remove Todo from List
 
 After spec is successfully created, remove the todo entry from TODO.md.
 
@@ -136,7 +154,7 @@ Update `*Last updated:` timestamp.
 
 **Important:** Only remove after confirmed spec creation.
 
-## Step 7: Display Result
+## Step 8: Display Result
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

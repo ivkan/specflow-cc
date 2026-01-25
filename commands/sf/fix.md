@@ -206,7 +206,23 @@ Append to Review History:
 
 <fallback>
 
-**If complex fixes needed**, spawn executor agent in fix mode:
+**If complex fixes needed**, spawn executor agent in fix mode.
+
+First, determine model profile:
+
+```bash
+[ -f .specflow/config.json ] && cat .specflow/config.json | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | cut -d'"' -f4 || echo "balanced"
+```
+
+**Profile Table:**
+
+| Profile | spec-creator | spec-auditor | spec-splitter | discusser | spec-executor | spec-executor-orchestrator | spec-executor-worker | impl-reviewer | spec-reviser | researcher | codebase-scanner |
+|---------|--------------|--------------|---------------|-----------|---------------|---------------------------|---------------------|---------------|--------------|------------|-----------------|
+| quality | opus | opus | opus | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet |
+| balanced | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet |
+| budget | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | haiku | sonnet | haiku | haiku |
+
+Use model for `spec-executor` from selected profile (default: balanced = sonnet).
 
 ```
 Task(prompt="
@@ -229,7 +245,7 @@ Task(prompt="
 Fix the implementation issues identified in the review.
 Create atomic commits for each fix.
 Record Fix Response in Review History.
-", subagent_type="sf-spec-executor", description="Fix implementation")
+", subagent_type="sf-spec-executor", model="{profile_model}", description="Fix implementation")
 ```
 
 ## Inline Fix (for simple fixes)

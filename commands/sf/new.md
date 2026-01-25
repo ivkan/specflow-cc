@@ -58,7 +58,25 @@ Use AskUserQuestion:
 - question: "What do you want to build?"
 - options: (freeform text input)
 
-## Step 3: Spawn Spec Creator Agent
+## Step 3: Determine Model Profile
+
+Check `.specflow/config.json` for model profile setting:
+
+```bash
+[ -f .specflow/config.json ] && cat .specflow/config.json | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | cut -d'"' -f4 || echo "balanced"
+```
+
+**Profile Table:**
+
+| Profile | spec-creator | spec-auditor | spec-splitter | discusser | spec-executor | spec-executor-orchestrator | spec-executor-worker | impl-reviewer | spec-reviser | researcher | codebase-scanner |
+|---------|--------------|--------------|---------------|-----------|---------------|---------------------------|---------------------|---------------|--------------|------------|-----------------|
+| quality | opus | opus | opus | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet |
+| balanced | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet |
+| budget | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | haiku | sonnet | haiku | haiku |
+
+Use model for `spec-creator` from selected profile (default: balanced = opus).
+
+## Step 4: Spawn Spec Creator Agent
 
 Launch the spec-creator subagent with context:
 
@@ -83,10 +101,10 @@ Task(prompt="
 
 Create a specification following the spec-creator agent instructions.
 {If research provided, add: "Use the research findings to inform the specification."}
-", subagent_type="sf-spec-creator", description="Create specification")
+", subagent_type="sf-spec-creator", model="{profile_model}", description="Create specification")
 ```
 
-## Step 4: Handle Agent Response
+## Step 5: Handle Agent Response
 
 The agent will:
 1. Ask critical questions (0-3) if needed
@@ -94,7 +112,7 @@ The agent will:
 3. Update STATE.md
 4. Return structured result
 
-## Step 5: Display Result
+## Step 6: Display Result
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

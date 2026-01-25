@@ -62,23 +62,40 @@ Options:
 Choice?
 ```
 
-## 4. Launch Scanner Agent
+## 4. Determine Model Profile
+
+Check `.specflow/config.json` for model profile setting:
+
+```bash
+[ -f .specflow/config.json ] && cat .specflow/config.json | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | cut -d'"' -f4 || echo "balanced"
+```
+
+**Profile Table:**
+
+| Profile | spec-creator | spec-auditor | spec-splitter | discusser | spec-executor | spec-executor-orchestrator | spec-executor-worker | impl-reviewer | spec-reviser | researcher | codebase-scanner |
+|---------|--------------|--------------|---------------|-----------|---------------|---------------------------|---------------------|---------------|--------------|------------|-----------------|
+| quality | opus | opus | opus | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet |
+| balanced | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet |
+| budget | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | haiku | sonnet | haiku | haiku |
+
+Use model for `codebase-scanner` from selected profile (default: balanced = sonnet).
+
+## 5. Launch Scanner Agent
 
 Use the Task tool to spawn codebase-scanner agent:
 
 ```
-subagent_type="sf-codebase-scanner"
-prompt="""
+Task(prompt="
 Focus: {FOCUS}
 Project: {from PROJECT.md}
 
 Scan the codebase and write findings to .specflow/SCAN.md
 
 Return only confirmation when done.
-"""
+", subagent_type="sf-codebase-scanner", model="{profile_model}", description="Scan codebase")
 ```
 
-## 5. Verify Results
+## 6. Verify Results
 
 After agent completes:
 
@@ -86,7 +103,7 @@ After agent completes:
 [ -f .specflow/SCAN.md ] && wc -l .specflow/SCAN.md
 ```
 
-## 6. Display Summary
+## 7. Display Summary
 
 Read `.specflow/SCAN.md` and extract summary:
 

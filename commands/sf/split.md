@@ -108,7 +108,25 @@ Continue with split analysis? [y/N]
 
 **If user declines:** Exit.
 
-## Step 4: Spawn Spec Splitter Agent
+## Step 4: Determine Model Profile
+
+Check `.specflow/config.json` for model profile setting:
+
+```bash
+[ -f .specflow/config.json ] && cat .specflow/config.json | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | cut -d'"' -f4 || echo "balanced"
+```
+
+**Profile Table:**
+
+| Profile | spec-creator | spec-auditor | spec-splitter | discusser | spec-executor | spec-executor-orchestrator | spec-executor-worker | impl-reviewer | spec-reviser | researcher | codebase-scanner |
+|---------|--------------|--------------|---------------|-----------|---------------|---------------------------|---------------------|---------------|--------------|------------|-----------------|
+| quality | opus | opus | opus | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet |
+| balanced | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet |
+| budget | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | haiku | sonnet | haiku | haiku |
+
+Use model for `spec-splitter` from selected profile (default: balanced = opus).
+
+## Step 5: Spawn Spec Splitter Agent
 
 Launch the spec-splitter subagent:
 
@@ -128,10 +146,10 @@ Task(prompt="
 
 Analyze this specification and propose a split into smaller sub-specifications.
 Follow the spec-splitter agent instructions.
-", subagent_type="sf-spec-splitter", description="Split specification")
+", subagent_type="sf-spec-splitter", model="{profile_model}", description="Split specification")
 ```
 
-## Step 5: Present Proposal
+## Step 6: Present Proposal
 
 Display agent's split proposal:
 
@@ -178,7 +196,7 @@ Display agent's split proposal:
 Your choice [1]:
 ```
 
-## Step 6: Handle User Choice
+## Step 7: Handle User Choice
 
 **If 1 (Accept):**
 - Agent creates child specifications
@@ -199,7 +217,7 @@ Specification {ID} unchanged.
 ```
 Exit.
 
-## Step 7: Display Result
+## Step 8: Display Result
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

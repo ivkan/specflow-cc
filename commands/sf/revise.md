@@ -111,7 +111,25 @@ Use AskUserQuestion with options:
 - "Fix critical only (1, 2)" → treat as "1,2"
 - "Custom selection" → ask for numbers or description
 
-## Step 6: Spawn Reviser Agent
+## Step 6: Determine Model Profile
+
+Check `.specflow/config.json` for model profile setting:
+
+```bash
+[ -f .specflow/config.json ] && cat .specflow/config.json | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | cut -d'"' -f4 || echo "balanced"
+```
+
+**Profile Table:**
+
+| Profile | spec-creator | spec-auditor | spec-splitter | discusser | spec-executor | spec-executor-orchestrator | spec-executor-worker | impl-reviewer | spec-reviser | researcher | codebase-scanner |
+|---------|--------------|--------------|---------------|-----------|---------------|---------------------------|---------------------|---------------|--------------|------------|-----------------|
+| quality | opus | opus | opus | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet |
+| balanced | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet |
+| budget | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | haiku | sonnet | haiku | haiku |
+
+Use model for `spec-reviser` from selected profile (default: balanced = sonnet).
+
+## Step 7: Spawn Reviser Agent
 
 Launch the spec-reviser subagent:
 
@@ -131,10 +149,10 @@ Task(prompt="
 
 Revise this specification following the spec-reviser agent instructions.
 Apply the specified changes and record the revision response.
-", subagent_type="sf-spec-reviser", description="Revise specification")
+", subagent_type="sf-spec-reviser", model="{profile_model}", description="Revise specification")
 ```
 
-## Step 7: Handle Agent Response
+## Step 8: Handle Agent Response
 
 The agent will:
 1. Parse the latest audit
@@ -143,7 +161,7 @@ The agent will:
 4. Update status to "auditing"
 5. Update STATE.md
 
-## Step 8: Display Result
+## Step 9: Display Result
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -72,7 +72,25 @@ Read the spec and any associated audit comments.
 - Load PROJECT.md for context
 - Check for related research in `.specflow/research/`
 
-## 4. Spawn Discusser Agent
+## 4. Determine Model Profile
+
+Check `.specflow/config.json` for model profile setting:
+
+```bash
+[ -f .specflow/config.json ] && cat .specflow/config.json | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | cut -d'"' -f4 || echo "balanced"
+```
+
+**Profile Table:**
+
+| Profile | spec-creator | spec-auditor | spec-splitter | discusser | spec-executor | spec-executor-orchestrator | spec-executor-worker | impl-reviewer | spec-reviser | researcher | codebase-scanner |
+|---------|--------------|--------------|---------------|-----------|---------------|---------------------------|---------------------|---------------|--------------|------------|-----------------|
+| quality | opus | opus | opus | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet |
+| balanced | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet |
+| budget | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | haiku | sonnet | haiku | haiku |
+
+Use model for `discusser` from selected profile (default: balanced = opus).
+
+## 5. Spawn Discusser Agent
 
 Launch the discusser agent:
 
@@ -95,17 +113,17 @@ Task(prompt="
 
 Conduct an interactive discussion to clarify requirements.
 Ask focused questions with clear options when possible.
-", subagent_type="sf-discusser", description="Discuss requirements")
+", subagent_type="sf-discusser", model="{profile_model}", description="Discuss requirements")
 ```
 
-## 5. Handle Discussion Results
+## 6. Handle Discussion Results
 
 The agent will:
 1. Ask 3-7 focused questions with options
 2. Document decisions and clarifications
 3. Save results to `.specflow/discussions/`
 
-## 6. Save Discussion
+## 7. Save Discussion
 
 **For spec-clarification:**
 Append to spec file or create discussion record:
@@ -119,7 +137,7 @@ Create discussion record:
 .specflow/discussions/DISC-XXX-{topic-slug}.md
 ```
 
-## 7. Display Result
+## 8. Display Result
 
 ### For direct-question mode:
 

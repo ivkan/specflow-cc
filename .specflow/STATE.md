@@ -2,16 +2,16 @@
 
 ## Active Specification
 
-none
+SPEC-MODEL-001
 
-**Status:** idle
-**Next Step:** /sf:new or /sf:next
+**Status:** review
+**Next Step:** /sf:review
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| medium | SPEC-MODEL-001 | Model Profiles for Cost-Efficient Agent Execution | draft | medium | — |
+| medium | SPEC-MODEL-001 | Model Profiles for Cost-Efficient Agent Execution | needs_decomposition | medium | — |
 | medium | SPEC-STATE-001 | STATE.md Size Constraint | draft | small | — |
 | medium | SPEC-PREDISCUSS-001 | Pre-Specification Discussion Mode | draft | medium | — |
 
@@ -62,6 +62,7 @@ none
 | 2026-01-25 | SPEC-QUICK-001: Re-audited (v2) and APPROVED - all v1 recommendations verified, ready for implementation |
 | 2026-01-25 | SPEC-QUICK-001: Implementation reviewed (v1) and APPROVED - all 8 acceptance criteria met |
 | 2026-01-25 | SPEC-QUICK-001: COMPLETED - Quick mode for minor tasks (/sf:quick command) |
+| 2026-01-25 | SPEC-MODEL-001: Audited (v1) - NEEDS_DECOMPOSITION - scope exceeds thresholds (13 files to modify), use orchestrated execution |
 
 ## Notes
 
@@ -76,7 +77,7 @@ none
 - SPEC-VERIFY-001: Interactive user acceptance testing (/sf:verify command)
 - SPEC-QUICK-001: Quick mode for minor tasks (/sf:quick command)
 ### In Progress
-- SPEC-MODEL-001: Model profiles for cost-efficient agent execution
+- SPEC-MODEL-001: Model profiles for cost-efficient agent execution (NEEDS_DECOMPOSITION - ready for orchestrated execution)
 - SPEC-STATE-001: STATE.md size constraint with decision archiving
 - SPEC-PREDISCUSS-001: Pre-spec discussion mode with feature-type-specific questions
 
@@ -92,9 +93,9 @@ none
 | Pause/Resume | Implemented (SPEC-SUBAGENT-C) - DONE |
 | Human UAT | Implemented (SPEC-VERIFY-001) - DONE |
 | Quick Mode | Implemented (SPEC-QUICK-001) - DONE |
-| Model Profiles | Draft (SPEC-MODEL-001) |
+| Model Profiles | Audited (SPEC-MODEL-001) - NEEDS_DECOMPOSITION |
 | STATE.md Size Limit | Draft (SPEC-STATE-001) |
 | Pre-spec Discussion | Draft (SPEC-PREDISCUSS-001) |
 
 ---
-*Last updated: 2026-01-25 (SPEC-QUICK-001 completed and archived)*
+*Last updated: 2026-01-25 (SPEC-MODEL-001 audited - NEEDS_DECOMPOSITION)*

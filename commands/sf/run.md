@@ -102,43 +102,7 @@ Log in STATE.md Warnings table:
 | {date} | SPEC-XXX | Executed without audit approval |
 ```
 
-## Step 4.5: Check for Existing Execution State
-
-**For orchestrated execution only:**
-
-Check if execution state exists:
-```bash
-ls .specflow/execution/SPEC-XXX-state.json 2>/dev/null
-```
-
-**If state file exists:**
-
-Display progress summary:
-```
-Found interrupted execution for SPEC-XXX
-
-**Progress:**
-- Wave 1: [checkmark] Complete (G1)
-- Wave 2: [lightning] In Progress
-  - G2: [checkmark] Complete
-  - G3: [x] Failed (context limit)
-  - G4: [checkmark] Complete
-- Wave 3: [circle] Pending (G5)
-
-Previous execution found. Resume? [Y/n]
-```
-
-Use AskUserQuestion with options:
-- "Yes, resume from G3" -> pass `--resume` flag to orchestrator
-- "Restart Wave 2" -> clear Wave 2 results, re-run all Wave 2 groups
-- "Start fresh" -> delete state file, begin new execution
-- "Abort" -> clean up, mark failed, exit
-
-**If `--resume` flag passed explicitly:**
-- Skip this prompt
-- Automatically resume from last checkpoint
-
-## Step 4.6: Determine Execution Mode
+## Step 4.5: Determine Execution Mode
 
 Check specification complexity to choose execution mode.
 
@@ -150,7 +114,7 @@ Check specification complexity to choose execution mode.
 **If no Implementation Tasks but large spec:**
 - Count requirements sections
 - Estimate scope from Files to Create/Modify counts
-- If total files > 5 OR requirements sections > 3 -> suggest running `/sf:audit` first to generate tasks
+- If total files > 5 OR requirements sections > 3 → suggest running `/sf:audit` first to generate tasks
 
 **Mode selection logic:**
 
@@ -160,8 +124,6 @@ Check specification complexity to choose execution mode.
 | 1 task group only | single |
 | Multiple groups, no parallelism (all sequential) | single |
 | Multiple groups with parallel opportunities | orchestrated |
-
-**Note:** State management only applies to orchestrated mode. Single-mode execution does not create state files.
 
 ## Step 5: Pre-Execution Summary
 
@@ -199,7 +161,25 @@ Display what will be implemented:
 Beginning implementation...
 ```
 
-## Step 6: Update Status
+## Step 6: Determine Model Profile
+
+Check `.specflow/config.json` for model profile setting:
+
+```bash
+[ -f .specflow/config.json ] && cat .specflow/config.json | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | cut -d'"' -f4 || echo "balanced"
+```
+
+**Profile Table:**
+
+| Profile | spec-creator | spec-auditor | spec-splitter | discusser | spec-executor | spec-executor-orchestrator | spec-executor-worker | impl-reviewer | spec-reviser | researcher | codebase-scanner |
+|---------|--------------|--------------|---------------|-----------|---------------|---------------------------|---------------------|---------------|--------------|------------|-----------------|
+| quality | opus | opus | opus | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet |
+| balanced | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet |
+| budget | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | haiku | sonnet | haiku | haiku |
+
+Use model for `spec-executor` or `spec-executor-orchestrator` from selected profile based on execution mode.
+
+## Step 7: Update Status
 
 Update STATE.md:
 - Status → "running"
@@ -208,7 +188,7 @@ Update STATE.md:
 Update spec frontmatter:
 - status → "running"
 
-## Step 7: Spawn Executor Agent
+## Step 8: Spawn Executor Agent
 
 **If mode == "single":**
 
@@ -226,14 +206,13 @@ Task(prompt="
 
 Execute this specification following the spec-executor agent instructions.
 Implement all requirements with atomic commits.
-", subagent_type="sf-spec-executor", description="Execute specification")
+", subagent_type="sf-spec-executor", model="{profile_model}", description="Execute specification")
 ```
 
 **If mode == "orchestrated":**
 
 Launch the orchestrator subagent (parallel multi-agent execution):
 
-**Normal execution (no --resume):**
 ```
 Task(prompt="
 <specification>
@@ -243,49 +222,16 @@ Task(prompt="
 <project_context>
 @.specflow/PROJECT.md
 </project_context>
-
-<execution_mode>fresh</execution_mode>
 
 Orchestrate execution of this large specification.
 Parse task groups from Implementation Tasks section.
 Determine execution waves based on dependencies.
-Create state file at .specflow/execution/SPEC-XXX-state.json
 Spawn worker subagents in parallel where possible.
-Update state after each wave/worker completes.
 Aggregate results and create final execution summary.
-Delete state file on successful completion.
-", subagent_type="sf-spec-executor-orchestrator", description="Orchestrate specification execution")
+", subagent_type="sf-spec-executor-orchestrator", model="{profile_model}", description="Orchestrate specification execution")
 ```
 
-**Resume execution (--resume or user chose to resume):**
-```
-Task(prompt="
-<specification>
-@.specflow/specs/SPEC-XXX.md
-</specification>
-
-<project_context>
-@.specflow/PROJECT.md
-</project_context>
-
-<execution_state>
-@.specflow/execution/SPEC-XXX-state.json
-</execution_state>
-
-<execution_mode>resume</execution_mode>
-
-Resume interrupted orchestrated execution.
-1. Load existing state file
-2. Verify commits from completed groups exist (git log --oneline | grep {hash})
-3. Skip groups with verified commits
-4. Re-run groups with missing commits or failed status
-5. Continue with pending waves
-6. Update state after each wave/worker completes
-7. Delete state file on successful completion
-", subagent_type="sf-spec-executor-orchestrator", description="Resume specification execution")
-```
-
-## Step 8: Handle Agent Response
+## Step 9: Handle Agent Response
 
 The agent will:
 1. Implement all requirements
@@ -294,7 +240,7 @@ The agent will:
 4. Add Execution Summary to spec
 5. Update STATE.md to "review"
 
-## Step 9: Display Result
+## Step 10: Display Result
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -387,13 +333,10 @@ Append Execution Summary to spec.
 <success_criteria>
 - [ ] Active specification identified
 - [ ] Audit status checked (warning if not audited)
-- [ ] Existing execution state detected and handled (orchestrated mode)
 - [ ] All files created as specified
 - [ ] All files modified as specified
 - [ ] All files deleted as specified
 - [ ] Atomic commits created
-- [ ] State file created/updated during execution (orchestrated mode)
-- [ ] State file deleted on completion (orchestrated mode)
 - [ ] Execution Summary added to spec
 - [ ] STATE.md updated to "review"
 - [ ] Clear next step shown

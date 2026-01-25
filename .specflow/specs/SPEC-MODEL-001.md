@@ -3,7 +3,7 @@
 ---
 id: SPEC-MODEL-001
 type: feature
-status: draft
+status: review
 priority: medium
 complexity: medium
 created: 2026-01-25
@@ -303,4 +303,88 @@ Wave 3: [G5]           (depends on G1 pattern)
 
 ## Audit History
 
-<!-- Filled by /sf:audit -->
+### Audit v1 (2026-01-25 15:30)
+**Status:** NEEDS_DECOMPOSITION
+
+**Scope Assessment:**
+
+| Metric | Value | Threshold | Status |
+|--------|-------|-----------|--------|
+| Files to create | 0 | <=5 | PASS |
+| Files to modify | 13 | <=3 | EXCEEDED |
+| Acceptance criteria | 7 | <=10 | PASS |
+| Total requirements | ~20 | <=15 | EXCEEDED |
+
+**Estimated context usage:** Large (~80%+)
+
+**Recommendation:** The specification is well-structured with pre-computed waves (Wave 1: G1, Wave 2: G2/G3/G4, Wave 3: G5). Use `/sf:run --parallel` for orchestrated execution with worker subagents.
+
+**Quality Assessment:**
+
+- Clarity: Excellent - clear problem statement, concrete requirements
+- Completeness: Good - all files listed, interfaces defined
+- Testability: Good - all 7 criteria are verifiable
+- Scope: Clear boundaries with explicit constraints
+- Feasibility: Good with noted risk on Task() API compatibility
+- Architecture fit: Aligns well with existing SpecFlow patterns
+- Non-duplication: Novel feature, no existing solution
+- Cognitive load: Acceptable - inline approach trades maintenance for simplicity
+
+**Recommendations:**
+
+1. Consider verifying Task() API supports `model` parameter before full implementation (noted as risk, verification step recommended)
+2. The profile table duplication across 13 files creates maintenance burden; if future changes needed, consider centralizing in a single reference file that commands can cite
+3. Observable Truth #5 mentions "command flag" for profile selection but no flag implementation is specified in Requirements - clarify if this is in scope or defer to future enhancement
+
+---
+
+## Execution Summary
+
+**Executed:** 2026-01-25 17:00
+**Mode:** orchestrated (single executor)
+**Commits:** 1
+
+### Execution Waves
+
+| Wave | Groups | Status |
+|------|--------|--------|
+| 1 | G1 | complete |
+| 2 | G2, G3, G4 | complete |
+| 3 | G5 | complete |
+
+### Files Modified
+
+- `commands/sf/new.md` - Added model profile lookup and model parameter to Task()
+- `commands/sf/plan.md` - Added model profile lookup and model parameter to Task()
+- `commands/sf/audit.md` - Added model profile lookup and model parameter to Task()
+- `commands/sf/split.md` - Added model profile lookup and model parameter to Task()
+- `commands/sf/discuss.md` - Added model profile lookup and model parameter to Task()
+- `commands/sf/run.md` - Added model profile lookup and model parameter to Task() (2 places)
+- `commands/sf/review.md` - Added model profile lookup and model parameter to Task()
+- `commands/sf/fix.md` - Added model profile lookup and model parameter to Task() (fallback)
+- `commands/sf/revise.md` - Added model profile lookup and model parameter to Task()
+- `commands/sf/research.md` - Added model profile lookup and model parameter to Task()
+- `commands/sf/scan.md` - Added model profile lookup and model parameter to Task()
+- `agents/sf-spec-executor-orchestrator.md` - Added model profile lookup and model parameter to worker Task() calls
+
+### Files Created
+
+None.
+
+### Acceptance Criteria Status
+
+- [x] 1. `/sf:new` uses Opus model in balanced profile (Task() call includes model="{profile_model}")
+- [x] 2. `/sf:run` uses Sonnet model for spec-executor in balanced profile
+- [x] 3. `/sf:audit` uses Opus model in balanced profile
+- [x] 4. `/sf:review` uses Sonnet model in balanced profile
+- [x] 5. Creating `.specflow/config.json` with `"model_profile": "budget"` changes all agents to use budget models
+- [x] 6. All 11 command/agent files with Task() calls updated to include model parameter (Note: resume.md does not use Task())
+- [x] 7. Profile table is consistent across all modified files
+
+### Deviations
+
+1. **resume.md not modified** - Specification listed resume.md but it does not use Task() to spawn subagents; it only reads state files.
+2. **11 files modified instead of 13** - The count is accurate for files that actually use Task():
+   - 10 command files (new, plan, audit, split, discuss, run, review, fix, revise, research, scan)
+   - 1 agent file (spec-executor-orchestrator)
+3. **Profile table expanded** - Added all 11 agent types to profile table instead of abbreviated "..." version for clarity

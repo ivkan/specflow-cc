@@ -47,7 +47,25 @@ Use AskUserQuestion:
 - question: "What do you want to research?"
 - options: (freeform text input)
 
-## 4. Spawn Researcher Agent
+## 4. Determine Model Profile
+
+Check `.specflow/config.json` for model profile setting:
+
+```bash
+[ -f .specflow/config.json ] && cat .specflow/config.json | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | cut -d'"' -f4 || echo "balanced"
+```
+
+**Profile Table:**
+
+| Profile | spec-creator | spec-auditor | spec-splitter | discusser | spec-executor | spec-executor-orchestrator | spec-executor-worker | impl-reviewer | spec-reviser | researcher | codebase-scanner |
+|---------|--------------|--------------|---------------|-----------|---------------|---------------------------|---------------------|---------------|--------------|------------|-----------------|
+| quality | opus | opus | opus | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet |
+| balanced | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet |
+| budget | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | haiku | sonnet | haiku | haiku |
+
+Use model for `researcher` from selected profile (default: balanced = sonnet).
+
+## 5. Spawn Researcher Agent
 
 Launch the researcher subagent:
 
@@ -62,17 +80,17 @@ Task(prompt="
 </project_context>
 
 Research this topic and create a structured findings document.
-", subagent_type="sf-researcher", description="Research topic")
+", subagent_type="sf-researcher", model="{profile_model}", description="Research topic")
 ```
 
-## 5. Handle Agent Response
+## 6. Handle Agent Response
 
 The agent will:
 1. Research the topic (codebase exploration, web search if needed)
 2. Create RES-XXX.md with findings
 3. Return structured result with ID and summary
 
-## 6. Display Result
+## 7. Display Result
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

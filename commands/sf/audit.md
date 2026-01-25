@@ -60,7 +60,25 @@ Use `/sf:run` to implement or `/sf:status` to see current state.
 ```
 Exit.
 
-## Step 4: Spawn Auditor Agent
+## Step 4: Determine Model Profile
+
+Check `.specflow/config.json` for model profile setting:
+
+```bash
+[ -f .specflow/config.json ] && cat .specflow/config.json | grep -o '"model_profile"[[:space:]]*:[[:space:]]*"[^"]*"' | cut -d'"' -f4 || echo "balanced"
+```
+
+**Profile Table:**
+
+| Profile | spec-creator | spec-auditor | spec-splitter | discusser | spec-executor | spec-executor-orchestrator | spec-executor-worker | impl-reviewer | spec-reviser | researcher | codebase-scanner |
+|---------|--------------|--------------|---------------|-----------|---------------|---------------------------|---------------------|---------------|--------------|------------|-----------------|
+| quality | opus | opus | opus | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet |
+| balanced | opus | opus | opus | opus | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet |
+| budget | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet | haiku | sonnet | haiku | haiku |
+
+Use model for `spec-auditor` from selected profile (default: balanced = opus).
+
+## Step 5: Spawn Auditor Agent
 
 Launch the spec-auditor subagent with fresh context:
 
@@ -76,10 +94,10 @@ Task(prompt="
 
 Audit this specification following the spec-auditor agent instructions.
 Do NOT read any conversation history — audit with fresh eyes.
-", subagent_type="sf-spec-auditor", description="Audit specification")
+", subagent_type="sf-spec-auditor", model="{profile_model}", description="Audit specification")
 ```
 
-## Step 5: Handle Agent Response
+## Step 6: Handle Agent Response
 
 The agent will:
 1. Evaluate 5 quality dimensions
@@ -88,7 +106,7 @@ The agent will:
 4. Update STATE.md
 5. Return structured result
 
-## Step 6: Display Result
+## Step 7: Display Result
 
 ### If APPROVED (no recommendations):
 
