@@ -1,14 +1,15 @@
 ---
 name: sf:discuss
 description: Interactive Q&A to clarify requirements or resolve specification ambiguities
-argument-hint: "[SPEC-XXX | topic | question?]"
+argument-hint: "[--pre <topic> | SPEC-XXX | topic | question?]"
 ---
 
 <purpose>
 Conduct an interactive discussion to clarify requirements, resolve ambiguities, or gather additional context. Results are saved and can be used when creating or revising specifications.
 
 Use cases:
-- Before `/sf:new`: Clarify requirements before creating a spec
+- Before `/sf:new`: Structured pre-spec discussion with `--pre` flag (feature-type-specific questions)
+- Before `/sf:new`: Generic requirements gathering (no `--pre` flag)
 - After `/sf:new`: Discuss assumptions made in the spec
 - After `/sf:audit`: Resolve issues that need user decision
 - During `/sf:run`: Quick clarification on specific question
@@ -40,21 +41,27 @@ Exit.
 
 Determine discussion mode from arguments:
 
-**Case A: `SPEC-XXX` provided**
+**Case A: `--pre <topic>` provided**
+- Structured pre-specification discussion
+- Detect feature type and ask type-specific questions
+- Mode: `pre-spec`
+- Example: `/sf:discuss --pre "add export feature"`
+
+**Case B: `SPEC-XXX` provided**
 - Load the specification
 - Discussion focuses on clarifying that spec
 - Mode: `spec-clarification`
 
-**Case B: String contains `?` (direct question)**
+**Case C: String contains `?` (direct question)**
 - Single question requiring immediate answer
 - Mode: `direct-question`
 - Example: `/sf:discuss "Should we use Redis or in-memory cache?"`
 
-**Case C: Topic string provided (no `?`, not SPEC-XXX)**
+**Case D: Topic string provided (no `--pre`, no `?`, not SPEC-XXX)**
 - Discussion about requirements before spec creation
 - Mode: `requirements-gathering`
 
-**Case D: No arguments**
+**Case E: No arguments**
 - Check STATE.md for active spec
 - If active spec exists: discuss that spec
 - If no active spec: ask what to discuss
@@ -113,6 +120,7 @@ Task(prompt="
 
 Conduct an interactive discussion to clarify requirements.
 Ask focused questions with clear options when possible.
+{If mode is pre-spec: "Detect feature type and ask type-specific questions (5-10 max)."}
 ", subagent_type="sf-discusser", model="{profile_model}", description="Discuss requirements")
 ```
 
@@ -124,6 +132,12 @@ The agent will:
 3. Save results to `.specflow/discussions/`
 
 ## 7. Save Discussion
+
+**For pre-spec mode:**
+Create discussion record:
+```
+.specflow/discussions/PRE-XXX.md
+```
 
 **For spec-clarification:**
 Append to spec file or create discussion record:
@@ -180,6 +194,9 @@ Create discussion record:
 ---
 
 ## Next Step
+
+{If pre-spec mode:}
+`/sf:new --discuss PRE-XXX "task"` — create spec with pre-discussion context
 
 {If requirements-gathering mode:}
 `/sf:new --discuss DISC-XXX "task"` — create spec with discussion context
