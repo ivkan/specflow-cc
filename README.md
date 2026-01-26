@@ -17,6 +17,10 @@ npx specflow-cc --global
 
 <br>
 
+https://github.com/user-attachments/assets/3f516907-8657-4ea4-bc0c-6319998a09db
+
+<br>
+
 *"The audit caught 4 issues before I wrote a single line of code."*
 
 *"Fresh context review found a bug I would have shipped to production."*
