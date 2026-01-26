@@ -48,6 +48,24 @@ The result: fewer surprises, cleaner code, and a paper trail of decisions.
 
 ---
 
+## Why SpecFlow?
+
+Most AI coding workflows suffer from **"Yes-Man Syndrome"** — you ask for a feature, the AI nods and writes code. 500 lines later, you discover hallucinated APIs, missing edge cases, or security holes.
+
+SpecFlow fixes this with **Fresh Context Auditing**:
+
+| Aspect | Standard AI Coding | SpecFlow |
+|--------|-------------------|----------|
+| **Context** | Single window (grows, degrades) | Fresh context per phase |
+| **Quality Control** | Self-correction (biased) | Independent Auditor (unbiased) |
+| **Verification** | "Looks good to me" | Verified against contract |
+| **Execution** | Linear, single agent | Atomic waves, parallel agents |
+| **Result** | Hidden bugs ship | Issues caught before code exists |
+
+> The auditor has no memory of your conversation. It only sees the spec. If the spec says "use the flux capacitor API" — the auditor asks "what is that?"
+
+---
+
 ## Who This Is For
 
 Developers who want Claude Code to:
