@@ -187,9 +187,12 @@ Based on this scan, consider creating specs for:
 1. **[Spec title]** — [brief description]
    - Priority: [High | Medium | Low]
    - Complexity: [small | medium | large]
+   - Run: `/sf:new "[title]"`
 
 2. **[Spec title]** — [brief description]
-   ...
+   - Priority: [High | Medium | Low]
+   - Complexity: [small | medium | large]
+   - Run: `/sf:new "[title]"`
 
 ---
 
