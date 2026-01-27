@@ -2,10 +2,10 @@
 
 ## Active Specification
 
-None
+none
 
 **Status:** idle
-**Next Step:** /sf:next (or /sf:new for new task)
+**Next Step:** /sf:new or /sf:next
 
 ## Queue
 
@@ -27,6 +27,13 @@ None
 | 2026-01-25 | SPEC-PREDISCUSS-001: Response v1 - applied all 4 recommendations (--discuss flag, ID generation logic, general fallback, model profile confirmation) |
 | 2026-01-25 | SPEC-PREDISCUSS-001: Audit v2 APPROVED - all recommendations verified, ready for implementation |
 | 2026-01-25 | SPEC-PREDISCUSS-001: Implementation reviewed and APPROVED - all 10 acceptance criteria met, 1 major systemic issue identified (grep -oP compatibility, pre-existing across 5 files) |
+| 2026-01-27 | SPEC-001: Audit v1 APPROVED - well-structured spec, ~22% context estimate, 1 minor recommendation (prefix terminology consistency) |
+| 2026-01-27 | SPEC-001: Response v1 - narrowed scope to respect single responsibility (removed auditor/reviewer targets, clarified /sf:new is only for genuinely new work) |
+| 2026-01-27 | SPEC-001: Audit v2 APPROVED - all 8 dimensions pass, ~12% context estimate, ready for implementation |
+| 2026-01-27 | SPEC-001: Review v1 CHANGES_REQUESTED - 2 critical issues (dash prefix formatting, templates/scan.md inconsistency with Run: vs Command:) |
+| 2026-01-27 | SPEC-001: Fix Response v1 - applied all 2 critical fixes (dash removal, templates/scan.md Run: alignment) |
+| 2026-01-27 | SPEC-001: Review v2 APPROVED - all fixes verified, all 4 acceptance criteria met, no regressions, ready for completion |
+| 2026-01-27 | SPEC-001: COMPLETED - ready-to-use /sf:new commands added to codebase scanner recommendations |
 
 ## Notes
 
@@ -43,6 +50,7 @@ None
 - SPEC-MODEL-001: Model profiles for cost-efficient agent execution (quality/balanced/budget)
 - SPEC-STATE-001: STATE.md size constraint with automatic decision archiving
 - SPEC-PREDISCUSS-001: Pre-spec discussion mode with feature-type-specific questions
+- SPEC-001: Add ready-to-use commands to spec creation recommendations
 
 ### In Progress
 None
@@ -64,4 +72,4 @@ None
 | Pre-spec Discussion | Implemented (SPEC-PREDISCUSS-001) - DONE |
 
 ---
-*Last updated: 2026-01-25 (SPEC-PREDISCUSS-001 review complete)*
+*Last updated: 2026-01-27 (SPEC-001 COMPLETED and archived)*
