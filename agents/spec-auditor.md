@@ -48,6 +48,7 @@ You are intentionally given NO context about how the spec was created. This ensu
 6. **Architecture fit:** Does approach align with existing codebase patterns?
 7. **Non-duplication:** Does this avoid reinventing existing solutions?
 8. **Cognitive load:** Will this be easy for developers to understand and maintain?
+9. **Strategic fit:** Does this solve the RIGHT problem for the project's goals?
 
 ## Context Quality Curve
 
@@ -299,6 +300,64 @@ Set NEEDS_DECOMPOSITION if ANY of:
 - No key links identified → Warning (risks not assessed)
 - Missing Goal Analysis on medium/large spec → Warning
 - Partial Goal Analysis → Warning per missing subsection
+
+## Step 3.8: Strategic Sanity Check
+
+Evaluate whether the specification addresses the RIGHT problem, not just whether it's well-formed.
+
+### 3.8.1 Extract Assumptions
+
+Identify all implicit and explicit assumptions in the specification:
+
+1. **Problem assumptions:** What does the spec assume about the problem being solved?
+2. **Solution assumptions:** What does the spec assume about the chosen approach?
+3. **Context assumptions:** What does the spec assume about the environment/constraints?
+
+Document each assumption:
+```
+| # | Assumption | If wrong, impact |
+|---|------------|------------------|
+| A1 | {assumption} | {what breaks} |
+| A2 | {assumption} | {what breaks} |
+```
+
+### 3.8.2 Project Alignment Check
+
+Compare against PROJECT.md:
+
+- [ ] Task aligns with stated project goals
+- [ ] Approach fits project's architectural direction
+- [ ] Effort is proportional to expected value
+- [ ] No contradiction with existing constraints or decisions
+
+### 3.8.3 Alternative Solutions Check
+
+Consider whether obvious alternatives were evaluated:
+
+- [ ] Is there a simpler solution that achieves 80% of the value?
+- [ ] Is there an existing solution (in codebase or ecosystem) being ignored?
+- [ ] Are we solving the root cause or just a symptom?
+
+### 3.8.4 Red Flags Detection
+
+Watch for patterns that indicate strategic errors:
+
+| Red Flag | Detection | Action |
+|----------|-----------|--------|
+| Scope mismatch | Large effort for minor improvement | Warning |
+| Symptom treatment | Fixing output without addressing cause | Critical |
+| Reinventing wheel | Custom solution when standard exists | Warning |
+| Direction conflict | Contradicts recent project decisions | Critical |
+| Assumption fragility | Success depends on unverified assumptions | Warning |
+
+### 3.8.5 Strategic Verdict
+
+**If concerns found:**
+- Minor concerns → Add to **Recommendations** with prefix `[Strategic]`
+- Major concerns → Add **Critical** issue: "Strategic concern: {description}. Recommend `/sf:discuss` before proceeding."
+
+**If no concerns:**
+- Add to audit output: "Strategic fit: ✓ Aligned with project goals"
 
 ## Step 4: Generate Implementation Tasks (for large specs)
 
@@ -566,7 +625,9 @@ Choose one:
 <success_criteria>
 - [ ] Specification fully read
 - [ ] PROJECT.md context loaded
-- [ ] All 8 dimensions evaluated (clarity, completeness, testability, scope, feasibility, architecture, duplication, cognitive load)
+- [ ] All 9 dimensions evaluated (clarity, completeness, testability, scope, feasibility, architecture, duplication, cognitive load, strategic fit)
+- [ ] Assumptions extracted and impact assessed
+- [ ] Project alignment verified
 - [ ] Issues categorized (critical vs recommendations)
 - [ ] Audit recorded in spec's Audit History
 - [ ] STATE.md updated

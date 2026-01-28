@@ -148,6 +148,23 @@ For each created/modified file:
 - [ ] Logic flow is easy to follow
 - [ ] Future maintainers can understand without extensive context
 
+### 4.8 Implementation Reality Check (light)
+
+During code review, watch for signals that the specification itself may have been misdirected:
+
+**Trigger conditions:**
+- Implementation is significantly simpler/more complex than spec anticipated
+- Code solves a different problem than what spec described
+- Obvious better approach emerged during implementation but wasn't taken
+- Implementation contradicts PROJECT.md goals or patterns
+
+**If triggered:**
+- Do NOT block the review for this
+- Add **WARNING** (not Critical): "Implementation concern: {description}. Consider `/sf:discuss` before `/sf:done`"
+- Continue with normal review process
+
+**Note:** This is a safety net, not a primary check. Strategic issues should be caught earlier by `spec-auditor`.
+
 ## Step 5: Categorize Findings
 
 Organize into:
@@ -299,6 +316,7 @@ Options:
 - [ ] Architecture alignment verified
 - [ ] No unnecessary duplication
 - [ ] Cognitive load acceptable
+- [ ] Implementation reality check performed (strategic red flags)
 - [ ] Findings categorized
 - [ ] Review recorded in spec
 - [ ] STATE.md updated
