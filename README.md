@@ -305,7 +305,7 @@ Six months later, you can read the spec and understand not just *what* was built
 |---------|-------------|
 | `/sf:init` | Initialize project |
 | `/sf:new "task"` | Create specification |
-| `/sf:audit` | Audit spec (fresh context) |
+| `/sf:audit` | Audit spec or import external feedback |
 | `/sf:revise` | Revise based on audit feedback |
 | `/sf:run` | Implement specification |
 | `/sf:review` | Review implementation (fresh context) |
@@ -319,6 +319,13 @@ Six months later, you can read the spec and understand not just *what* was built
 /sf:quick "fix button color"    # Skip full workflow for trivial tasks
 ```
 
+**Audit options:**
+
+```bash
+/sf:audit                           # Audit active spec (fresh context)
+/sf:audit --import "[Critical] ..." # Import external feedback for review
+```
+
 **Revise options:**
 
 ```bash
@@ -326,6 +333,13 @@ Six months later, you can read the spec and understand not just *what* was built
 /sf:revise all          # Apply all feedback
 /sf:revise 1,2          # Fix specific items
 /sf:revise "custom..."  # Custom instructions
+```
+
+**External feedback workflow:**
+
+```bash
+/sf:audit --import "[Critical] SQL injection; [Major] Add rate limiting"
+/sf:revise              # Critically evaluate each item (Apply/Skip/Defer)
 ```
 
 ### Research & Clarification

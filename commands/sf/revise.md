@@ -63,15 +63,28 @@ Exit.
 
 ## Step 4: Extract Latest Audit
 
-Find the most recent "Audit v[N]" section in Audit History.
+Find the most recent audit section in Audit History. Can be:
+- `### Audit v[N]` — internal audit
+- `### External Audit v[N]` — imported external feedback
 
 **If no audit exists:**
 ```
 Specification SPEC-XXX has no audit history.
 
-Run `/sf:audit` first to get feedback.
+Run `/sf:audit` first to get feedback,
+or `/sf:audit --import "feedback"` to import external review.
 ```
 Exit.
+
+**Determine audit type:**
+```bash
+LATEST_AUDIT=$(grep -E "^### (External )?Audit v[0-9]+" .specflow/specs/SPEC-XXX.md | tail -1)
+if echo "$LATEST_AUDIT" | grep -q "External"; then
+    AUDIT_TYPE="external"
+else
+    AUDIT_TYPE="internal"
+fi
+```
 
 ## Step 5: Parse Arguments
 
@@ -84,7 +97,9 @@ Exit.
 
 ### If Interactive Mode (no arguments):
 
-Display audit comments:
+Display audit comments with context about source:
+
+**For internal audit:**
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -110,6 +125,57 @@ Use AskUserQuestion with options:
 - "Apply all feedback" → treat as "all"
 - "Fix critical only (1, 2)" → treat as "1,2"
 - "Custom selection" → ask for numbers or description
+
+**For external audit (requires critical evaluation):**
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ REVIEW EXTERNAL FEEDBACK: SPEC-XXX
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️  External feedback requires critical evaluation.
+    Not all suggestions may be applicable or correct.
+
+External Audit (v{N}) items:
+
+**Critical:**
+1. [Issue 1]
+2. [Issue 2]
+
+**Major:**
+3. [Issue 3]
+4. [Issue 4]
+
+**Minor:**
+5. [Issue 5]
+
+---
+
+How to proceed?
+```
+
+Use AskUserQuestion with options:
+- "Review each item" → interactive per-item evaluation (recommended)
+- "Apply all" → apply everything (use with caution)
+- "Apply critical only" → treat as critical items
+- "Select specific" → ask for numbers
+
+**If "Review each item" selected:**
+
+For each item, use AskUserQuestion:
+```
+Item {N}: {issue description}
+
+Evaluate this feedback:
+```
+
+Options:
+- "Apply" — implement this change
+- "Skip" — not applicable, with reason
+- "Discuss" — need clarification
+- "Defer" — valid but out of scope
+
+Record each decision in Response section.
 
 ## Step 6: Determine Model Profile
 
@@ -163,6 +229,8 @@ The agent will:
 
 ## Step 9: Display Result
 
+**For internal audit:**
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  REVISION COMPLETE
@@ -194,6 +262,50 @@ The agent will:
 <sub>/clear recommended → auditor needs fresh context</sub>
 ```
 
+**For external audit:**
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ EXTERNAL FEEDBACK REVIEWED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Specification:** SPEC-XXX
+**External Audit:** v{N} → Response v{N}
+
+### Decisions Summary
+
+| # | Item | Decision | Reason |
+|---|------|----------|--------|
+| 1 | {short description} | ✓ Applied | — |
+| 2 | {short description} | ✗ Skipped | {reason} |
+| 3 | {short description} | ⏸ Deferred | Out of scope |
+| 4 | {short description} | ? Discuss | Needs clarification |
+
+**Applied:** {count} | **Skipped:** {count} | **Deferred:** {count}
+
+{If any items marked "Discuss":}
+### Needs Discussion
+
+Items {N, M} require clarification before deciding.
+
+---
+
+📄 File: .specflow/specs/SPEC-XXX.md
+
+---
+
+## Next Steps
+
+{If items need discussion:}
+`/sf:discuss SPEC-XXX` — clarify items {N, M}
+
+{If all decided:}
+`/sf:audit` — re-audit with applied changes
+
+{If deferred items exist:}
+<sub>Deferred items saved to `.specflow/todos/` for future consideration.</sub>
+```
+
 </workflow>
 
 <fallback>
@@ -223,7 +335,7 @@ RESPONSE_COUNT=$(grep -c "### Response v" .specflow/specs/SPEC-XXX.md 2>/dev/nul
 NEXT_VERSION=$((RESPONSE_COUNT + 1))
 ```
 
-Append to Audit History:
+**For internal audit, append:**
 
 ```markdown
 ### Response v{N} ({date} {time})
@@ -232,6 +344,23 @@ Append to Audit History:
 **Changes:**
 1. [✓/✗] {Item} — {what was done}
 2. [✓/✗] {Item} — {what was done}
+```
+
+**For external audit, append:**
+
+```markdown
+### Response v{N} ({date} {time})
+**Source:** External Audit v{M}
+**Review Type:** {interactive | bulk}
+
+**Decisions:**
+| # | Item | Decision | Reason |
+|---|------|----------|--------|
+| 1 | {description} | Applied | — |
+| 2 | {description} | Skipped | {reason} |
+| 3 | {description} | Deferred | {reason} |
+
+**Summary:** Applied {X}/{Y} items, Skipped {Z}, Deferred {W}
 ```
 
 ### Update Status

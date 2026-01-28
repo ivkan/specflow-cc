@@ -70,6 +70,7 @@ Based on current status:
 | idle | `/sf:new "task"` — create specification |
 | drafting | `/sf:audit` — audit specification |
 | revision_requested | `/sf:revise` — fix issues |
+| external_review | `/sf:revise` — review external feedback |
 | audited | `/sf:run` — implement |
 | running | Continue implementation or `/sf:review` |
 | reviewing | `/sf:fix` or `/sf:done` |

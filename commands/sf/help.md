@@ -128,6 +128,8 @@ Read the command file and extract:
 ```
 /sf:audit                  # Audit active specification
 /sf:audit SPEC-003         # Audit specific specification
+/sf:audit --import "[Critical] No error handling; [Major] Add logging"
+/sf:audit --import "Security review: 1. SQL injection in search 2. XSS in comments"
 ```
 ```
 
@@ -209,7 +211,7 @@ Workflow: Spec → Audit → Revise → Run → Review → Fix → Done
 |--------------|-----------------------------------------|
 | /sf:init     | Initialize project, analyze codebase    |
 | /sf:new      | Create specification from task          |
-| /sf:audit    | Audit specification (fresh context)     |
+| /sf:audit    | Audit spec or import external feedback  |
 | /sf:revise   | Revise spec based on audit feedback     |
 | /sf:run      | Execute specification                   |
 | /sf:review   | Review implementation (fresh context)   |

@@ -5,8 +5,8 @@
 ## Current Position
 
 - **Active Specification:** [none | SPEC-XXX]
-- **Status:** [idle | drafting | auditing | running | reviewing]
-- **Next Step:** [/sf:new | /sf:audit | /sf:run | /sf:review | /sf:done]
+- **Status:** [idle | drafting | auditing | revision_requested | external_review | running | reviewing]
+- **Next Step:** [/sf:new | /sf:audit | /sf:revise | /sf:run | /sf:review | /sf:done]
 
 ## Queue
 

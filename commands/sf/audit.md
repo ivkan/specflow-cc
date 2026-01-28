@@ -1,6 +1,7 @@
 ---
 name: sf:audit
 description: Audit the active specification in a fresh context
+argument-hint: "[SPEC-XXX] [--import \"feedback\"]"
 allowed-tools:
   - Read
   - Write
@@ -8,10 +9,13 @@ allowed-tools:
   - Glob
   - Grep
   - Task
+  - AskUserQuestion
 ---
 
 <purpose>
 Audit the active specification using a fresh context subagent. The auditor evaluates clarity, completeness, testability, scope, and feasibility without bias from the creation process.
+
+Also supports importing external feedback (from code reviews, security audits, team discussions) for critical evaluation and selective application.
 </purpose>
 
 <context>
@@ -52,13 +56,140 @@ Exit.
 
 Read the active spec file: `.specflow/specs/SPEC-XXX.md`
 
-**If status is not 'draft' or 'revision_requested':**
+**If status is not 'draft', 'auditing', or 'revision_requested':**
 ```
 Specification SPEC-XXX is already audited (status: {status}).
 
 Use `/sf:run` to implement or `/sf:status` to see current state.
 ```
 Exit.
+
+## Step 3.5: Check for --import Flag
+
+Parse arguments for `--import "feedback text"` pattern.
+
+**If --import flag present:** Go to Step 4-IMPORT
+**Otherwise:** Continue to Step 4 (internal audit)
+
+---
+
+## Step 4-IMPORT: Import External Feedback
+
+### 4.1 Parse External Feedback
+
+Extract the feedback text from the `--import` argument.
+
+**Expected formats in feedback:**
+- `[Critical]` or `[CRITICAL]` — blocking issues
+- `[Major]` or `[Recommend]` — should fix
+- `[Minor]` or `[Optional]` — nice to have
+- Numbered lists (1. 2. 3.)
+- Bullet points (- or *)
+
+If no severity markers found, treat all items as `[Major]`.
+
+### 4.2 Structure the Feedback
+
+Parse items into structured format:
+
+```
+Critical Issues:
+1. {item}
+2. {item}
+
+Major Issues:
+3. {item}
+4. {item}
+
+Minor Issues:
+5. {item}
+```
+
+### 4.3 Get Next Audit Version
+
+```bash
+AUDIT_COUNT=$(grep -c "### Audit v" .specflow/specs/SPEC-XXX.md 2>/dev/null || echo 0)
+EXTERNAL_COUNT=$(grep -c "### External Audit" .specflow/specs/SPEC-XXX.md 2>/dev/null || echo 0)
+NEXT_VERSION=$((AUDIT_COUNT + EXTERNAL_COUNT + 1))
+```
+
+### 4.4 Append to Audit History
+
+Append to the spec's `## Audit History` section:
+
+```markdown
+### External Audit v{N} ({date} {time})
+**Source:** External review
+**Status:** PENDING_REVIEW
+
+**Critical Issues:**
+1. {parsed critical item}
+2. {parsed critical item}
+
+**Major Issues:**
+3. {parsed major item}
+
+**Minor Issues:**
+4. {parsed minor item}
+
+---
+*Imported feedback requires review before application.*
+*Use `/sf:revise` to critically evaluate and selectively apply.*
+```
+
+### 4.5 Update Spec Status
+
+In spec frontmatter, set: `status: revision_requested`
+
+### 4.6 Update STATE.md
+
+Update STATE.md:
+- Status → "external_review"
+- Next Step → "/sf:revise"
+- Add decision: "Imported external feedback for SPEC-XXX"
+
+### 4.7 Display Import Result
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ EXTERNAL FEEDBACK IMPORTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Specification:** SPEC-XXX
+**Source:** External review
+
+### Imported Items
+
+**Critical:** {count} items
+**Major:** {count} items
+**Minor:** {count} items
+
+### Preview
+
+{Show first 2-3 items as preview}
+
+---
+
+📄 File: .specflow/specs/SPEC-XXX.md
+
+---
+
+## Next Step
+
+`/sf:revise` — critically review and selectively apply
+
+Options:
+• `/sf:revise` — interactive review (recommended)
+• `/sf:revise all` — apply all items
+• `/sf:revise 1,2,5` — apply specific items
+• `/sf:discuss SPEC-XXX` — discuss items before deciding
+
+<sub>External feedback should be critically evaluated, not blindly applied.</sub>
+```
+
+Exit.
+
+---
 
 ## Step 4: Determine Model Profile
 

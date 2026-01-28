@@ -1,7 +1,7 @@
 ---
 id: SPEC-XXX
 type: feature | refactor | bugfix
-status: draft | audited | running | review | done
+status: draft | auditing | revision_requested | audited | running | review | done
 priority: high | medium | low
 complexity: small | medium | large
 created: YYYY-MM-DD
