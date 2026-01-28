@@ -148,11 +148,22 @@ Read the command file and extract:
 ## Examples
 
 ```
-/sf:revise                 # Interactive — shows audit comments
+/sf:revise                 # Interactive — shows audit comments with analysis
 /sf:revise all             # Apply all audit comments
 /sf:revise 1,2             # Apply only comments 1 and 2
+/sf:revise --no-analysis   # Skip pre-analysis, go directly to review mode
 /sf:revise "add error handling, ignore item 3"
 ```
+
+## Flags
+
+| Flag | Description |
+|------|-------------|
+| `--no-analysis` | Skip AI pre-analysis of external feedback |
+
+**Note:** For external audits, Claude analyzes each feedback item and provides
+recommendations (Apply/Discuss/Skip) before showing review options. Use
+`--no-analysis` to skip this and go directly to manual review.
 ```
 
 **For `/sf:split`:**

@@ -5,6 +5,33 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2026-01-28
+
+### Added
+
+- **AI pre-analysis of external feedback** — `/sf:revise` now analyzes imported external audit items before showing review options
+  - Provides recommendations: ✓ Apply / ? Discuss / ✗ Skip with reasoning
+  - New "Apply recommended" option to apply only recommended items
+  - `--no-analysis` flag to skip pre-analysis and go directly to manual review
+
+### Changed
+
+- `/sf:audit --import` workflow now flows through AI analysis step by default
+- Updated help documentation with new flag
+
+---
+
+## [1.6.3] - 2026-01-28
+
+### Added
+
+- `/sf:audit --import "feedback"` — Import external feedback (code reviews, security audits) for critical evaluation
+- `/sf:revise` detects external audits and offers per-item evaluation (Apply/Skip/Discuss/Defer)
+- New `external_review` status in state machine
+- Strategic sanity check in auditor agents
+
+---
+
 ## [1.6.0] - 2026-01-25
 
 ### Added

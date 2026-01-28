@@ -86,6 +86,65 @@ else
 fi
 ```
 
+## Step 4.5: Pre-analyze External Feedback
+
+**Only for external audits (AUDIT_TYPE="external"):**
+
+Skip this step if:
+- `--no-analysis` flag is present in arguments
+- AUDIT_TYPE is "internal"
+
+### Analysis Process
+
+Read the specification and project context, then analyze each external feedback item:
+
+For each item in the external audit:
+1. Check if the issue actually exists in the current specification
+2. Evaluate relevance to the specification's scope and goals
+3. Consider project architecture and constraints
+4. Determine recommendation: Apply / Discuss / Skip
+
+### Display Analysis Results
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ANALYSIS: EXTERNAL FEEDBACK — SPEC-XXX
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Based on specification context and project architecture:
+
+| # | Item | Recommendation | Reason |
+|---|------|----------------|--------|
+| 1 | {issue description} | ✓ Apply | {why it's relevant} |
+| 2 | {issue description} | ✓ Apply | {why it's relevant} |
+| 3 | {issue description} | ? Discuss | {why clarification needed} |
+| 4 | {issue description} | ✗ Skip | {why not applicable} |
+
+**Summary:** {N} recommended, {M} need discussion, {K} likely irrelevant
+
+---
+```
+
+### Recommendation Criteria
+
+**✓ Apply** — recommend when:
+- Issue clearly exists in the specification
+- Fix aligns with specification goals
+- Within scope of current work
+
+**? Discuss** — recommend when:
+- Issue may be valid but requires clarification
+- Trade-offs need user decision
+- Significant architectural change implied
+
+**✗ Skip** — recommend when:
+- Issue doesn't exist in current specification
+- Clearly out of scope for this specification
+- Based on incorrect assumptions about the project
+- Would conflict with explicit requirements
+
+Continue to Step 5 with analysis context available.
+
 ## Step 5: Parse Arguments
 
 | Argument | Action |
@@ -93,7 +152,17 @@ fi
 | (none) | Interactive mode — show comments, ask what to fix |
 | "all" | Apply all critical issues AND recommendations |
 | "1,2,3" | Apply only numbered items |
+| "--no-analysis" | Skip pre-analysis, go directly to review mode |
 | "..." | Treat as custom revision instructions |
+
+**Check for `--no-analysis` flag:**
+```bash
+if echo "$ARGS" | grep -q "\-\-no-analysis"; then
+    SKIP_ANALYSIS=true
+    # Remove flag from args for further processing
+    ARGS=$(echo "$ARGS" | sed 's/--no-analysis//g' | xargs)
+fi
+```
 
 ### If Interactive Mode (no arguments):
 
@@ -127,6 +196,38 @@ Use AskUserQuestion with options:
 - "Custom selection" → ask for numbers or description
 
 **For external audit (requires critical evaluation):**
+
+**If pre-analysis was performed (Step 4.5):**
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ REVIEW EXTERNAL FEEDBACK: SPEC-XXX
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+External Audit (v{N}) — with analysis:
+
+| # | Item | Severity | Recommendation | Reason |
+|---|------|----------|----------------|--------|
+| 1 | {issue} | Critical | ✓ Apply | {reason} |
+| 2 | {issue} | Critical | ✓ Apply | {reason} |
+| 3 | {issue} | Major | ? Discuss | {reason} |
+| 4 | {issue} | Major | ✗ Skip | {reason} |
+| 5 | {issue} | Minor | ✓ Apply | {reason} |
+
+**Analysis:** {N} recommended, {M} need discussion, {K} skip suggested
+
+---
+
+How to proceed?
+```
+
+Use AskUserQuestion with options:
+- "Apply recommended" → apply items marked ✓ Apply (recommended)
+- "Review each item" → interactive per-item evaluation
+- "Apply all" → apply everything (ignore analysis)
+- "Select specific" → ask for numbers
+
+**If pre-analysis was skipped (`--no-analysis` or internal flow):**
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -339,8 +339,13 @@ Six months later, you can read the spec and understand not just *what* was built
 
 ```bash
 /sf:audit --import "[Critical] SQL injection; [Major] Add rate limiting"
-/sf:revise              # Critically evaluate each item (Apply/Skip/Defer)
+/sf:revise              # AI analyzes feedback, then shows review options
+/sf:revise --no-analysis  # Skip AI analysis, go directly to manual review
 ```
+
+When reviewing external feedback, Claude first analyzes each item against the
+specification and provides recommendations (✓ Apply / ? Discuss / ✗ Skip)
+before showing interactive options.
 
 ### Research & Clarification
 
