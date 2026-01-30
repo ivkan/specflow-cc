@@ -541,7 +541,8 @@ N+1. [recommendation]
 ## Step 8: Update STATE.md
 
 Update status:
-- If APPROVED: Status → "audited", Next Step → "/sf:run"
+- If APPROVED (no recommendations): Status → "audited", Next Step → "/sf:run"
+- If APPROVED (with recommendations): Status → "audited", Next Step → "/sf:run or /sf:revise"
 - If NEEDS_DECOMPOSITION: Status → "needs_decomposition", Next Step → "/sf:split or /sf:run --parallel"
 - If NEEDS_REVISION: Status → "revision_requested", Next Step → "/sf:revise"
 
@@ -609,7 +610,7 @@ Choose one:
 
 ---
 
-{If APPROVED:}
+{If APPROVED without recommendations:}
 
 ### Summary
 
@@ -618,6 +619,25 @@ Choose one:
 ### Next Step
 
 `/sf:run` — implement specification
+
+---
+
+{If APPROVED with recommendations:}
+
+### Summary
+
+[Brief comment on spec quality]
+
+### Recommendations (Optional)
+
+N. [recommendation]
+N+1. [recommendation]
+
+### Next Steps
+
+Choose one:
+- `/sf:run` — implement specification as-is
+- `/sf:revise` — apply optional recommendations first ({N} items)
 ```
 
 </output>
