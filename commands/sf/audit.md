@@ -184,7 +184,7 @@ Options:
 • `/sf:revise 1,2,5` — apply specific items
 • `/sf:discuss SPEC-XXX` — discuss items before deciding
 
-<sub>External feedback should be critically evaluated, not blindly applied.</sub>
+Note: External feedback should be critically evaluated, not blindly applied.
 ```
 
 Exit.
@@ -357,7 +357,7 @@ fi
 
 ---
 
-## Next Steps
+## Next Step
 
 Choose one:
 • `/sf:run` — implement specification as-is
@@ -394,11 +394,9 @@ Choose one:
 `/sf:revise` — address critical issues
 
 Options:
-- `/sf:revise all` — apply all feedback
-- `/sf:revise 1,2` — fix specific issues
-- `/sf:revise [instructions]` — custom changes
-
-<sub>Optional: `/sf:discuss SPEC-XXX` — clarify requirements before revising</sub>
+• `/sf:revise all` — apply all feedback
+• `/sf:revise 1,2` — fix specific issues
+• `/sf:revise [instructions]` — custom changes
 ```
 
 </workflow>

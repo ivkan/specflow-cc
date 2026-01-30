@@ -360,7 +360,7 @@ The agent will:
 
 `/sf:audit` — re-audit revised specification
 
-<sub>/clear recommended → auditor needs fresh context</sub>
+Tip: `/clear` recommended — auditor needs fresh context
 ```
 
 **For external audit:**
@@ -395,7 +395,7 @@ Items {N, M} require clarification before deciding.
 
 ---
 
-## Next Steps
+## Next Step
 
 {If items need discussion:}
 `/sf:discuss SPEC-XXX` — clarify items {N, M}
@@ -404,7 +404,7 @@ Items {N, M} require clarification before deciding.
 `/sf:audit` — re-audit with applied changes
 
 {If deferred items exist:}
-<sub>Deferred items saved to `.specflow/todos/` for future consideration.</sub>
+Note: Deferred items saved to `.specflow/todos/` for future consideration.
 ```
 
 </workflow>

@@ -199,7 +199,7 @@ Append to Review History:
 
 `/sf:review` — re-review to verify fixes
 
-<sub>/clear recommended → reviewer needs fresh context</sub>
+Tip: `/clear` recommended — reviewer needs fresh context
 ```
 
 </workflow>

@@ -337,30 +337,27 @@ git commit -m "docs(sf): complete SPEC-XXX
 - **Audit cycles:** {count}
 - **Review cycles:** {count}
 
-### Archived To
-
-`.specflow/archive/SPEC-XXX.md`
-
 {If decisions extracted:}
 ### Decisions Recorded
 
-- {decision 1}
-- {decision 2}
+• {decision 1}
+• {decision 2}
 
 ---
 
-## Queue Status
+📄 File: .specflow/archive/SPEC-XXX.md
+
+---
+
+## Next Step
 
 {If queue has more specs:}
-**Next in queue:** SPEC-YYY — {title}
-
-Run `/sf:next` to start the next specification.
+`/sf:next` — start next specification (SPEC-YYY)
 
 {If queue is empty:}
-Queue is empty.
-
-Run `/sf:new "task"` to create a new specification
-or `/sf:todos` to see pending ideas.
+Choose one:
+• `/sf:new "task"` — create new specification
+• `/sf:todos` — see pending ideas
 ```
 
 </workflow>

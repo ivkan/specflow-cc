@@ -260,7 +260,7 @@ fi
 
 ---
 
-## Next Steps
+## Next Step
 
 Choose one:
 • `/sf:done` — finalize and archive as-is
@@ -309,9 +309,9 @@ Choose one:
 `/sf:fix` — address the issues
 
 Options:
-- `/sf:fix all` — apply all fixes
-- `/sf:fix 1,2` — fix specific issues
-- `/sf:fix [instructions]` — custom fixes
+• `/sf:fix all` — apply all fixes
+• `/sf:fix 1,2` — fix specific issues
+• `/sf:fix [instructions]` — custom fixes
 ```
 
 </workflow>

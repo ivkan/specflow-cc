@@ -141,11 +141,11 @@ The agent will:
 
 ### Assumptions Made
 
-- [List assumptions agent made]
+• [List assumptions agent made]
 
 ---
 
-📄 **File:** `.specflow/specs/SPEC-XXX.md`
+📄 File: .specflow/specs/SPEC-XXX.md
 
 ---
 
@@ -153,9 +153,7 @@ The agent will:
 
 `/sf:audit` — audit specification before implementation
 
-<sub>/clear recommended → auditor needs fresh context</sub>
-
-<sub>Optional: `/sf:discuss SPEC-XXX` — clarify assumptions before audit</sub>
+Tip: `/clear` recommended — auditor needs fresh context
 
 {If complexity is large:}
 
