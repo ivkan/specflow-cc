@@ -63,6 +63,13 @@ One commit per logical unit:
 - Clean, readable code
 - Handle edge cases mentioned in spec
 
+## Code Comments Convention
+
+When writing or modifying code:
+- Do NOT add phase/spec/bug references in code comments (e.g., `// Phase 8.02`, `// BUG-06`, `// SPEC-011`)
+- Such references belong in commit messages, not in code
+- Instead, write WHY-comments explaining the reason for the code
+
 </philosophy>
 
 <process>

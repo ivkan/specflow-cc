@@ -81,6 +81,7 @@ Critical connections that must work correctly:
 
 - [What NOT to do]
 - [Boundaries and limitations]
+- Do not add SPEC-XXX, Phase X, or BUG-XX references in generated code comments
 
 ## Implementation Tasks
 
