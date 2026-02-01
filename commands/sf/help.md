@@ -275,6 +275,7 @@ Workflow: Spec → Audit → Revise → Run → Review → Fix → Done
 | /sf:research | Research topic for spec context         |
 | /sf:discuss  | Clarify requirements interactively      |
 | /sf:scan     | Deep codebase analysis                  |
+| /sf:triage   | Convert scan findings to TODOs          |
 
 ## Utilities
 

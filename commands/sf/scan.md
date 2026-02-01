@@ -130,8 +130,9 @@ Top Priority Issues:
 📁 Full report: .specflow/SCAN.md
 
 Next steps:
+• /sf:triage — Review findings and create TODOs
 • /sf:new "Fix: {top concern}" — Create spec for top issue
-• /sf:todo {concern} — Add to backlog for later
+• /sf:todo {concern} — Add single item to backlog
 ```
 
 </workflow>
