@@ -356,6 +356,7 @@ before showing interactive options.
 | `/sf:discuss "question?"` | Single question |
 | `/sf:discuss --pre "topic"` | Pre-spec discussion with feature-type questions |
 | `/sf:scan` | Analyze codebase for issues |
+| `/sf:triage` | Convert scan findings to TODOs |
 
 **Pre-spec discussion** identifies gray areas before creating a spec:
 
