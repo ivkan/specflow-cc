@@ -143,7 +143,7 @@ Set status to "auditing" (ready for re-audit).
 
 <output>
 
-Return formatted revision result:
+Output directly as formatted text (not wrapped in a code block):
 
 ```
 ## REVISION COMPLETE

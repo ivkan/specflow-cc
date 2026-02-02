@@ -244,7 +244,7 @@ Append to specification's Review History:
 
 <output>
 
-Return review result:
+Output directly as formatted text (not wrapped in a code block):
 
 ```
 ## REVIEW RESULT

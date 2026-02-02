@@ -224,7 +224,7 @@ Append Execution Summary to specification:
 
 <output>
 
-Return orchestration result:
+Output directly as formatted text (not wrapped in a code block):
 
 ```
 ## ORCHESTRATION COMPLETE

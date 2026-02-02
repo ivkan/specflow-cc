@@ -153,7 +153,7 @@ Update the discussion file (PRE-XXX.md or DISC-XXX.md):
 
 <output>
 
-Return structured result:
+Output directly as formatted text (not wrapped in a code block):
 
 ```
 ## SPEC CREATED

@@ -383,7 +383,7 @@ status: complete
 
 <output>
 
-Return structured result:
+Output directly as formatted text (not wrapped in a code block):
 
 ```
 ## DISCUSSION COMPLETE

@@ -195,7 +195,7 @@ Append to specification:
 
 <output>
 
-Return execution result:
+Output directly as formatted text (not wrapped in a code block):
 
 ```
 ## EXECUTION COMPLETE

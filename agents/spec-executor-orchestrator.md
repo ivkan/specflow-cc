@@ -494,7 +494,7 @@ rm .specflow/execution/SPEC-XXX-state.json
 
 <output>
 
-Return orchestration result:
+Output directly as formatted text (not wrapped in a code block):
 
 ```
 ## ORCHESTRATION COMPLETE

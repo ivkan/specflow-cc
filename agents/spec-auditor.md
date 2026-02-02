@@ -606,7 +606,7 @@ Update status:
 
 <output>
 
-Return formatted audit result:
+Output directly as formatted text (not wrapped in a code block):
 
 ```
 ## AUDIT RESULT

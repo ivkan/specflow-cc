@@ -141,7 +141,7 @@ Update `.specflow/STATE.md`:
 
 <output>
 
-Return structured result:
+Output directly as formatted text (not wrapped in a code block):
 
 ```
 ## SPLIT COMPLETE
