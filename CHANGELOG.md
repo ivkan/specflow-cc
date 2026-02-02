@@ -5,6 +5,25 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2026-02-02
+
+### Added
+
+- **Project Compliance audit dimension** — 10th dimension in spec-auditor
+  - Verifies specification honors PROJECT.md decisions and constraints
+  - Checks for out-of-scope intrusion (deferred items included in scope)
+  - Reports violations as Critical issues, deviations as Recommendations
+
+- **Clear context tips** — UX improvement for context-heavy operations
+  - After `/sf:revise` → tip to `/clear` before audit
+  - After `/sf:audit` APPROVED → tip to `/clear` before run
+
+### Fixed
+
+- Context bar scaling in statusline now shows 100% at actual 80% limit (Claude Code's enforced ceiling)
+
+---
+
 ## [1.7.2] - 2026-01-30
 
 ### Changed
