@@ -49,6 +49,7 @@ You are intentionally given NO context about how the spec was created. This ensu
 7. **Non-duplication:** Does this avoid reinventing existing solutions?
 8. **Cognitive load:** Will this be easy for developers to understand and maintain?
 9. **Strategic fit:** Does this solve the RIGHT problem for the project's goals?
+10. **Project compliance:** Does spec honor decisions and constraints from PROJECT.md?
 
 ## Context Quality Curve
 
@@ -359,6 +360,61 @@ Watch for patterns that indicate strategic errors:
 **If no concerns:**
 - Add to audit output: "Strategic fit: ✓ Aligned with project goals"
 
+## Step 3.9: Project Compliance Check
+
+Verify specification honors explicit decisions and constraints from PROJECT.md.
+
+### 3.9.1 Extract Project Decisions
+
+Parse PROJECT.md for explicit decisions:
+
+| Section | What to Extract |
+|---------|-----------------|
+| Tech Stack | Required technologies, versions |
+| Patterns | Established patterns to follow |
+| Constraints | Hard limits (no new deps, specific APIs, etc.) |
+| Decisions | Explicit choices already made |
+| Out of Scope | Items explicitly deferred |
+
+### 3.9.2 Compliance Verification
+
+For each extracted decision, check spec compliance:
+
+```
+| Decision | Spec Compliance | Status |
+|----------|-----------------|--------|
+| Use TypeScript strict mode | Spec doesn't add `any` types | ✓ |
+| No new runtime dependencies | Spec adds `lodash` | ✗ VIOLATION |
+| Follow existing handler pattern | Spec uses different structure | ⚠ |
+```
+
+**Status indicators:**
+- ✓ Compliant: Spec follows the decision
+- ⚠ Deviation: Spec differs but may be justified
+- ✗ Violation: Spec contradicts explicit decision
+
+### 3.9.3 Out-of-Scope Intrusion
+
+Check if spec includes items marked as "Out of Scope" or "Deferred" in PROJECT.md:
+
+- [ ] No deferred features included in scope
+- [ ] No "future work" items being implemented
+- [ ] Scope matches project's current phase/milestone
+
+### 3.9.4 Compliance Verdict
+
+**If violations found:**
+- Add **Critical** issue: "Project compliance violation: {decision} contradicted by {spec element}"
+
+**If deviations found:**
+- Add **Recommendation** with prefix `[Compliance]`: "Spec deviates from {decision}. If intentional, update PROJECT.md."
+
+**If out-of-scope intrusion:**
+- Add **Critical** issue: "Scope violation: {item} is marked out-of-scope in PROJECT.md"
+
+**If compliant:**
+- Add to audit output: "Project compliance: ✓ Honors PROJECT.md decisions"
+
 ## Step 4: Generate Implementation Tasks (for large specs)
 
 If scope is large, generate the Implementation Tasks section:
@@ -620,6 +676,8 @@ Choose one:
 
 `/sf:run` — implement specification
 
+Tip: `/clear` recommended — executor needs fresh context for implementation
+
 ---
 
 {If APPROVED with recommendations:}
@@ -638,6 +696,8 @@ N+1. [recommendation]
 Choose one:
 - `/sf:run` — implement specification as-is
 - `/sf:revise` — apply optional recommendations first ({N} items)
+
+Tip: `/clear` recommended before `/sf:run` — executor needs fresh context
 ```
 
 </output>
@@ -645,9 +705,10 @@ Choose one:
 <success_criteria>
 - [ ] Specification fully read
 - [ ] PROJECT.md context loaded
-- [ ] All 9 dimensions evaluated (clarity, completeness, testability, scope, feasibility, architecture, duplication, cognitive load, strategic fit)
+- [ ] All 10 dimensions evaluated (clarity, completeness, testability, scope, feasibility, architecture, duplication, cognitive load, strategic fit, project compliance)
 - [ ] Assumptions extracted and impact assessed
 - [ ] Project alignment verified
+- [ ] Project compliance verified (decisions, constraints, out-of-scope)
 - [ ] Issues categorized (critical vs recommendations)
 - [ ] Audit recorded in spec's Audit History
 - [ ] STATE.md updated

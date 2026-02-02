@@ -168,6 +168,8 @@ Return formatted revision result:
 ### Next Step
 
 `/sf:audit` — re-audit revised specification
+
+Tip: `/clear` recommended — auditor needs fresh context
 ```
 
 </output>

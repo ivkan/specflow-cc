@@ -334,6 +334,8 @@ fi
 ## Next Step
 
 `/sf:run` — implement specification
+
+Tip: `/clear` recommended — executor needs fresh context for implementation
 ```
 
 ### If APPROVED (with optional recommendations):
@@ -362,6 +364,8 @@ fi
 Choose one:
 • `/sf:run` — implement specification as-is
 • `/sf:revise` — apply optional recommendations first ({N} items)
+
+Tip: `/clear` recommended before `/sf:run` — executor needs fresh context
 ```
 
 ### If NEEDS_REVISION:
