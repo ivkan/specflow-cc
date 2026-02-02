@@ -261,7 +261,9 @@ Exit.
 
 `/sf:audit {ID}a` — start with first sub-specification (no dependencies)
 
-**Tip:** Use `/sf:deps` to see the full dependency graph.
+Tip: `/clear` recommended — auditor needs fresh context
+
+Tip: Use `/sf:deps` to see the full dependency graph.
 ```
 
 </workflow>

@@ -180,6 +180,8 @@ SPEC-XXXc
 ### Next Step
 
 `/sf:audit SPEC-XXXa` — start with first sub-specification
+
+Tip: `/clear` recommended — auditor needs fresh context
 ```
 
 </output>

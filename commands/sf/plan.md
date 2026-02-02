@@ -181,6 +181,8 @@ Update `*Last updated:` timestamp.
 
 `/sf:audit` — audit specification before implementation
 
+Tip: `/clear` recommended — auditor needs fresh context
+
 {If complexity is large:}
 
 ### Warning

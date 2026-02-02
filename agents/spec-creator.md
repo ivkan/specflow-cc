@@ -173,6 +173,8 @@ Return structured result:
 ### Next Step
 `/sf:audit` — audit specification before implementation
 
+Tip: `/clear` recommended — auditor needs fresh context
+
 {If complexity is large:}
 ### Warning
 Specification is large (>150k tokens estimated). Consider `/sf:split SPEC-XXX` to decompose.
