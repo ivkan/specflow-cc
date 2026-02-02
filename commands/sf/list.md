@@ -79,6 +79,8 @@ Sort by:
 
 ## Step 7: Display List
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  SPECIFICATIONS

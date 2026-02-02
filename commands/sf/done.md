@@ -319,6 +319,8 @@ git commit -m "docs(sf): complete SPEC-XXX
 
 ## Step 11: Display Completion Summary
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  SPECIFICATION COMPLETED

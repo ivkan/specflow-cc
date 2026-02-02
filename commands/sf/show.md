@@ -111,6 +111,8 @@ Based on current status:
 
 ## Step 7: Display Specification
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  {ID}: {Title}

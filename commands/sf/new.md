@@ -129,6 +129,8 @@ The agent will:
 
 ## Step 6: Display Result
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  SPECIFICATION CREATED

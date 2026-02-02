@@ -209,6 +209,8 @@ Under Current Position, add:
 
 ## Step 10: Display Confirmation
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 **For single-mode execution:**
 
 ```

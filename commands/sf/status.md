@@ -77,6 +77,8 @@ Based on current status:
 
 ## Step 6: Display Status
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  SPECFLOW STATUS

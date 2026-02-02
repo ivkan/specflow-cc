@@ -131,6 +131,8 @@ Exit.
 
 ## Step 4: Display Mini-Spec
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  QUICK MODE
@@ -215,6 +217,8 @@ Append new row to QUICK_LOG.md:
 ```
 
 ## Step 7: Display Result
+
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
 
 ### On Success:
 

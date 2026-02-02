@@ -251,6 +251,8 @@ Compare with pause state changes to identify:
 
 ## Step 9: Display Full Resume Context
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  SESSION RESUMED

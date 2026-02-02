@@ -186,6 +186,8 @@ If TODO.md exists, insert new entries after `# To-Do List` line and update times
 
 ## Step 7: Display Results
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  TRIAGE COMPLETE

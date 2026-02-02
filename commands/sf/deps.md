@@ -94,6 +94,8 @@ Exit.
 
 **Display specific dependencies:**
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  DEPENDENCIES: {ID}
@@ -168,6 +170,8 @@ SPEC-001a [done] → SPEC-001b [running] → SPEC-001c [blocked]
 ```
 
 ### Display Full Graph
+
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

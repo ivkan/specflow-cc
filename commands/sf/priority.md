@@ -57,6 +57,8 @@ Read `.specflow/todos/TODO.md` and extract:
 
 ## Step 3: Display Current Prioritization
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  PRIORITIZATION
@@ -165,6 +167,8 @@ If input is `q`, `done`, or `cancel`:
 Exit prioritization.
 
 ## Step 6: Display Final State
+
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
 
 After changes:
 

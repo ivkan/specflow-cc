@@ -83,6 +83,8 @@ Within same priority, sort by date (oldest first).
 
 ## Step 6: Display List
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  TO-DO LIST

@@ -313,6 +313,8 @@ fi
 
 ## Step 7: Display Result
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 ### If APPROVED (no recommendations):
 
 ```

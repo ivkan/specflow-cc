@@ -123,6 +123,8 @@ Read `.specflow/STATE.md` Decisions table and filter by spec ID.
 
 ### Display Detailed View
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  {ID}: {Title} (Archived)
@@ -213,6 +215,8 @@ Most recent first.
 - First-pass review rate
 
 ### Display List
+
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

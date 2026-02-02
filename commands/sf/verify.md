@@ -90,6 +90,8 @@ Check if Verification History section exists in spec:
 
 ## Step 6: Display Verification Start
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  HUMAN VERIFICATION
@@ -198,6 +200,8 @@ DO NOT modify:
 - Any other existing sections
 
 ## Step 10: Display Summary
+
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

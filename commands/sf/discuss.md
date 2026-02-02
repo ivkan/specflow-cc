@@ -153,6 +153,8 @@ Create discussion record:
 
 ## 8. Display Result
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 ### For direct-question mode:
 
 ```

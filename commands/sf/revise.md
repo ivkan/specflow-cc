@@ -330,6 +330,8 @@ The agent will:
 
 ## Step 9: Display Result
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 **For internal audit:**
 
 ```

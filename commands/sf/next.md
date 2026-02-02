@@ -135,6 +135,8 @@ Update `.specflow/STATE.md`:
 
 ## Step 7: Display Next Task
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  NEXT TASK

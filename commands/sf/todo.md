@@ -99,6 +99,8 @@ Also update `*Last updated:` line at the bottom.
 
 ## Step 6: Display Confirmation
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  TODO CREATED

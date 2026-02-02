@@ -163,6 +163,8 @@ Based on calculated metrics, generate 2-4 actionable insights:
 
 ## Step 5: Display Metrics
 
+**IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  PROJECT METRICS
