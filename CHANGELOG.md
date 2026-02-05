@@ -5,6 +5,24 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.4] - 2026-02-05
+
+### Fixed
+
+- **Spec ID collision bug** — numbering now checks both `specs/` and `archive/` directories
+  - Previously, when all specs were archived, new specs would start from SPEC-001 again
+  - This caused ID collisions with archived specs
+  - Affected files: `spec-creator.md`, `new.md`
+
+### Added
+
+- **State consistency validation** in `/sf:status` (Step 4.5)
+  - Detects orphan specs (files in `specs/` but STATE.md shows "None")
+  - Detects duplicate IDs (same spec in both `specs/` and `archive/`)
+  - Provides actionable warnings with suggested fixes
+
+---
+
 ## [1.9.1] - 2026-02-02
 
 ### Fixed
