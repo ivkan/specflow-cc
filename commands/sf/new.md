@@ -176,7 +176,8 @@ Consider `/sf:split SPEC-XXX` to decompose into smaller specs.
 ### Get Next Spec Number
 
 ```bash
-LAST=$(ls .specflow/specs/SPEC-*.md 2>/dev/null | sort -V | tail -1 | grep -oP 'SPEC-\K\d+')
+# Check BOTH specs and archive directories to prevent ID collisions
+LAST=$(ls .specflow/specs/SPEC-*.md .specflow/archive/SPEC-*.md 2>/dev/null | grep -oP 'SPEC-\K\d+' | sort -n | tail -1)
 NEXT=$(printf "%03d" $((${LAST:-0} + 1)))
 echo "SPEC-$NEXT"
 ```

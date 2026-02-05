@@ -61,6 +61,38 @@ DONE=$(ls .specflow/archive/SPEC-*.md 2>/dev/null | wc -l)
 TODOS=$(ls .specflow/todos/*.md 2>/dev/null | wc -l)
 ```
 
+## Step 4.5: Validate State Consistency
+
+Check for mismatches between STATE.md and actual files:
+
+```bash
+# Check for orphan specs (exist in specs/ but STATE.md says "None")
+ORPHAN_SPECS=$(ls .specflow/specs/SPEC-*.md 2>/dev/null | head -1)
+
+# Check for duplicate IDs (same spec in both specs/ and archive/)
+for f in .specflow/specs/SPEC-*.md; do
+  [ -f "$f" ] || continue
+  ID=$(basename "$f")
+  [ -f ".specflow/archive/$ID" ] && echo "DUPLICATE: $ID"
+done
+```
+
+**If STATE.md shows "Active Specification: None" but specs exist in specs/:**
+Add warning:
+```
+STATE MISMATCH: Found {N} spec(s) in specs/ but STATE.md shows no active spec.
+Likely cause: STATE.md was not updated after spec creation.
+Run: Read the spec file and manually update STATE.md, or delete orphan spec if duplicate.
+```
+
+**If duplicate IDs found:**
+Add warning:
+```
+DUPLICATE ID: {SPEC-XXX} exists in both specs/ and archive/.
+Likely cause: Spec numbering bug - archive was not checked when generating ID.
+Fix: Rename the spec in specs/ to next available ID.
+```
+
 ## Step 5: Determine Next Action
 
 Based on current status:

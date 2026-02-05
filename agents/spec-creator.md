@@ -105,13 +105,15 @@ Limit: 1-3 questions maximum. Zero is fine if task is clear or discussion is com
 
 ## Step 4: Generate Spec ID
 
-Find next available SPEC-XXX number:
+Find next available SPEC-XXX number by checking BOTH specs and archive directories:
 
 ```bash
-ls .specflow/specs/SPEC-*.md 2>/dev/null | sort -V | tail -1
+ls .specflow/specs/SPEC-*.md .specflow/archive/SPEC-*.md 2>/dev/null | grep -oP 'SPEC-\K\d+' | sort -n | tail -1
 ```
 
-If no specs exist, start with SPEC-001.
+If no specs exist in either directory, start with SPEC-001.
+
+**Important:** Always check both directories to prevent ID collisions with archived specs.
 
 ## Step 5: Create Specification
 
