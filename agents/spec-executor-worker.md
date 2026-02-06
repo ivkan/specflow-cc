@@ -79,10 +79,18 @@ When writing or modifying code:
 
 From orchestrator prompt, extract:
 - Task group ID (e.g., "G2")
+- **Segment info (if present):** segment number, total segments
+- **Prior segment summary (if present):** files created, key exports, commits
 - Task description
-- Requirements for this group
+- Requirements for this group/segment
 - Interfaces/types to use (from previous groups)
 - Project patterns reference
+
+**If segment info is present:**
+- This is a segmented execution
+- Focus ONLY on tasks assigned to this segment
+- Use prior segment summary to understand what already exists
+- Do NOT re-read files from prior segments unless you need specific implementation details
 
 ## Step 2: Load Required Context
 
@@ -162,6 +170,8 @@ git log --oneline -10 | grep -q "{hash}" && echo "FOUND: {hash}" || echo "MISSIN
 
 Output structured JSON for orchestrator:
 
+**For non-segmented execution:**
+
 ```json
 {
   "group": "G2",
@@ -183,6 +193,40 @@ Output structured JSON for orchestrator:
 }
 ```
 
+**For segmented execution, add segment fields:**
+
+```json
+{
+  "group": "G2",
+  "segment": 1,
+  "segment_total": 2,
+  "status": "complete",
+  "files_created": ["path/to/types.ts", "path/to/handler-a.ts"],
+  "files_modified": [],
+  "commits": ["abc123", "def456"],
+  "criteria_met": ["Types defined", "HandlerA implemented"],
+  "deviations": [],
+  "self_check": "passed",
+  "error": null,
+  "handoff_summary": {
+    "key_exports": ["UserType", "ConfigType", "HandlerA"],
+    "interfaces": "UserType: { id: string, name: string }",
+    "notes": "HandlerA expects ConfigType in constructor"
+  }
+}
+```
+
+**The `handoff_summary` field** (for segmented execution only) contains:
+- Key exports from created files
+- Interface/type signatures that later segments will need
+- Brief notes about design decisions or conventions established
+
+**Rules for handoff summary:**
+- Include file paths and key exports (not full file contents)
+- Include interface/type signatures if they are needed by later segments
+- Maximum ~500 words per segment summary
+- Do NOT include implementation details, only the public API surface
+
 **Status values:**
 - `complete`: All tasks done successfully
 - `partial`: Some tasks done, others blocked
@@ -194,7 +238,7 @@ Output structured JSON for orchestrator:
 
 Return ONLY the structured JSON result. The orchestrator will parse this.
 
-**On success:**
+**On success (non-segmented):**
 ```json
 {
   "group": "G2",
@@ -206,6 +250,28 @@ Return ONLY the structured JSON result. The orchestrator will parse this.
   "deviations": [],
   "self_check": "passed",
   "error": null
+}
+```
+
+**On success (segmented):**
+```json
+{
+  "group": "G2",
+  "segment": 1,
+  "segment_total": 2,
+  "status": "complete",
+  "files_created": ["path/to/types.ts"],
+  "files_modified": [],
+  "commits": ["abc1234"],
+  "criteria_met": ["Types defined"],
+  "deviations": [],
+  "self_check": "passed",
+  "error": null,
+  "handoff_summary": {
+    "key_exports": ["UserType", "ConfigType"],
+    "interfaces": "UserType: { id: string, name: string }",
+    "notes": "Types exported from types.ts module"
+  }
 }
 ```
 
