@@ -5,6 +5,17 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.0] - 2026-02-06
+
+### Added
+
+- **"max" model profile** — uses Opus for all agent types (spec-creator, spec-executor, impl-reviewer, researcher, codebase-scanner, etc.)
+  - Existing profiles unchanged: `quality`, `balanced`, `budget`
+  - Set `"model_profile": "max"` in `.specflow/config.json` to enable
+  - Affected files: all 11 command files + orchestrator agent
+
+---
+
 ## [1.9.4] - 2026-02-05
 
 ### Fixed
