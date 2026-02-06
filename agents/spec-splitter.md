@@ -112,6 +112,57 @@ After user approval, create each child spec:
 7. Copy applicable Constraints
 8. Note inherited Assumptions
 
+**Implementation Tasks for Child Specs:**
+
+When a child spec contains **3+ task groups**, include an Implementation Tasks section with Wave column:
+
+### Wave Assignment Algorithm
+
+1. Initialize all groups with wave = 0 (unassigned)
+2. For each group with no dependencies: wave = 1
+3. Repeat until all groups have waves:
+   - For each unassigned group:
+     - If all dependencies have assigned waves:
+       - wave = max(dependency waves) + 1
+4. If groups remain unassigned after a full pass with no progress:
+   - Circular dependency exists
+   - Flag in spec as note for auditor
+
+### Implementation Tasks Table Format
+
+```markdown
+### Task Groups
+
+| Group | Wave | Tasks | Dependencies | Est. Context |
+|-------|------|-------|--------------|--------------|
+| G1 | 1 | Create types | — | ~10% |
+| G2 | 2 | Create handler | G1 | ~20% |
+| G3 | 2 | Create tests | G1 | ~15% |
+| G4 | 3 | Wire integration | G2, G3 | ~10% |
+```
+
+### Execution Plan Format
+
+```markdown
+### Execution Plan
+
+| Wave | Groups | Parallel? | Workers |
+|------|--------|-----------|---------|
+| 1 | G1 | No | 1 |
+| 2 | G2, G3 | Yes | 2 |
+| 3 | G4 | No | 1 |
+
+**Total workers needed:** 2 (max in any wave)
+```
+
+- **Parallel?**: "Yes" if wave has >1 group, "No" otherwise
+- **Workers**: Count of groups in the wave
+- **Total workers needed**: Maximum Workers value across all waves
+
+**Threshold Note:**
+- Child specs with <3 task groups: Implementation Tasks section is optional
+- Child specs with 3+ task groups: Include Implementation Tasks with Wave column
+
 ## Step 7: Archive Parent
 
 Move parent spec:
