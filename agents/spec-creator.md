@@ -130,6 +130,74 @@ Write to `.specflow/specs/SPEC-XXX.md` using the template structure:
 8. **Assumptions:** What you assumed (clearly marked)
    - **If `<prior_discussion>` provided:** Decisions from discussion are facts, not assumptions
 
+## Step 5.5: Generate Implementation Tasks (for medium and large specs)
+
+**When to include:**
+- **Medium** and **large** complexity specs: Always include Implementation Tasks section
+- **Small** complexity specs: Optional (skip if only 1-2 files or simple change)
+
+**Task Groups:**
+
+1. Group related work logically:
+   - Types/interfaces first (foundational)
+   - Independent implementations (can run parallel)
+   - Integration/wiring last (depends on implementations)
+
+2. For each group, define:
+   - **Group ID**: G1, G2, G3, etc.
+   - **Tasks**: Brief description of what the group does
+   - **Dependencies**: Which groups must complete first (use `—` for none)
+   - **Est. Context**: Rough estimate (e.g., ~15%, ~20%)
+
+**Wave Assignment Algorithm:**
+
+Assign wave numbers to enable parallel execution:
+
+1. Initialize all groups with wave = 0 (unassigned)
+2. For each group with no dependencies: wave = 1
+3. Repeat until all groups have waves:
+   - For each unassigned group:
+     - If all dependencies have assigned waves:
+       - wave = max(dependency waves) + 1
+4. If groups remain unassigned after a full pass with no progress:
+   - Circular dependency exists
+   - Flag in spec as note: "Note: Circular dependency detected in groups [list]. Auditor will verify."
+
+**Implementation Tasks Table:**
+
+Generate the table with Wave column:
+
+```markdown
+### Task Groups
+
+| Group | Wave | Tasks | Dependencies | Est. Context |
+|-------|------|-------|--------------|--------------|
+| G1 | 1 | Create types | — | ~10% |
+| G2 | 2 | Create handler | G1 | ~20% |
+| G3 | 2 | Create tests | G1 | ~15% |
+| G4 | 3 | Wire integration | G2, G3 | ~10% |
+```
+
+**Execution Plan:**
+
+Generate the Execution Plan summary showing parallel opportunities:
+
+```markdown
+### Execution Plan
+
+| Wave | Groups | Parallel? | Workers |
+|------|--------|-----------|---------|
+| 1 | G1 | No | 1 |
+| 2 | G2, G3 | Yes | 2 |
+| 3 | G4 | No | 1 |
+
+**Total workers needed:** 2 (max in any wave)
+```
+
+- **Parallel?**: "Yes" if wave has >1 group, "No" otherwise
+- **Workers**: Count of groups in the wave
+- **Total workers needed**: Maximum Workers value across all waves
+
 ## Step 6: Estimate Complexity
 
 Based on:
