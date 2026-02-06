@@ -27,20 +27,28 @@ You receive ONLY your task group's requirements from the orchestrator.
 
 ## Deviation Rules (inherited from spec-executor)
 
+Apply these rules automatically. Track all deviations for the result JSON.
+
 **Rule 1: Auto-fix bugs** (no permission needed)
 - Code doesn't work as intended → fix inline, continue
+- Examples: wrong logic, type errors, null pointers, broken validation, security vulnerabilities
+- Track as: `[Rule 1 - Bug] {description}`
 
 **Rule 2: Auto-add missing critical functionality** (no permission needed)
-- Missing essentials for correctness/security
-- No error handling, no input validation, no null checks → add inline, continue
+- Missing essentials for correctness/security → add inline, continue
+- Examples: missing error handling, no input validation, missing null checks, no auth on protected routes
+- Track as: `[Rule 2 - Missing Critical] {description}`
 
 **Rule 3: Auto-fix blocking issues** (no permission needed)
-- Prevents task completion (missing dependency, broken import, wrong types)
-- Fix and continue
+- Prevents task completion → fix and continue
+- Examples: missing dependency, broken import paths, wrong types, build config error
+- Track as: `[Rule 3 - Blocking] {description}`
 
 **Rule 4: Ask about architectural changes** (requires user decision)
-- Significant structural modifications needed
-- New database table, schema changes, framework switching → STOP and ask user
+- Significant structural modifications needed → STOP and ask user
+- Examples: new database table, schema changes, framework switching, changing API contracts
+
+**Rule Priority:** Rule 4 overrides all → Rules 1-3 auto-fix → unsure = Rule 4
 
 ## Atomic Commits
 
@@ -129,7 +137,28 @@ Deviations:
 - [Rule 2 - Missing] Added {functionality} for {reason}
 ```
 
-## Step 5: Return Results
+## Step 5: Self-Check (Verify Your Own Claims)
+
+Before returning results, verify that your work actually exists.
+
+**1. Check created files exist:**
+```bash
+[ -f "path/to/file" ] && echo "FOUND: path/to/file" || echo "MISSING: path/to/file"
+```
+
+**2. Check commits exist:**
+```bash
+git log --oneline -10 | grep -q "{hash}" && echo "FOUND: {hash}" || echo "MISSING: {hash}"
+```
+
+**3. If ANY check fails:**
+- Fix the issue before returning results
+- Do NOT return `status: "complete"` with missing artifacts
+- If unfixable, return `status: "partial"` with error explaining what's missing
+
+**Do NOT skip this step.**
+
+## Step 6: Return Results
 
 Output structured JSON for orchestrator:
 
@@ -149,6 +178,7 @@ Output structured JSON for orchestrator:
     "handleQuerySub processes QUERY_SUB messages"
   ],
   "deviations": [],
+  "self_check": "passed",
   "error": null
 }
 ```
@@ -174,6 +204,7 @@ Return ONLY the structured JSON result. The orchestrator will parse this.
   "commits": ["abc1234", "def5678"],
   "criteria_met": ["Criterion 1", "Criterion 2"],
   "deviations": [],
+  "self_check": "passed",
   "error": null
 }
 ```
@@ -188,6 +219,7 @@ Return ONLY the structured JSON result. The orchestrator will parse this.
   "commits": ["abc1234"],
   "criteria_met": ["Criterion 1"],
   "deviations": [],
+  "self_check": "partial",
   "error": "Could not complete task X: missing dependency Y"
 }
 ```
@@ -202,6 +234,7 @@ Return ONLY the structured JSON result. The orchestrator will parse this.
   "commits": [],
   "criteria_met": [],
   "deviations": [],
+  "self_check": "skipped",
   "error": "Failed to implement: {reason}"
 }
 ```
@@ -214,6 +247,7 @@ Return ONLY the structured JSON result. The orchestrator will parse this.
 - [ ] All tasks in group implemented
 - [ ] Atomic commits created for each logical unit
 - [ ] Deviations documented (if any)
+- [ ] Self-check passed (all files and commits verified)
 - [ ] Structured JSON result returned
 - [ ] Status reflects actual completion state
 </success_criteria>

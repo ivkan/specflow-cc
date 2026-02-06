@@ -85,6 +85,7 @@ Worker returns structured JSON:
   "commits": ["abc123", "def456"],
   "criteria_met": ["Criterion 1", "Criterion 2"],
   "deviations": [],
+  "self_check": "passed|partial|skipped",
   "error": null
 }
 ```
@@ -438,6 +439,36 @@ Criteria met: [union of all criteria_met]
 Deviations: [collect all deviations]
 ```
 
+## Step 4.5: Final Aggregated Self-Check
+
+After aggregating all results, verify claims against reality.
+
+**1. Check all created files exist:**
+
+For each file in the aggregated `files_created` list:
+```bash
+[ -f "path/to/file" ] && echo "FOUND: path/to/file" || echo "MISSING: path/to/file"
+```
+
+**2. Check all commits exist:**
+
+For each commit hash in the aggregated `commits` list:
+```bash
+git log --oneline -30 | grep -q "{hash}" && echo "FOUND: {hash}" || echo "MISSING: {hash}"
+```
+
+**3. Check worker self_check fields:**
+
+If any worker returned `self_check: "partial"` or `self_check: "skipped"`, flag those groups.
+
+**4. Handle discrepancies:**
+
+- Missing files/commits → report in Execution Summary under "Self-Check Issues"
+- Do NOT report full success with missing artifacts
+- If critical files missing → mark affected groups as `partial` in state
+
+**Do NOT skip this step.**
+
 ## Step 5: Create Final Summary
 
 Append Execution Summary to specification:
@@ -551,6 +582,7 @@ Output directly as formatted text (not wrapped in a code block):
 - [ ] State updated after each wave completes
 - [ ] Post-wave verification performed after each wave
 - [ ] Failures handled per failure handling rules
+- [ ] Final aggregated self-check passed (all files and commits verified)
 - [ ] Results aggregated into final summary
 - [ ] State file deleted on successful completion
 - [ ] Execution Summary appended to specification

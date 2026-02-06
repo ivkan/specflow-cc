@@ -184,7 +184,35 @@ Criteria met: [union of all criteria_met]
 Deviations: [collect all deviations]
 ```
 
-## Step 6: Create Final Summary
+## Step 6: Aggregated Self-Check
+
+After aggregating results, verify that all worker claims are real.
+
+**1. Check all created files exist:**
+
+For each file in the aggregated `files_created` list:
+```bash
+[ -f "path/to/file" ] && echo "FOUND: path/to/file" || echo "MISSING: path/to/file"
+```
+
+**2. Check all commits exist:**
+
+For each commit hash in the aggregated `commits` list:
+```bash
+git log --oneline -20 | grep -q "{hash}" && echo "FOUND: {hash}" || echo "MISSING: {hash}"
+```
+
+**3. Check worker self_check fields:**
+
+If any worker returned `self_check: "partial"` or `self_check: "failed"`, flag those groups for investigation.
+
+**4. Handle failures:**
+
+- If missing files/commits found: report discrepancies in Execution Summary
+- Do NOT report success with missing artifacts
+- If critical files missing: mark affected groups as `partial`
+
+## Step 7: Create Final Summary
 
 Append Execution Summary to specification:
 
@@ -216,7 +244,7 @@ Append Execution Summary to specification:
 {aggregated deviations}
 ```
 
-## Step 7: Update STATE.md
+## Step 8: Update STATE.md
 
 - Status → "review"
 - Next Step → "/sf:review"
@@ -276,6 +304,7 @@ Output directly as formatted text (not wrapped in a code block):
 - [ ] Each worker receives no more than 3 task groups
 - [ ] All worker results collected and parsed
 - [ ] Failures handled per failure handling rules
+- [ ] Aggregated self-check passed (all files and commits verified)
 - [ ] Results aggregated into final summary
 - [ ] Execution Summary appended to specification
 - [ ] STATE.md updated to "review"
