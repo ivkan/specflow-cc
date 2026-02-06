@@ -2,16 +2,16 @@
 
 ## Active Specification
 
-none
+SPEC-002
 
-**Status:** idle
-**Next Step:** /sf:new or /sf:next
+**Status:** review
+**Next Step:** /sf:review
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| — | — | — | — | — | — |
+| medium | SPEC-002 | Ensure spec-creator and spec-splitter always include Wave column in Implementation Tasks | review | small | — |
 
 **Master Spec:** SPEC-GSD-IMPROVEMENTS (umbrella for GSD adoption) - COMPLETE
 
@@ -34,6 +34,8 @@ none
 | 2026-01-27 | SPEC-001: Fix Response v1 - applied all 2 critical fixes (dash removal, templates/scan.md Run: alignment) |
 | 2026-01-27 | SPEC-001: Review v2 APPROVED - all fixes verified, all 4 acceptance criteria met, no regressions, ready for completion |
 | 2026-01-27 | SPEC-001: COMPLETED - ready-to-use /sf:new commands added to codebase scanner recommendations |
+| 2026-02-06 | SPEC-002: Created from TODO-002 — wave-based parallelization formalization in spec-creator and spec-splitter |
+| 2026-02-06 | SPEC-002: Audit v1 APPROVED — ~15% context estimate, 1 recommendation (step numbering approach), all 10 dimensions pass |
 
 ## Notes
 
@@ -53,7 +55,7 @@ none
 - SPEC-001: Add ready-to-use commands to spec creation recommendations
 
 ### In Progress
-None
+- SPEC-002: Ensure spec-creator and spec-splitter always include Wave column in Implementation Tasks
 
 ### Architecture Alignment with GSD
 | Aspect | SF Status |
@@ -72,4 +74,4 @@ None
 | Pre-spec Discussion | Implemented (SPEC-PREDISCUSS-001) - DONE |
 
 ---
-*Last updated: 2026-01-27 (SPEC-001 COMPLETED and archived)*
+*Last updated: 2026-02-06 (SPEC-002 audit v1 APPROVED)*
