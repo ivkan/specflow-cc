@@ -37,6 +37,16 @@ none
 | 2026-02-06 | SPEC-002: Audit v1 APPROVED — ~15% context estimate, 1 recommendation (step numbering approach), all 10 dimensions pass |
 | 2026-02-06 | SPEC-002: Review v1 APPROVED — all 7 acceptance criteria met, wave algorithm consistent across all three agents, no constraint violations |
 | 2026-02-06 | SPEC-002: COMPLETED — wave column instructions added to spec-creator and spec-splitter |
+| 2026-02-06 | SPEC-003: Created from TODO-001 — segmented execution within task groups for fresh context per segment |
+| 2026-02-06 | SPEC-003: Audit v1 APPROVED — ~50% context estimate, 4 recommendations (G1 threshold, handoff format clarity, step numbering for sf- orchestrator, >50% segment count), all 10 dimensions pass |
+| 2026-02-06 | SPEC-003: Response v1 — applied all 4 recommendations (G1 threshold note in assumptions, handoff format clarification, orchestrator step numbering reference table, >50% default to 4 segments) |
+| 2026-02-06 | SPEC-003: Audit v2 APPROVED — ~50% context estimate, all v1 recommendations verified, 1 minor recommendation (worker step number reference), ready for implementation |
+| 2026-02-06 | SPEC-003: Response v2 — applied audit v2 recommendation (worker step number reference fix: Step 5 -> Step 6) |
+| 2026-02-06 | SPEC-003: Audit v3 APPROVED — v2 fix partially applied (heading fixed, code block and Files table not updated), 2 minor recommendations (residual Step 5 references) |
+| 2026-02-06 | SPEC-003: Response v3 — applied both audit v3 recommendations (code block Step 5→6, Files table Step 5→6) |
+| 2026-02-06 | SPEC-003: Audit v4 APPROVED — all v3 recommendations verified applied correctly, all 10 dimensions pass, no remaining issues, ready for implementation |
+| 2026-02-06 | SPEC-003: Review v1 APPROVED — all 9 acceptance criteria met, both orchestrators consistent, worker segment-aware, auditor generates hints, state tracking correct, no issues found |
+| 2026-02-06 | SPEC-003: COMPLETED — segmented execution within task groups for fresh context per segment |
 
 ## Notes
 
@@ -55,9 +65,7 @@ none
 - SPEC-PREDISCUSS-001: Pre-spec discussion mode with feature-type-specific questions
 - SPEC-001: Add ready-to-use commands to spec creation recommendations
 - SPEC-002: Ensure spec-creator and spec-splitter always include Wave column in Implementation Tasks
-
-### In Progress
-- None
+- SPEC-003: Segmented execution within task groups
 
 ### Architecture Alignment with GSD
 | Aspect | SF Status |
@@ -74,6 +82,7 @@ none
 | Model Profiles | Implemented (SPEC-MODEL-001) - DONE |
 | STATE.md Size Limit | Implemented (SPEC-STATE-001) - DONE |
 | Pre-spec Discussion | Implemented (SPEC-PREDISCUSS-001) - DONE |
+| Segmented execution | Implemented (SPEC-003) - DONE |
 
 ---
-*Last updated: 2026-02-06 (SPEC-002 COMPLETED)*
+*Last updated: 2026-02-06 (SPEC-003 COMPLETED — segmented execution within task groups)*
