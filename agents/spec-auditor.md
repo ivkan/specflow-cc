@@ -467,6 +467,38 @@ If the spec has a Goal Analysis section, enhance Implementation Tasks:
 
 Note: "Enables Truths" column is only added when Goal Analysis is present.
 
+### 4.45 Segment Hints for Large Groups
+
+After generating task groups, check if any single group has Est. Context >= 20%.
+
+If so, add a `Segments` column to the Implementation Tasks table:
+
+| Group | Wave | Tasks | Dependencies | Est. Context | Segments |
+|-------|------|-------|--------------|--------------|----------|
+| G1 | 1 | Create types | - | ~8% | 1 |
+| G2 | 2 | Create handlers, tests, validation | G1 | ~28% | 2 |
+| G3 | 2 | Create UI components | G1 | ~10% | 1 |
+
+For groups with Segments > 1, add segment breakdown in the Execution Plan:
+
+**G2 Segments:**
+- S1: Create handlers (handler-a.ts, handler-b.ts) -- ~14%
+- S2: Create tests and validation (handler.test.ts, validation.ts) -- ~14%
+
+**Segment count guidance:**
+
+| Est. Context | Segment Count |
+|--------------|---------------|
+| < 20% | 1 (no segmentation) |
+| 20-35% | 2 segments |
+| 35-50% | 3 segments |
+| > 50% | 4 segments (with warning: consider splitting into separate task groups) |
+
+**Segment boundaries should follow natural divisions:**
+1. File boundaries (each segment handles subset of files)
+2. Logical unit boundaries (types first, then implementations, then wiring)
+3. Sequential task ordering (T1-T3 in S1, T4-T6 in S2)
+
 ## Step 4.5: Compute Execution Waves
 
 After generating task groups (or for any spec with Implementation Tasks):
