@@ -139,6 +139,37 @@ This helps workers make trade-off decisions:
           "error": null
         }
       }
+    },
+    {
+      "id": 2,
+      "status": "in_progress",
+      "results": {
+        "G2": {
+          "status": "in_progress",
+          "segmented": true,
+          "segment_count": 2,
+          "segments": [
+            {
+              "segment": 1,
+              "status": "complete",
+              "commits": ["abc123"],
+              "files_created": ["types.ts"],
+              "handoff_summary": "..."
+            },
+            {
+              "segment": 2,
+              "status": "running",
+              "commits": [],
+              "files_created": []
+            }
+          ]
+        },
+        "G3": {
+          "status": "complete",
+          "segmented": false,
+          "commits": ["def456"]
+        }
+      }
     }
   ],
   "commits": ["all", "commit", "hashes"],
@@ -321,7 +352,48 @@ Verify prerequisites:
   2. "Continue anyway" -> proceed despite issues
   3. "Abort" -> stop execution, preserve state
 
+### 3.05 Evaluate Segmentation
+
+For each task group in the current wave, check if segmentation is needed.
+
+**Segmentation threshold:** Est. Context >= 20%
+
+**Decision logic:**
+
+| Est. Context | Segment Count | Rationale |
+|--------------|---------------|-----------|
+| < 20% | 1 (no segmentation) | Fits comfortably in fresh context |
+| 20-35% | 2 segments | Split to keep each segment in PEAK range |
+| 35-50% | 3 segments | Three-way split for larger groups |
+| > 50% | 4 segments (default) + warning | Group should have been split by auditor; flag as warning but proceed with 4-way split |
+
+**How to determine segment boundaries:**
+
+Parse the task group's task list and divide at natural boundaries:
+1. File boundaries (each segment handles a subset of files)
+2. Logical unit boundaries (types first, then implementations, then wiring)
+3. If tasks are numbered (T1, T2, T3...), divide the task numbers evenly
+
+**Segment plan format:**
+
+For each segmented group, create a segment plan:
+
+| Segment | Tasks | Files | Est. Context |
+|---------|-------|-------|--------------|
+| G2-S1 | Create types, Create handler-a | types.ts, handler-a.ts | ~12% |
+| G2-S2 | Create handler-b, Create tests | handler-b.ts, tests.ts | ~13% |
+
+**Pre-computed segments from auditor:**
+
+If the Implementation Tasks table includes a `Segments` column, use those segment boundaries instead of computing them at runtime.
+
 ### 3.1 Spawn Workers
+
+For each task group in the current wave:
+
+**If group is NOT segmented (standard path):**
+
+Spawn worker as today (unchanged).
 
 **Parallel (preferred):**
 ```
@@ -344,6 +416,104 @@ Task(prompt="...G4 (with context_budget)...", subagent_type="sf-spec-executor-wo
 ```
 
 **Sequential fallback:** If parallel fails, execute one at a time.
+
+**If group IS segmented:**
+
+Execute segments sequentially within the group, each in a fresh worker:
+
+Segment 1:
+```
+Task(prompt="<task_group>G2-S1: Create types and handler-a</task_group>
+<segment_info>
+Segment 1 of 2 for group G2.
+This is the FIRST segment. No prior work exists.
+</segment_info>
+<requirements>{G2-S1 requirements}</requirements>
+<project_patterns>@.specflow/PROJECT.md</project_patterns>
+<context_budget>
+Estimated: ~12%
+Target max: 25%
+</context_budget>
+Implement this segment. Create atomic commits.
+Return JSON: {group, segment, status, files_created, files_modified, commits, criteria_met, deviations, error}
+", subagent_type="sf-spec-executor-worker", model="{profile_model}", description="Execute G2 segment 1/2")
+```
+
+Wait for Segment 1 result, then:
+
+Segment 2:
+```
+Task(prompt="<task_group>G2-S2: Create handler-b and tests</task_group>
+<segment_info>
+Segment 2 of 2 for group G2.
+Prior segment completed. Summary of prior work:
+</segment_info>
+<prior_segment_summary>
+## Completed Segments
+
+### Segment 1 of N
+**Status:** complete
+**Files created:**
+- `path/to/file1.ts` -- brief description (key exports: X, Y)
+- `path/to/file2.ts` -- brief description (key exports: Z)
+
+**Files modified:**
+- `path/to/existing.ts` -- what changed
+
+**Commits:** hash1, hash2
+
+**Key interfaces/types defined:**
+- InterfaceName: { field1: type, field2: type }
+- TypeName: description
+</prior_segment_summary>
+<requirements>{G2-S2 requirements}</requirements>
+<project_patterns>@.specflow/PROJECT.md</project_patterns>
+<context_budget>
+Estimated: ~13%
+Target max: 25%
+</context_budget>
+Implement this segment. Create atomic commits.
+You can reference files created by prior segments but do NOT re-read them unless you need specific details.
+Return JSON: {group, segment, status, files_created, files_modified, commits, criteria_met, deviations, error}
+", subagent_type="sf-spec-executor-worker", model="{profile_model}", description="Execute G2 segment 2/2")
+```
+
+**Important:** Segments within a group are ALWAYS sequential (never parallel) because later segments depend on earlier ones.
+
+**Parallel behavior:** Non-segmented groups in the same wave still run in parallel alongside segmented groups. The segmented group's sequential segments run independently of other groups.
+
+### 3.15 Aggregate Segment Results
+
+After all segments for a group complete, merge results into a single group result:
+
+```json
+{
+  "group": "G2",
+  "status": "{worst status among segments: failed > partial > complete}",
+  "files_created": ["{union of all segments' files_created}"],
+  "files_modified": ["{union of all segments' files_modified}"],
+  "commits": ["{concatenation of all segments' commits in order}"],
+  "criteria_met": ["{union of all segments' criteria_met}"],
+  "deviations": ["{concatenation of all segments' deviations}"],
+  "error": "{first non-null error, or null}",
+  "segmented": true,
+  "segment_count": 2,
+  "segment_results": [
+    {"segment": 1, "status": "complete", ...},
+    {"segment": 2, "status": "complete", ...}
+  ]
+}
+```
+
+This aggregated result feeds into the existing Step 3.2 (Collect Results) and Step 3.3 (Update State Per Worker) unchanged.
+
+**Segment failure handling:**
+
+| Scenario | Action |
+|----------|--------|
+| Segment N fails | Abort remaining segments for this group, mark group as failed |
+| Segment N partial | Continue to next segment with available results, mark group as partial |
+| All segments complete | Aggregate into single group result, mark group as complete |
 
 ### 3.2 Collect Results
 
