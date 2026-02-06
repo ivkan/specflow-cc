@@ -413,11 +413,12 @@ Control cost vs quality:
 
 | Profile | Spec Creation | Execution | Review |
 |---------|---------------|-----------|--------|
+| `max` | Opus | Opus | Opus |
 | `quality` | Opus | Opus | Sonnet |
 | `balanced` | Opus | Sonnet | Sonnet |
 | `budget` | Sonnet | Sonnet | Haiku |
 
-Use `quality` for critical features, `budget` for routine tasks.
+Use `max` for maximum quality everywhere, `quality` for critical features, `budget` for routine tasks.
 
 ---
 
