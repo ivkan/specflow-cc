@@ -2,7 +2,7 @@
 id: SPEC-002
 title: Ensure spec-creator and spec-splitter always include Wave column in Implementation Tasks
 type: feature
-status: running
+status: done
 priority: medium
 complexity: small
 created: 2026-02-06
@@ -209,3 +209,41 @@ All three agents (spec-creator.md, spec-splitter.md, spec-auditor.md) now use th
 - Wave algorithm is now consistent across all three agents
 - Execution Plan format is consistent with templates/spec.md
 - Small spec exemption explicitly documented in both agents
+
+---
+
+## Review History
+
+### Review v1 (2026-02-06)
+**Result:** APPROVED
+**Reviewer:** impl-reviewer (subagent)
+
+**Findings:**
+
+**Passed:**
+- [✓] Acceptance Criterion 1 — `agents/spec-creator.md` Step 5.5 contains explicit instructions for Wave column in medium and large specs (lines 133-137)
+- [✓] Acceptance Criterion 2 — `agents/spec-creator.md` contains wave assignment algorithm (lines 156-164), matches specification exactly
+- [✓] Acceptance Criterion 3 — `agents/spec-creator.md` contains Execution Plan summary table format (lines 186-199)
+- [✓] Acceptance Criterion 4 — `agents/spec-splitter.md` Step 6 contains Wave column instructions for 3+ task groups (line 117, lines 162-164)
+- [✓] Acceptance Criterion 5 — `agents/spec-splitter.md` contains wave assignment algorithm (lines 121-129), matches specification exactly
+- [✓] Acceptance Criterion 6 — Wave assignment algorithms are identical across all three agents (verified via grep: spec-creator.md, spec-splitter.md, spec-auditor.md all use same 4-step algorithm)
+- [✓] Acceptance Criterion 7 — Small specs explicitly exempted in `agents/spec-creator.md` line 137: "Small complexity specs: Optional (skip if only 1-2 files or simple change)"
+- [✓] Constraint compliance — No modifications to `agents/spec-auditor.md`, `agents/spec-executor-orchestrator.md`, or `templates/spec.md` (verified via git log)
+- [✓] Wave algorithm consistency — All three files use identical algorithm: initialize wave=0, no deps get wave=1, others get max(dep waves)+1, circular dependency detection
+- [✓] Execution Plan format consistency — All three agents use identical table format with Wave, Groups, Parallel?, Workers columns
+- [✓] Implementation Tasks table format — All three agents use identical format with Group, Wave, Tasks, Dependencies, Est. Context columns
+- [✓] Code quality — Clear, readable additions; follows existing document structure and formatting patterns
+- [✓] Integration — New Step 5.5 in spec-creator fits naturally between Step 5 and Step 6; spec-splitter update integrates smoothly into Step 6
+- [✓] Documentation clarity — Instructions are specific and actionable; examples provided match template format
+
+**Summary:**
+
+Implementation is complete and fully compliant with all acceptance criteria and constraints. The wave assignment algorithm is now consistent across all three agents (spec-creator, spec-splitter, spec-auditor), matching the specification exactly. Both modified files include proper Wave column instructions, wave assignment algorithms, and Execution Plan formats. Small specs are appropriately exempted, and the 3+ task group threshold for spec-splitter is clearly documented. No constrained files were modified. Code quality is high, with clear integration into existing agent structures.
+
+---
+
+## Completion
+
+**Completed:** 2026-02-06
+**Total Commits:** 2
+**Review Cycles:** 1

@@ -2,16 +2,15 @@
 
 ## Active Specification
 
-SPEC-002
+none
 
-**Status:** review
-**Next Step:** /sf:review
+**Status:** idle
+**Next Step:** /sf:new or /sf:next
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| medium | SPEC-002 | Ensure spec-creator and spec-splitter always include Wave column in Implementation Tasks | review | small | — |
 
 **Master Spec:** SPEC-GSD-IMPROVEMENTS (umbrella for GSD adoption) - COMPLETE
 
@@ -36,6 +35,8 @@ SPEC-002
 | 2026-01-27 | SPEC-001: COMPLETED - ready-to-use /sf:new commands added to codebase scanner recommendations |
 | 2026-02-06 | SPEC-002: Created from TODO-002 — wave-based parallelization formalization in spec-creator and spec-splitter |
 | 2026-02-06 | SPEC-002: Audit v1 APPROVED — ~15% context estimate, 1 recommendation (step numbering approach), all 10 dimensions pass |
+| 2026-02-06 | SPEC-002: Review v1 APPROVED — all 7 acceptance criteria met, wave algorithm consistent across all three agents, no constraint violations |
+| 2026-02-06 | SPEC-002: COMPLETED — wave column instructions added to spec-creator and spec-splitter |
 
 ## Notes
 
@@ -53,9 +54,10 @@ SPEC-002
 - SPEC-STATE-001: STATE.md size constraint with automatic decision archiving
 - SPEC-PREDISCUSS-001: Pre-spec discussion mode with feature-type-specific questions
 - SPEC-001: Add ready-to-use commands to spec creation recommendations
+- SPEC-002: Ensure spec-creator and spec-splitter always include Wave column in Implementation Tasks
 
 ### In Progress
-- SPEC-002: Ensure spec-creator and spec-splitter always include Wave column in Implementation Tasks
+- None
 
 ### Architecture Alignment with GSD
 | Aspect | SF Status |
@@ -74,4 +76,4 @@ SPEC-002
 | Pre-spec Discussion | Implemented (SPEC-PREDISCUSS-001) - DONE |
 
 ---
-*Last updated: 2026-02-06 (SPEC-002 audit v1 APPROVED)*
+*Last updated: 2026-02-06 (SPEC-002 COMPLETED)*
