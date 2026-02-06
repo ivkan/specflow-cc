@@ -5,6 +5,38 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0] - 2026-02-06
+
+### Added
+
+- **Self-check verification** — all executor agents now verify their own claims before reporting completion
+  - `spec-executor`: checks created files exist on disk, commits in git, modified files contain expected changes
+  - `spec-executor-worker`: self-check step before returning JSON results; new `self_check` field in response protocol
+  - Both orchestrators: aggregated self-check verifying all worker claims against reality
+  - Agents refuse to report success if artifacts are missing
+
+- **Segmented execution** — large task groups automatically split into sequential segments with fresh context
+  - Orchestrators evaluate segmentation threshold (Est. Context >= 20%)
+  - Each segment runs in a fresh worker subagent to prevent quality degradation
+  - Handoff summaries pass key exports and interface signatures between segments
+  - Segment results aggregated into single group result for downstream processing
+  - Segment failure handling: abort remaining segments on failure, continue on partial
+
+- **Wave column in spec creation** — `spec-creator` and `spec-splitter` now always generate a `Wave` column in Implementation Tasks tables
+  - Pre-computed wave numbers during spec creation (not during execution)
+  - Orchestrators read wave numbers directly instead of computing dependency graphs
+  - Fallback for legacy specs without Wave column preserved
+
+### Changed
+
+- **Enhanced deviation rules** — all executor agents now include detailed examples, rule priority order, and edge case guidance
+  - Rule priority: Rule 4 (architectural) overrides all; Rules 1-3 auto-fix; unsure defaults to Rule 4
+  - Standardized tracking format: `[Rule N - Type] {description}`
+
+- **Auditor segment hints** — `spec-auditor` can now flag task groups that should be pre-segmented based on estimated context
+
+---
+
 ## [1.10.0] - 2026-02-06
 
 ### Added
