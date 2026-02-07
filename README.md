@@ -17,7 +17,7 @@ npx specflow-cc --global
 
 <br>
 
-https://github.com/user-attachments/assets/3f516907-8657-4ea4-bc0c-6319998a09db
+https://github.com/user-attachments/assets/23415009-81f9-4755-9e35-32e8bc56b8e7
 
 <br>
 
