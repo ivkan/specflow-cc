@@ -77,6 +77,83 @@ ls -d **/components/** 2>/dev/null | head -5
 ls tsconfig.json 2>/dev/null
 ```
 
+## Step 4.5: Detect Language Profile
+
+Based on Step 2 detection results, determine primary language and generate profile:
+
+**Rust** (if `Cargo.toml` found):
+```markdown
+## Language Profile
+
+| Setting | Value |
+|---------|-------|
+| Language | Rust |
+| Build check | `cargo check` |
+| Lint | `cargo clippy -- -D warnings` |
+| Test | `cargo test` |
+| Max files per spec | 5 |
+| Compilation gate | Yes — run `cargo check` after each implementation block |
+| Trait-first | Yes — trait/interface design must be in Wave 1 |
+
+### Rust-Specific Guidelines
+
+- Keep specs to 3-5 files max (borrow checker errors cascade across files)
+- Design traits/interfaces before implementation (wrong trait boundaries force rewrites)
+- Run `cargo check` after every file change, not just at the end
+- Prefer `Result<T, E>` over `unwrap()`/`expect()` in production code
+- Document `unsafe` blocks with safety invariants
+- Use `cargo clippy` as mandatory quality gate
+```
+
+**Go** (if `go.mod` found):
+```markdown
+## Language Profile
+
+| Setting | Value |
+|---------|-------|
+| Language | Go |
+| Build check | `go build ./...` |
+| Lint | `golangci-lint run` |
+| Test | `go test ./...` |
+| Max files per spec | 8 |
+| Compilation gate | Yes — run `go build ./...` after each implementation block |
+| Trait-first | Yes — interface design must be in Wave 1 |
+```
+
+**TypeScript** (if `tsconfig.json` found):
+```markdown
+## Language Profile
+
+| Setting | Value |
+|---------|-------|
+| Language | TypeScript |
+| Build check | `npx tsc --noEmit` |
+| Lint | `npx eslint .` |
+| Test | `pnpm test` |
+| Max files per spec | 10 |
+| Compilation gate | No |
+| Trait-first | No |
+```
+
+**Python** (if `pyproject.toml` or `setup.py` found):
+```markdown
+## Language Profile
+
+| Setting | Value |
+|---------|-------|
+| Language | Python |
+| Build check | — |
+| Lint | `ruff check .` |
+| Test | `pytest` |
+| Max files per spec | 10 |
+| Compilation gate | No |
+| Trait-first | No |
+```
+
+**If no recognized language detected:** omit Language Profile section entirely.
+
+Include the generated profile in Step 6 (Generate PROJECT.md) before the closing `---` line.
+
 ## Step 5: Create .specflow Directory
 
 ```bash

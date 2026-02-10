@@ -5,6 +5,45 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.0] - 2026-02-10
+
+### Added
+
+- **Language Profiles** — optional, per-language configuration in PROJECT.md that adapts all agents to language-specific needs
+  - `/sf:init` auto-detects language from `Cargo.toml` (Rust), `go.mod` (Go), `tsconfig.json` (TypeScript), `pyproject.toml` (Python)
+  - Generates `## Language Profile` section in PROJECT.md with build/lint/test commands, max files per spec, compilation gate, and trait-first settings
+  - Projects without a detected language remain fully language-agnostic (backward-compatible)
+
+- **Compilation gates** — incremental build verification during implementation (Rust, Go)
+  - `spec-executor` and `spec-executor-worker` run `build_check` command after each file or tightly coupled group
+  - Build failures auto-fixed before proceeding (Rule 3: blocking issues)
+  - Lint check runs at end of implementation scope
+  - New `build_check` field in worker JSON result protocol
+
+- **Trait-first enforcement** — compiled languages require type/trait design before implementation
+  - `spec-creator` mandates G1/Wave 1 as types-only when `Trait-first: Yes`
+  - `spec-auditor` validates trait-first compliance (Critical if G1 mixes traits and implementation)
+  - Prevents cascading rework from wrong trait boundaries in Rust/Go
+
+- **Language-aware spec sizing** — file count limits adapted per language
+  - Rust: 3-5 files max (borrow checker errors cascade)
+  - Go: 5-8 files max
+  - TypeScript/Python: 8-10 files max
+  - `spec-auditor` raises Warning/Critical when file count exceeds language profile limit
+
+- **Language-specific review gates** in `impl-reviewer`
+  - Runs build, lint, and test commands from profile as review gates
+  - Rust idiom checks: no unnecessary `.clone()`, `?` operator over `.unwrap()`, `unsafe` documentation, `Send + Sync` bounds
+  - Go idiom checks: error returns over panics, interfaces accepted/structs returned, context propagation
+
+### Changed
+
+- `templates/project.md` — added optional Language Profile section
+- `spec-auditor` — added Step 3.10 (Language Profile Check) with 5 sub-checks and scope threshold override
+- `spec-creator` — added language-specific sizing table and trait-first override in task group generation
+
+---
+
 ## [1.11.1] - 2026-02-10
 
 ### Fixed

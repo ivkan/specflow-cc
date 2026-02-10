@@ -415,6 +415,57 @@ Check if spec includes items marked as "Out of Scope" or "Deferred" in PROJECT.m
 **If compliant:**
 - Add to audit output: "Project compliance: ✓ Honors PROJECT.md decisions"
 
+## Step 3.10: Language Profile Check
+
+**Detection:** Check if PROJECT.md contains a `## Language Profile` section.
+
+**If no Language Profile section:** Skip this check entirely.
+
+**If Language Profile exists:** Parse settings and validate spec compliance.
+
+### 3.10.1 File Count Check
+
+Extract `Max files per spec` from profile. Count total files to create + modify in spec.
+
+| Condition | Action |
+|-----------|--------|
+| Files ≤ max | ✓ OK |
+| Files = max + 1-2 | **Warning**: "File count ({N}) slightly exceeds language profile limit ({max}). Consider splitting." |
+| Files > max + 2 | **Critical**: "File count ({N}) significantly exceeds language profile limit ({max}). Must split with `/sf:split`." |
+
+### 3.10.2 Trait-First Check
+
+If `Trait-first: Yes` AND spec complexity is medium or large:
+
+- Check if Implementation Tasks section exists
+- If yes: verify G1 (Wave 1) contains ONLY types/traits/interfaces, not implementation
+- If G1 mixes traits and implementation: **Critical**: "Trait-first violation: G1 must contain only types/traits/interfaces. Implementation must be in Wave 2+."
+- If no Implementation Tasks: **Warning**: "Trait-first language requires explicit task grouping for medium/large specs. Recommend adding Implementation Tasks with types in G1."
+
+### 3.10.3 Compilation Gate Awareness
+
+If `Compilation gate: Yes`:
+
+- Verify task groups are small enough for incremental compilation checks
+- If any single task group modifies >3 files: **Warning**: "Large task group ({N} files) with compilation gate. Consider splitting into smaller groups for incremental `build_check` verification."
+
+### 3.10.4 Scope Threshold Override
+
+If Language Profile exists, override default Scope Sanity Thresholds:
+
+| Metric | Default | With Language Profile |
+|--------|---------|---------------------|
+| Files/plan (Blocker) | 15+ | `Max files per spec` from profile |
+| Tasks/plan (Warning) | 4 | 3 (if `Trait-first: Yes`) |
+
+### 3.10.5 Language Profile Verdict
+
+**If all checks pass:**
+- Add to audit output: "Language profile: ✓ Compliant with {Language} profile"
+
+**If warnings or critical issues found:**
+- Add issues to appropriate category (Critical/Recommendations)
+
 ## Step 4: Generate Implementation Tasks (for large specs)
 
 If scope is large, generate the Implementation Tasks section:
@@ -738,6 +789,7 @@ Tip: `/clear` recommended before `/sf:run` — executor needs fresh context
 - [ ] Specification fully read
 - [ ] PROJECT.md context loaded
 - [ ] All 10 dimensions evaluated (clarity, completeness, testability, scope, feasibility, architecture, duplication, cognitive load, strategic fit, project compliance)
+- [ ] Language profile checked (if present in PROJECT.md)
 - [ ] Assumptions extracted and impact assessed
 - [ ] Project alignment verified
 - [ ] Project compliance verified (decisions, constraints, out-of-scope)

@@ -131,6 +131,28 @@ After implementing, verify:
 - Meets relevant acceptance criteria
 - Follows project conventions
 
+### 4.2.1 Compilation Gate (Language Profile)
+
+If PROJECT.md has `Compilation gate: Yes` in Language Profile:
+
+After implementing each file or tightly coupled group of files, run the `Build check` command from the profile:
+
+```bash
+# Example for Rust:
+cargo check
+# Example for Go:
+go build ./...
+```
+
+**If build fails:**
+- Fix the compilation error immediately (Rule 3: Auto-fix blocking issues)
+- Do NOT proceed to next file until current file compiles
+- Track as: `[Rule 3 - Compilation] Fixed {error} in {file}`
+
+**If build passes:** continue to next file.
+
+This prevents cascading errors — especially critical for Rust where borrow checker errors in file A can mask the real issue in file B.
+
 ### 4.3 Commit
 
 Create atomic commit:
@@ -191,7 +213,16 @@ For key modifications, verify the change is present:
 grep -q "expected_pattern" path/to/modified/file && echo "VERIFIED" || echo "NOT FOUND"
 ```
 
-**4. Report self-check result:**
+**4. Language profile checks (if Language Profile exists in PROJECT.md):**
+
+Run each configured command and verify it passes:
+- `Lint` command (e.g., `cargo clippy -- -D warnings`) → must exit 0
+- `Test` command (e.g., `cargo test`) → must exit 0
+- `Safety check` command if present (e.g., `cargo miri test`) → must exit 0
+
+If any check fails: fix the issue before proceeding (Rule 3).
+
+**5. Report self-check result:**
 
 - If ALL checks pass: continue to Execution Summary
 - If ANY check fails: **fix the issue** before proceeding, do NOT report success with missing artifacts

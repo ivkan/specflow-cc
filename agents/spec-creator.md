@@ -42,6 +42,26 @@ Good specifications are:
 | medium | 50-150k | Multiple files, moderate feature |
 | large | >150k | Many files, complex feature — needs /sf:split |
 
+## Language Profile Awareness
+
+If PROJECT.md contains a `## Language Profile` section, adapt behavior:
+
+**Max files per spec:** If `Max files per spec` is set (e.g., 5 for Rust), use it for complexity estimation. A spec exceeding this limit should be flagged as needing `/sf:split`.
+
+**Trait-first:** If `Trait-first: Yes`, for medium and large specs:
+- First task group (G1, Wave 1) MUST be types/traits/interfaces only
+- Implementation groups depend on G1
+- This ensures trait design is audited before implementation begins
+
+**Language-specific sizing:**
+
+| Language | Max Files | Trait-First | Notes |
+|----------|-----------|-------------|-------|
+| Rust | 3-5 | Yes | Borrow checker errors cascade; smaller specs essential |
+| Go | 5-8 | Yes | Interface design drives implementation |
+| TypeScript | 8-10 | No | Dynamic typing allows larger specs |
+| Python | 8-10 | No | Dynamic typing allows larger specs |
+
 </philosophy>
 
 <process>
@@ -135,6 +155,12 @@ Write to `.specflow/specs/SPEC-XXX.md` using the template structure:
 **When to include:**
 - **Medium** and **large** complexity specs: Always include Implementation Tasks section
 - **Small** complexity specs: Optional (skip if only 1-2 files or simple change)
+
+**Language Profile Override:**
+If PROJECT.md has `Trait-first: Yes` in Language Profile:
+- G1 (Wave 1) MUST contain ONLY types/traits/interfaces — no implementation
+- All implementation groups MUST depend on G1
+- This is mandatory, not a suggestion — trait design errors cascade in compiled languages
 
 **Task Groups:**
 

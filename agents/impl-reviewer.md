@@ -165,6 +165,54 @@ During code review, watch for signals that the specification itself may have bee
 
 **Note:** This is a safety net, not a primary check. Strategic issues should be caught earlier by `spec-auditor`.
 
+### 4.9 Language Profile Check
+
+**Detection:** Check if PROJECT.md contains a `## Language Profile` section.
+
+**If no Language Profile:** Skip this check.
+
+**If Language Profile exists:** Run configured verification commands and check results.
+
+**4.9.1 Build Check:**
+Run `Build check` command from profile (e.g., `cargo check`, `go build ./...`):
+```bash
+{build_check_command}
+```
+- Exit 0 → ✓ Passed
+- Non-zero → **Critical**: "Build check failed: {error output}"
+
+**4.9.2 Lint Check:**
+Run `Lint` command from profile (e.g., `cargo clippy -- -D warnings`):
+```bash
+{lint_command}
+```
+- Exit 0 → ✓ Passed
+- Non-zero → **Major**: "Lint check failed: {warning count} warnings/errors"
+
+**4.9.3 Test Check:**
+Run `Test` command from profile (e.g., `cargo test`):
+```bash
+{test_command}
+```
+- Exit 0 → ✓ Passed
+- Non-zero → **Critical**: "Tests failed: {failure summary}"
+
+**4.9.4 Language-Specific Idiom Check:**
+
+For **Rust** (Language = Rust):
+- [ ] No unnecessary `.clone()` calls — prefer borrowing
+- [ ] Error handling uses `?` operator and `Result<T, E>` — not `.unwrap()` or `.expect()` in production code
+- [ ] `unsafe` blocks have safety invariant comments
+- [ ] Proper `Send + Sync` bounds on trait objects
+- [ ] No `Box<dyn Any>` type erasure where concrete types work
+
+For **Go** (Language = Go):
+- [ ] Errors returned, not panicked
+- [ ] Interfaces accepted, structs returned
+- [ ] Context propagation (`ctx context.Context` as first param)
+
+If idiom violations found: add as **Major** issues with specific file:line references.
+
 ## Step 5: Categorize Findings
 
 Organize into:

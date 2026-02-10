@@ -122,6 +122,22 @@ After implementing, verify:
 - Follows project conventions
 - Meets task requirements
 
+### 3.2.1 Compilation Gate (Language Profile)
+
+If PROJECT.md has `Compilation gate: Yes` in Language Profile:
+
+After implementing each file or tightly coupled group, run the `Build check` command:
+
+```bash
+# Example for Rust: cargo check
+# Example for Go: go build ./...
+```
+
+**If build fails:** fix immediately (Rule 3: Auto-fix blocking issues). Do NOT proceed until current file compiles.
+**If build passes:** continue to next file.
+
+At end of all tasks in this group: run `Lint` command if specified in profile (e.g., `cargo clippy -- -D warnings`).
+
 ### 3.3 Commit
 
 Create atomic commit:
@@ -189,9 +205,12 @@ Output structured JSON for orchestrator:
   ],
   "deviations": [],
   "self_check": "passed",
+  "build_check": "passed",
   "error": null
 }
 ```
+
+**Note:** `build_check` field is only included when Language Profile has `Compilation gate: Yes`. Values: `"passed"`, `"fixed"` (had to fix compilation errors), `"skipped"` (no language profile).
 
 **For segmented execution, add segment fields:**
 
