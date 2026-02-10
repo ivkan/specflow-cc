@@ -385,8 +385,16 @@ Append Execution Summary to specification:
 
 ## Step 8: Update STATE.md
 
+Update ONLY the Current Position section:
 - Status → "review"
 - Next Step → "/sf:review"
+
+**CRITICAL — DO NOT go beyond this:**
+- Do NOT move the spec to Completed Specifications table
+- Do NOT remove the spec from Queue table
+- Do NOT activate the next specification in the queue
+- Do NOT archive the spec file
+- These actions belong to `/sf:done`, not to execution
 
 </process>
 

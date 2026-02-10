@@ -5,6 +5,19 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.1] - 2026-02-10
+
+### Fixed
+
+- **Orchestrator premature state advancement** — executor agents could advance STATE.md beyond "review", skipping the review step entirely
+  - After `/sf:run` completion, the orchestrator would sometimes perform `/sf:done` logic (moving spec to Completed, activating next spec)
+  - Root cause: vague instructions in STATE.md update step allowed LLM agents to over-interpret "update STATE.md"
+  - Added explicit boundary instructions ("DO NOT move to Completed, DO NOT activate next spec") to all three executor agents
+  - Added post-execution state verification guard in `/sf:run` command handler
+  - Affected files: `sf-spec-executor-orchestrator.md`, `spec-executor-orchestrator.md`, `spec-executor.md`, `run.md`
+
+---
+
 ## [1.11.0] - 2026-02-06
 
 ### Added

@@ -239,7 +239,13 @@ The agent will:
 2. Create atomic commits
 3. Handle deviations
 4. Add Execution Summary to spec
-5. Update STATE.md to "review"
+5. Update STATE.md status to "review"
+
+**After agent returns, verify STATE.md is correct:**
+- Active Specification must still be the SAME spec (not advanced to next)
+- Status must be "review" (not "done" or "draft")
+- Spec must still be in Queue (not moved to Completed)
+- If agent over-advanced the state, revert to: active=SPEC-XXX, status=review, next=/sf:review
 
 ## Step 9.5: Check STATE.md Size and Rotate if Needed
 
