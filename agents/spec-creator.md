@@ -241,6 +241,16 @@ Update `.specflow/STATE.md`:
 - Set Next Step to "/sf:audit"
 - Add spec to Queue
 
+Update STATE.md by reading the current file content, then writing the updated file with:
+- "**Active Specification:**" line changed to the new spec
+- "**Status:**" line changed to "drafting"
+- "**Next Step:**" line changed to "/sf:audit"
+- Queue table updated with new spec entry
+- No other content modified
+
+Use the Read tool to read `.specflow/STATE.md`, then use the Write tool to write the updated content.
+Do NOT use Bash (awk, sed, or echo) to modify `.specflow/STATE.md`.
+
 **If `<prior_discussion>` provided:**
 Update the discussion file (PRE-XXX.md or DISC-XXX.md):
 - Set `used_by: SPEC-XXX` in frontmatter
