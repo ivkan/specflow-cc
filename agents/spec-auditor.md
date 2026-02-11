@@ -685,6 +685,14 @@ Update status:
 - If NEEDS_DECOMPOSITION: Status → "needs_decomposition", Next Step → "/sf:split or /sf:run --parallel"
 - If NEEDS_REVISION: Status → "revision_requested", Next Step → "/sf:revise"
 
+Update STATE.md by reading the current file content, then writing the updated file with:
+- "**Status:**" line changed to the new status
+- "**Next Step:**" line changed to the new next step
+- No other content modified
+
+Use the Read tool to read `.specflow/STATE.md`, then use the Write tool to write the updated content.
+Do NOT use Bash (awk, sed, or echo) to modify `.specflow/STATE.md`.
+
 </process>
 
 <output>
