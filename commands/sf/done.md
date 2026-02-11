@@ -228,75 +228,17 @@ If implementation established new patterns, add to Project Patterns section.
 
 After updating STATE.md, check if rotation is needed:
 
-```bash
-LINE_COUNT=$(wc -l < .specflow/STATE.md)
-if [ $LINE_COUNT -gt 100 ]; then
-    echo "STATE.md exceeds 100 lines ($LINE_COUNT), rotating old decisions..."
-
-    # Parse decisions table and extract all decisions
-    DECISIONS=$(awk '/^## Decisions$/ { found=1; next } /^## / && found { exit } found { print }' .specflow/STATE.md | grep -E '^\| [0-9]{4}-' || true)
-    DECISION_COUNT=$(echo "$DECISIONS" | grep -c '^|' || echo 0)
-
-    if [ "$DECISION_COUNT" -gt 7 ]; then
-        # Keep only 5 most recent decisions
-        RECENT_DECISIONS=$(echo "$DECISIONS" | tail -5)
-        OLD_DECISION_COUNT=$((DECISION_COUNT - 5))
-        OLD_DECISIONS=$(echo "$DECISIONS" | head -n $OLD_DECISION_COUNT)
-
-        # Create or append to archive
-        if [ ! -f .specflow/DECISIONS_ARCHIVE.md ]; then
-            cat > .specflow/DECISIONS_ARCHIVE.md << 'EOF'
-# SpecFlow Decisions Archive
-
-Historical decisions rotated from STATE.md to maintain compactness.
-
-## Archived Decisions
-
-| Date | Decision |
-|------|----------|
-EOF
-        fi
-
-        # Write old decisions to temp file for awk to read (awk -v cannot handle multiline strings)
-        TEMP_OLD=$(mktemp)
-        echo "$OLD_DECISIONS" > "$TEMP_OLD"
-
-        # Append old decisions to archive (insert after table header)
-        TEMP_ARCHIVE=$(mktemp)
-        awk -v oldfile="$TEMP_OLD" '
-            /^\| Date \| Decision \|$/ { print; getline; print; while ((getline line < oldfile) > 0) print line; close(oldfile); next }
-            {print}
-        ' .specflow/DECISIONS_ARCHIVE.md > "$TEMP_ARCHIVE"
-        mv "$TEMP_ARCHIVE" .specflow/DECISIONS_ARCHIVE.md
-        rm -f "$TEMP_OLD"
-
-        # Write recent decisions to temp file for awk to read
-        TEMP_RECENT=$(mktemp)
-        echo "$RECENT_DECISIONS" > "$TEMP_RECENT"
-
-        # Update STATE.md with only recent decisions
-        TEMP_STATE=$(mktemp)
-        awk -v recentfile="$TEMP_RECENT" '
-            /^## Decisions$/ {
-                print
-                print ""
-                print "| Date | Decision |"
-                print "|------|----------|"
-                while ((getline line < recentfile) > 0) print line
-                close(recentfile)
-                in_decisions=1
-                next
-            }
-            /^## / && in_decisions { in_decisions=0 }
-            !in_decisions || !/^\|/ { print }
-        ' .specflow/STATE.md > "$TEMP_STATE"
-        mv "$TEMP_STATE" .specflow/STATE.md
-        rm -f "$TEMP_RECENT"
-
-        echo "Rotated $(echo "$OLD_DECISIONS" | grep -c '^|') old decisions to DECISIONS_ARCHIVE.md"
-    fi
-fi
-```
+1. Use the Read tool to read `.specflow/STATE.md` and count total lines
+2. If total lines <= 100, no action needed
+3. If total lines > 100:
+   a. Read the `## Decisions` section and extract all decision rows (lines matching `| YYYY-`)
+   b. Count decision rows. If <= 7, no rotation needed
+   c. If > 7 decisions:
+      - Identify the 5 most recent decisions (last 5 rows) -- these STAY
+      - Identify older decisions (all rows except last 5) -- these MOVE to archive
+      - Read `.specflow/DECISIONS_ARCHIVE.md` (create with template if missing)
+      - Write updated DECISIONS_ARCHIVE.md: insert old decisions after the table header row
+      - Write updated STATE.md: replace Decisions section content with only the 5 most recent decisions
 
 ## Step 10: Create Final Commit (if needed)
 
