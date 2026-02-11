@@ -23,13 +23,6 @@
 
 ---
 
-## TODO-006 — 2026-02-06
-**Description:** Autopilot mode (`/sf:autopilot`) — run the full spec lifecycle (audit → run → review → fix → done) without manual step invocations. For queued specs, processes them sequentially end-to-end. Stops only on blocking issues (failed review after N fix attempts, user intervention needed). Enables "start and walk away" workflows for well-defined specs.
-**Priority:** medium
-**Notes:** Inspired by GSD [#344](https://github.com/glittercowboy/get-shit-done/issues/344). Requires: cycle detection (prevent infinite audit↔revise or review↔fix loops), configurable max retry count, clear stop conditions, and a summary report at the end. Could support single-spec mode (`/sf:autopilot`) and batch mode (`/sf:autopilot --all` for entire queue).
-
----
-
 ## TODO-007 — 2026-02-06
 **Description:** Dynamic spec revision during execution (`/sf:pivot`) — adjust the active specification mid-execution when requirements change or new information emerges. Currently requires pause → manual edit → resume, which loses execution context. A dedicated flow would: pause execution, present current progress, accept requirement changes, revise remaining tasks, and resume with updated plan.
 **Priority:** medium
@@ -50,4 +43,25 @@
 **Notes:** Inspired by GSD [#316](https://github.com/glittercowboy/get-shit-done/issues/316). STATE.md decision trail is high-level; this provides granular execution details. Useful for diagnosing: why a spec was flagged NEEDS_DECOMPOSITION, why a segment failed, or why a review was rejected. Should not pollute STATE.md — separate log files per execution.
 
 ---
-*Last updated: 2026-02-06 (TODO-005..009 added from GSD issue analysis)*
+
+## TODO-011 — 2026-02-11
+**Description:** Active spec validation and child spec disambiguation — before executing any workflow command (`/sf:run`, `/sf:review`, `/sf:fix`, etc.), verify the target spec ID against STATE.md active spec. When child specs exist (e.g., SPEC-016a, SPEC-016b), require explicit confirmation of which child to target. Prevents costly mis-targeting that wastes a full command cycle.
+**Priority:** medium
+**Notes:** Identified by Claude Code Insights report. Claude targeted SPEC-016b instead of SPEC-016a in one session, requiring interrupt and restart. Could be implemented as a guard clause in the shared workflow preamble or as a pre-execution validation step in each command prompt.
+
+---
+
+## TODO-012 — 2026-02-11
+**Description:** Impact analysis / dry-run before execution (`/sf:impact` or `--dry-run` flag) — analyze blast radius of a spec before committing to implementation. Runs `tsc --noEmit`, maps affected files, estimates cascading changes, and reports scope assessment. Prevents the pattern where scoped fixes balloon (e.g., 5 targeted TS errors → 42 actual errors + broken mocks).
+**Priority:** medium
+**Notes:** Identified by Claude Code Insights report. A session targeting 5 TypeScript errors discovered 41 additional errors and broken integration test mocks, forcing expanded scope. Could be a standalone command or an optional pre-step in `/sf:run`. Should produce a brief report: files affected, estimated change count, risk areas.
+
+---
+
+## TODO-013 — 2026-02-11
+**Description:** Parallel spec execution — run multiple independent specifications simultaneously via coordinated sub-agents on separate feature branches. A coordinator reads the dependency graph, identifies non-dependent specs, spawns parallel Task agents (one per spec), and merges completed branches sequentially with integration testing after each merge.
+**Priority:** low
+**Notes:** Described in Claude Code Insights "On the Horizon" section. Builds on existing Task tool usage (193 invocations in 10 days). Requires: dependency graph analysis from `/sf:deps`, branch management per spec, conflict detection, and a merge coordinator. Large scope but could compress multi-day sprints significantly. Depends on TODO-006 (autopilot) as a prerequisite for single-spec autonomous execution.
+
+---
+*Last updated: 2026-02-11 (TODO-006 converted to SPEC-005; TODO-010 converted to SPEC-004; TODO-011..013 from Claude Code Insights analysis)*

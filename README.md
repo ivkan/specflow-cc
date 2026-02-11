@@ -241,6 +241,8 @@ Your spec becomes documentation: why the code exists, what decisions were made, 
               ↓                          ↓              ↓
          /sf:revise                  /sf:fix      (optional UAT)
          (if needed)                 (if needed)
+
+         /sf:autopilot — runs the entire flow above automatically
 ```
 
 **Key principle:** Audits and reviews run in fresh context — no bias from creation.
@@ -312,6 +314,7 @@ Six months later, you can read the spec and understand not just *what* was built
 | `/sf:fix` | Fix based on review feedback |
 | `/sf:verify` | Interactive user acceptance testing |
 | `/sf:done` | Complete and archive |
+| `/sf:autopilot` | Run full lifecycle autonomously |
 
 **Quick mode:**
 
@@ -455,6 +458,10 @@ Use `max` for maximum quality everywhere, `quality` for critical features, `budg
 /sf:review                               # Fresh context review
 /sf:verify                               # Manual verification
 /sf:done                                 # Archive
+
+# Or skip manual steps — run everything autonomously
+/sf:autopilot                            # Process active spec end-to-end
+/sf:autopilot --all                      # Process entire queue
 ```
 
 ---
