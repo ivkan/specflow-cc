@@ -288,6 +288,14 @@ Append to specification's Review History:
 - If APPROVED: Status → "done", Next Step → "/sf:done"
 - If CHANGES_REQUESTED: Status → "review", Next Step → "/sf:fix"
 
+Update STATE.md by reading the current file content, then writing the updated file with:
+- "**Status:**" line changed to the new status
+- "**Next Step:**" line changed to the new next step
+- No other content modified
+
+Use the Read tool to read `.specflow/STATE.md`, then use the Write tool to write the updated content.
+Do NOT use Bash (awk, sed, or echo) to modify `.specflow/STATE.md`.
+
 </process>
 
 <output>
