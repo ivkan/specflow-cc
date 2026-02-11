@@ -55,3 +55,7 @@ Historical decisions rotated from STATE.md to maintain compactness.
 | 2026-01-25 | SPEC-STATE-001: Re-audited (v2) and APPROVED - all v1 issues resolved, ready for implementation |
 | 2026-01-25 | SPEC-STATE-001: Implementation reviewed (v1) - CHANGES_REQUESTED - 2 critical issues (non-portable head -n -1 syntax, template format mismatch) |
 | 2026-01-25 | SPEC-STATE-001: Fix response (v1) - applied all 3 items (portable shell syntax, template format fix, re-implemented in repo) |
+| 2026-02-11 | SPEC-004: COMPLETED — replaced all Bash/awk/sed markdown mutations with Read+Write tool instructions across 13 files |
+| 2026-02-11 | SPEC-005: Created from TODO-006 — autopilot mode for autonomous spec lifecycle execution |
+| 2026-02-11 | SPEC-005: Audit v1 NEEDS_REVISION — missing needs_decomposition status handling in phase transition table |
+| 2026-02-11 | SPEC-005: Response v1 applied — all critical issues and recommendations addressed (needs_decomposition/paused status, autopilot mechanism clarification, context estimate update) |

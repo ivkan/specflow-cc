@@ -18,42 +18,11 @@ none
 
 | Date | Decision |
 |------|----------|
-| 2026-01-25 | SPEC-STATE-001: Implementation reviewed (v3) - CHANGES_REQUESTED - 1 critical issue (awk -v cannot handle multiline strings for STATE.md update) |
-| 2026-01-25 | SPEC-STATE-001: Fix response (v3) - applied temp file approach for multiline awk variables |
-| 2026-01-25 | SPEC-STATE-001: Implementation reviewed (v4) and APPROVED - all 7 acceptance criteria met, temp file approach working correctly |
-| 2026-01-25 | SPEC-STATE-001: COMPLETED - STATE.md size constraint with automatic decision archiving |
-| 2026-01-25 | SPEC-PREDISCUSS-001: Audit v1 APPROVED - 4 recommendations (naming consistency, ID generation, fallback type, model profile) |
-| 2026-01-25 | SPEC-PREDISCUSS-001: Response v1 - applied all 4 recommendations (--discuss flag, ID generation logic, general fallback, model profile confirmation) |
-| 2026-01-25 | SPEC-PREDISCUSS-001: Audit v2 APPROVED - all recommendations verified, ready for implementation |
-| 2026-01-25 | SPEC-PREDISCUSS-001: Implementation reviewed and APPROVED - all 10 acceptance criteria met, 1 major systemic issue identified (grep -oP compatibility, pre-existing across 5 files) |
-| 2026-01-27 | SPEC-001: Audit v1 APPROVED - well-structured spec, ~22% context estimate, 1 minor recommendation (prefix terminology consistency) |
-| 2026-01-27 | SPEC-001: Response v1 - narrowed scope to respect single responsibility (removed auditor/reviewer targets, clarified /sf:new is only for genuinely new work) |
-| 2026-01-27 | SPEC-001: Audit v2 APPROVED - all 8 dimensions pass, ~12% context estimate, ready for implementation |
-| 2026-01-27 | SPEC-001: Review v1 CHANGES_REQUESTED - 2 critical issues (dash prefix formatting, templates/scan.md inconsistency with Run: vs Command:) |
-| 2026-01-27 | SPEC-001: Fix Response v1 - applied all 2 critical fixes (dash removal, templates/scan.md Run: alignment) |
-| 2026-01-27 | SPEC-001: Review v2 APPROVED - all fixes verified, all 4 acceptance criteria met, no regressions, ready for completion |
-| 2026-01-27 | SPEC-001: COMPLETED - ready-to-use /sf:new commands added to codebase scanner recommendations |
-| 2026-02-06 | SPEC-002: Created from TODO-002 — wave-based parallelization formalization in spec-creator and spec-splitter |
-| 2026-02-06 | SPEC-002: Audit v1 APPROVED — ~15% context estimate, 1 recommendation (step numbering approach), all 10 dimensions pass |
-| 2026-02-06 | SPEC-002: Review v1 APPROVED — all 7 acceptance criteria met, wave algorithm consistent across all three agents, no constraint violations |
-| 2026-02-06 | SPEC-002: COMPLETED — wave column instructions added to spec-creator and spec-splitter |
-| 2026-02-06 | SPEC-003: Created from TODO-001 — segmented execution within task groups for fresh context per segment |
-| 2026-02-06 | SPEC-003: Audit v1 APPROVED — ~50% context estimate, 4 recommendations (G1 threshold, handoff format clarity, step numbering for sf- orchestrator, >50% segment count), all 10 dimensions pass |
-| 2026-02-06 | SPEC-003: Response v1 — applied all 4 recommendations (G1 threshold note in assumptions, handoff format clarification, orchestrator step numbering reference table, >50% default to 4 segments) |
-| 2026-02-06 | SPEC-003: Audit v2 APPROVED — ~50% context estimate, all v1 recommendations verified, 1 minor recommendation (worker step number reference), ready for implementation |
-| 2026-02-06 | SPEC-003: Response v2 — applied audit v2 recommendation (worker step number reference fix: Step 5 -> Step 6) |
-| 2026-02-06 | SPEC-003: Audit v3 APPROVED — v2 fix partially applied (heading fixed, code block and Files table not updated), 2 minor recommendations (residual Step 5 references) |
-| 2026-02-06 | SPEC-003: Response v3 — applied both audit v3 recommendations (code block Step 5→6, Files table Step 5→6) |
-| 2026-02-06 | SPEC-003: Audit v4 APPROVED — all v3 recommendations verified applied correctly, all 10 dimensions pass, no remaining issues, ready for implementation |
-| 2026-02-06 | SPEC-003: Review v1 APPROVED — all 9 acceptance criteria met, both orchestrators consistent, worker segment-aware, auditor generates hints, state tracking correct, no issues found |
-| 2026-02-06 | SPEC-003: COMPLETED — segmented execution within task groups for fresh context per segment |
-| 2026-02-11 | SPEC-004: Created from TODO-010 — replace Bash/awk/sed markdown mutations with Read+Write tool instructions |
-| 2026-02-11 | SPEC-004: Audit v1 NEEDS_REVISION — 2 critical issues (item #8 references wrong file for Execution Status steps, Queue table manipulation claim is inaccurate), 4 recommendations |
-| 2026-02-11 | SPEC-004: Response v1 — applied all 6 items (corrected item #7 and #8 file/step references, removed Queue table claim, fixed Context/Key Links to say "4 files", clarified wc -l vs Read tool for line counting) |
-| 2026-02-11 | SPEC-004: Audit v2 APPROVED — all v1 fixes verified, 2 minor recommendations (step number inaccuracies in items #7 and #8), ready for implementation |
-| 2026-02-11 | SPEC-004: Response v2 — applied both audit v2 recommendations (item #7 Step 8→removed, item #8 Step 6,7→Step 8) |
-| 2026-02-11 | SPEC-004: Review v1 APPROVED — all 9 acceptance criteria met, all awk/sed markdown mutations replaced with Read+Write instructions, decision rotation consistent across 4 files, agent files include explicit anti-Bash instruction |
-| 2026-02-11 | SPEC-004: COMPLETED — replaced all Bash/awk/sed markdown mutations with Read+Write tool instructions across 13 files |
+| 2026-02-11 | SPEC-005: Audit v2 APPROVED — all v1 fixes verified, 2 minor recommendations (Key Links consistency, fallback section), ready for implementation |
+| 2026-02-11 | SPEC-005: Response v2 applied — all audit v2 recommendations addressed (Key Links already correct, added fallback behavior section) |
+| 2026-02-11 | SPEC-005: Audit v3 APPROVED — all prior fixes verified, no remaining issues, ready for implementation |
+| 2026-02-11 | SPEC-005: Review v1 APPROVED — implementation passes all 10 acceptance criteria, no issues found |
+| 2026-02-11 | SPEC-005: COMPLETED — autopilot mode for autonomous spec lifecycle execution |
 
 ## Notes
 
@@ -74,6 +43,7 @@ none
 - SPEC-002: Ensure spec-creator and spec-splitter always include Wave column in Implementation Tasks
 - SPEC-003: Segmented execution within task groups
 - SPEC-004: Replace Bash/awk/sed markdown mutations with Read+Write tool instructions
+- SPEC-005: Add Autopilot Mode (`/sf:autopilot`)
 
 ### Architecture Alignment with GSD
 | Aspect | SF Status |
@@ -91,6 +61,7 @@ none
 | STATE.md Size Limit | Implemented (SPEC-STATE-001) - DONE |
 | Pre-spec Discussion | Implemented (SPEC-PREDISCUSS-001) - DONE |
 | Segmented execution | Implemented (SPEC-003) - DONE |
+| Autopilot Mode | Implemented (SPEC-005) - DONE |
 
 ---
-*Last updated: 2026-02-11 (SPEC-004 COMPLETED)*
+*Last updated: 2026-02-11 (SPEC-005 completed and archived)*
