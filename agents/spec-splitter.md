@@ -188,6 +188,16 @@ Update `.specflow/STATE.md`:
 - Set first child (no dependencies) as Active Specification
 - Add note to Decisions: "Split SPEC-XXX into N parts"
 
+Update STATE.md by reading the current file content, then writing the updated file with:
+- Parent spec removed from Queue table
+- All child specs added to Queue table in dependency order
+- First child (no dependencies) set as Active Specification
+- Decisions section updated with split note
+- No other content modified
+
+Use the Read tool to read `.specflow/STATE.md`, then use the Write tool to write the updated content.
+Do NOT use Bash (awk, sed, or echo) to modify `.specflow/STATE.md`.
+
 </process>
 
 <output>
