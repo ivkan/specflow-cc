@@ -236,6 +236,12 @@ Workflow: Spec → Audit → Revise → Run → Review → Fix → Done
 |--------------|-----------------------------------------|
 | /sf:quick    | Execute minor tasks (1-3 files) fast    |
 
+## Autonomous Execution
+
+| Command      | Description                             |
+|--------------|-----------------------------------------|
+| /sf:autopilot | Run full lifecycle autonomously         |
+
 ## Navigation
 
 | Command      | Description                             |
@@ -296,6 +302,7 @@ Workflow: Spec → Audit → Revise → Run → Review → Fix → Done
 5. `/sf:run` — Implement
 6. `/sf:review` — Review implementation
 7. `/sf:done` — Complete and archive
+8. Or skip steps 4-7: `/sf:autopilot` -- run everything autonomously
 
 ## Typical Session
 
@@ -307,6 +314,13 @@ Workflow: Spec → Audit → Revise → Run → Review → Fix → Done
 /sf:run           # Implement
 /sf:review        # Review implementation
 /sf:done          # Complete
+```
+
+## Autonomous Alternative
+
+```
+/sf:autopilot          # Process active spec end-to-end
+/sf:autopilot --all    # Process entire queue
 ```
 
 ---
