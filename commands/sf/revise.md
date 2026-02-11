@@ -156,13 +156,10 @@ Continue to Step 5 with analysis context available.
 | "..." | Treat as custom revision instructions |
 
 **Check for `--no-analysis` flag:**
-```bash
-if echo "$ARGS" | grep -q "\-\-no-analysis"; then
-    SKIP_ANALYSIS=true
-    # Remove flag from args for further processing
-    ARGS=$(echo "$ARGS" | sed 's/--no-analysis//g' | xargs)
-fi
-```
+
+If the arguments string contains `--no-analysis`:
+- Set SKIP_ANALYSIS to true
+- Remove the `--no-analysis` flag from the arguments string for further processing
 
 ### If Interactive Mode (no arguments):
 
