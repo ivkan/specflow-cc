@@ -330,6 +330,10 @@ Write `.specflow/execution/SPEC-XXX-state.json`:
 | SPEC-XXX | orchestrated | Wave 0/{total} (0%) | {timestamp} |
 ```
 
+Update STATE.md by reading the current file content, then writing the updated file with the Execution Status table row added/updated.
+Use the Read tool to read `.specflow/STATE.md`, then use the Write tool to write the updated content.
+Do NOT use Bash (awk, sed, or echo) to modify `.specflow/STATE.md`.
+
 ## Step 3: Execute Waves
 
 For each wave:
@@ -597,6 +601,10 @@ After wave completes (all groups done):
 | SPEC-XXX | orchestrated | Wave 2/{total} (67%) | {timestamp} |
 ```
 
+Update STATE.md by reading the current file content, then writing the updated file with the Execution Status table row updated for this wave.
+Use the Read tool to read `.specflow/STATE.md`, then use the Write tool to write the updated content.
+Do NOT use Bash (awk, sed, or echo) to modify `.specflow/STATE.md`.
+
 ## Step 4: Aggregate Results
 
 Combine all worker results:
@@ -683,6 +691,10 @@ rm .specflow/execution/SPEC-XXX-state.json
 - Change row to show "Complete" or remove row entirely
 - Or archive: `mv .specflow/execution/SPEC-XXX-state.json .specflow/execution/archive/`
 
+Update STATE.md by reading the current file content, then writing the updated file with the Execution Status table row removed or updated to "Complete".
+Use the Read tool to read `.specflow/STATE.md`, then use the Write tool to write the updated content.
+Do NOT use Bash (awk, sed, or echo) to modify `.specflow/STATE.md`.
+
 **Note:** Only delete on FULL success. If any groups failed or are partial, keep state file for potential retry.
 
 ## Step 7: Update STATE.md
@@ -691,6 +703,15 @@ Update ONLY the Current Position section:
 - Status → "review"
 - Next Step → "/sf:review"
 - Remove or update Execution Status row
+
+Update STATE.md by reading the current file content, then writing the updated file with:
+- "**Status:**" line changed to the new status
+- "**Next Step:**" line changed to the new next step
+- Execution Status row removed or updated
+- No other content modified
+
+Use the Read tool to read `.specflow/STATE.md`, then use the Write tool to write the updated content.
+Do NOT use Bash (awk, sed, or echo) to modify `.specflow/STATE.md`.
 
 **CRITICAL — DO NOT go beyond this:**
 - Do NOT move the spec to Completed Specifications table
