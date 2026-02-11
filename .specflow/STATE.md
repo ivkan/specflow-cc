@@ -47,6 +47,13 @@ none
 | 2026-02-06 | SPEC-003: Audit v4 APPROVED — all v3 recommendations verified applied correctly, all 10 dimensions pass, no remaining issues, ready for implementation |
 | 2026-02-06 | SPEC-003: Review v1 APPROVED — all 9 acceptance criteria met, both orchestrators consistent, worker segment-aware, auditor generates hints, state tracking correct, no issues found |
 | 2026-02-06 | SPEC-003: COMPLETED — segmented execution within task groups for fresh context per segment |
+| 2026-02-11 | SPEC-004: Created from TODO-010 — replace Bash/awk/sed markdown mutations with Read+Write tool instructions |
+| 2026-02-11 | SPEC-004: Audit v1 NEEDS_REVISION — 2 critical issues (item #8 references wrong file for Execution Status steps, Queue table manipulation claim is inaccurate), 4 recommendations |
+| 2026-02-11 | SPEC-004: Response v1 — applied all 6 items (corrected item #7 and #8 file/step references, removed Queue table claim, fixed Context/Key Links to say "4 files", clarified wc -l vs Read tool for line counting) |
+| 2026-02-11 | SPEC-004: Audit v2 APPROVED — all v1 fixes verified, 2 minor recommendations (step number inaccuracies in items #7 and #8), ready for implementation |
+| 2026-02-11 | SPEC-004: Response v2 — applied both audit v2 recommendations (item #7 Step 8→removed, item #8 Step 6,7→Step 8) |
+| 2026-02-11 | SPEC-004: Review v1 APPROVED — all 9 acceptance criteria met, all awk/sed markdown mutations replaced with Read+Write instructions, decision rotation consistent across 4 files, agent files include explicit anti-Bash instruction |
+| 2026-02-11 | SPEC-004: COMPLETED — replaced all Bash/awk/sed markdown mutations with Read+Write tool instructions across 13 files |
 
 ## Notes
 
@@ -66,6 +73,7 @@ none
 - SPEC-001: Add ready-to-use commands to spec creation recommendations
 - SPEC-002: Ensure spec-creator and spec-splitter always include Wave column in Implementation Tasks
 - SPEC-003: Segmented execution within task groups
+- SPEC-004: Replace Bash/awk/sed markdown mutations with Read+Write tool instructions
 
 ### Architecture Alignment with GSD
 | Aspect | SF Status |
@@ -85,4 +93,4 @@ none
 | Segmented execution | Implemented (SPEC-003) - DONE |
 
 ---
-*Last updated: 2026-02-06 (SPEC-003 COMPLETED — segmented execution within task groups)*
+*Last updated: 2026-02-11 (SPEC-004 COMPLETED)*
