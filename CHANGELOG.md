@@ -5,6 +5,31 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.0] - 2026-02-11
+
+### Added
+
+- **Autopilot mode** (`/sf:autopilot`) — run the full spec lifecycle autonomously
+  - Single spec: `/sf:autopilot` or `/sf:autopilot SPEC-XXX`
+  - Batch mode: `/sf:autopilot --all` processes entire queue sequentially
+  - Cycle detection: configurable limits for audit (default: 3) and fix (default: 3) cycles
+  - Graceful halt on `needs_decomposition` or `paused` specs
+  - Summary report with per-spec outcomes and cycle counts
+  - Agent failure handling: continues batch on single-spec failure
+  - Configurable via `.specflow/config.json` under `"autopilot"` key
+
+### Changed
+
+- **Replaced all Bash/awk/sed markdown mutations** with Read+Write tool instructions across 13 agent and command files
+  - Eliminates fragile shell-based file editing that could corrupt markdown structure
+  - All STATE.md, spec, and archive updates now use explicit Read→Write pattern
+  - Affected: spec-creator, spec-auditor, spec-reviser, spec-splitter, spec-executor, spec-executor-orchestrator, impl-reviewer, and 6 command files
+
+- `/sf:help` — added Autonomous Execution section with autopilot commands
+- README — added autopilot to workflow diagram, commands table, and typical session
+
+---
+
 ## [1.12.0] - 2026-02-10
 
 ### Added
