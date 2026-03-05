@@ -175,7 +175,7 @@ mkdir -p .specflow/archive
 Update frontmatter:
 - status → "done"
 
-Add completion timestamp:
+Add completion summary section to the spec:
 
 ```markdown
 ---
@@ -185,14 +185,33 @@ Add completion timestamp:
 **Completed:** {date} {time}
 **Total Commits:** {count from Execution Summary}
 **Review Cycles:** {count of Review v[N] entries}
+
+### Outcome
+
+{1-2 sentence summary of what was delivered}
+
+### Key Files
+
+- `{path}` — {what it does/why it matters}
+
+### Patterns Established
+
+{List any new patterns, conventions, or architectural decisions introduced.
+If none: "None — followed existing patterns."}
+
+### Deviations
+
+{Any deviations from the original spec during implementation.
+If none: "None — implemented as specified."}
 ```
 
 ## Step 7: Extract Decisions
 
-Scan specification for important decisions:
+Scan specification and Completion section for important decisions:
 - Technology choices mentioned in Context or Assumptions
 - Patterns established during implementation
 - Constraints discovered
+- Deviations that became new conventions
 
 If significant decisions found, add to STATE.md Decisions table:
 
