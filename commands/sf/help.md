@@ -288,6 +288,7 @@ Workflow: Spec → Audit → Revise → Run → Review → Fix → Done
 | Command      | Description                             |
 |--------------|-----------------------------------------|
 | /sf:help     | This help (or detailed: /sf:help new)   |
+| /sf:health   | Diagnose .specflow/ integrity (--repair)|
 | /sf:history  | View completed specifications           |
 | /sf:metrics  | Project statistics and insights         |
 
