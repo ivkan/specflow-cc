@@ -266,6 +266,26 @@ function finishInstall(settingsPath, settings, statuslineCommand, shouldInstallS
     console.log(`  ${green}✓${reset} Configured statusline`);
   }
 
+  // Configure context-monitor hook
+  const isGlobal = statuslineCommand.includes('$HOME');
+  const monitorCommand = isGlobal
+    ? 'node "$HOME/.claude/hooks/context-monitor.js"'
+    : 'node .claude/hooks/context-monitor.js';
+
+  if (!settings.hooks) settings.hooks = {};
+  if (!settings.hooks.PostToolUse) settings.hooks.PostToolUse = [];
+
+  const hasMonitor = settings.hooks.PostToolUse.some(h =>
+    h.command && h.command.includes('context-monitor')
+  );
+  if (!hasMonitor) {
+    settings.hooks.PostToolUse.push({
+      type: 'command',
+      command: monitorCommand
+    });
+    console.log(`  ${green}✓${reset} Configured context monitor hook`);
+  }
+
   writeSettings(settingsPath, settings);
 
   console.log(`
