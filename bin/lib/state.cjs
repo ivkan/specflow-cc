@@ -237,8 +237,5 @@ module.exports = {
   cmdStateGet,
   cmdStateSetActive,
   cmdQueueNext,
-  // Exported for testing
-  extractBoldField,
   extractActiveSpec,
-  parseQueueTable,
 };

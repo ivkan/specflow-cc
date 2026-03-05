@@ -9,6 +9,7 @@
 const fs = require('fs');
 const path = require('path');
 const { output, safeReadFile, parseFrontmatter } = require('./core.cjs');
+const { extractActiveSpec } = require('./state.cjs');
 
 /**
  * Verify .specflow/ directory structure and integrity.
@@ -60,20 +61,7 @@ function cmdVerifyStructure(cwd, raw) {
   // Check 5: Active spec referenced in STATE.md exists in specs/ (if set)
   let activeSpecCheck = true;
   if (stateContent) {
-    const lines = stateContent.split('\n');
-    let activeSpec = null;
-    for (let i = 0; i < lines.length; i++) {
-      if (lines[i].trim() === '## Active Specification') {
-        for (let j = i + 1; j < lines.length; j++) {
-          const line = lines[j].trim();
-          if (line && !line.startsWith('**') && !line.startsWith('#')) {
-            activeSpec = line;
-            break;
-          }
-        }
-        break;
-      }
-    }
+    const activeSpec = extractActiveSpec(stateContent);
 
     if (activeSpec && activeSpec !== 'None' && activeSpec !== '(none)') {
       const activeSpecPath = path.join(specsDir, activeSpec + '.md');
