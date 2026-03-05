@@ -22,6 +22,9 @@ coverage/
 dist/
 build/
 
+# SpecFlow local state (generated per-project)
+.specflow/
+
 # Environment
 .env
 .env.local
