@@ -146,8 +146,9 @@ Write to `.specflow/specs/SPEC-XXX.md` using the template structure:
 4. **Task:** What to do
 5. **Requirements:** Files, interfaces, deletions
 6. **Acceptance Criteria:** Specific, measurable
-7. **Constraints:** What NOT to do
-8. **Assumptions:** What you assumed (clearly marked)
+7. **Validation Checklist** (medium/large specs only): 3-5 concrete verification steps with expected outcomes. Each item = action + expected result. Examples: "Run `npm test` — all pass", "POST /api/users with invalid email — returns 422", "Open settings page — new toggle visible"
+8. **Constraints:** What NOT to do
+9. **Assumptions:** What you assumed (clearly marked)
    - **If `<prior_discussion>` provided:** Decisions from discussion are facts, not assumptions
 
 ## Step 5.5: Generate Implementation Tasks (for medium and large specs)
