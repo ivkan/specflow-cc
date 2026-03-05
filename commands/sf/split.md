@@ -201,9 +201,20 @@ Your choice [1]:
 
 **If 1 (Accept):**
 - Agent creates child specifications
-- Agent archives parent
-- Agent updates STATE.md
-- Continue to Step 7
+- Agent archives parent and updates STATE.md
+- **Verify archival:** After agent completes, check if parent was moved:
+
+```bash
+if [ -f ".specflow/specs/{ID}.md" ]; then
+  mkdir -p .specflow/archive
+  mv ".specflow/specs/{ID}.md" ".specflow/archive/{ID}.md"
+  echo "ARCHIVED"
+else
+  echo "ALREADY_ARCHIVED"
+fi
+```
+
+- Continue to Step 8
 
 **If 2 (Modify):**
 - Use AskUserQuestion to get modifications

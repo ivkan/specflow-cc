@@ -1,7 +1,7 @@
 ---
 name: sf-spec-splitter
 description: Analyzes large specifications and splits them into manageable sub-specifications with dependencies
-tools: Read, Write, Glob, Grep
+tools: Read, Write, Glob, Grep, Bash
 ---
 
 <role>
