@@ -5,6 +5,55 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.0] - 2026-03-05
+
+### Added
+
+- **Context Monitor Hook** — agent-facing context awareness via PostToolUse hook
+  - Statusline writes bridge file to `/tmp/claude-ctx-{session}.json`
+  - New `hooks/context-monitor.js` reads metrics and injects WARNING (35% remaining) / CRITICAL (25%) warnings into agent context
+  - Debounce (5 tool uses between warnings), severity escalation bypasses debounce
+  - Integrates with `/sf:pause` for graceful session saves
+  - Installer auto-registers the hook in settings.json
+
+- **`/sf:health`** — diagnose `.specflow/` directory integrity
+  - 13 error codes across 3 severity levels (error, warning, info)
+  - Checks: STATE.md integrity, orphaned specs, queue consistency, missing directories, stale execution state
+  - `--repair` flag for safe auto-fixes (create missing dirs, regenerate STATE.md, clear stale state)
+  - Repair verification: re-runs checks after repair to confirm resolution
+
+- **`/sf:validate`** — run validation checklist from specification
+  - Executes automated checks (test commands), code verifications (grep/glob), and manual prompts
+  - Pass/fail report per checklist item with overall validation status
+  - Graceful handling when spec has no validation checklist
+
+- **Validation Checklist in spec template** — spec-creator generates `## Validation Checklist` section for medium/large specs
+  - 3-5 concrete verification steps with expected outcomes
+  - Each item: action + expected result (e.g., "Run `npm test` — all pass")
+
+- **Enriched completion summaries** in `/sf:done`
+  - New sections: Outcome, Key Files, Patterns Established, Deviations
+  - Decisions extracted from both spec content and completion section
+
+- **Centralized CLI Tooling** (`bin/sf-tools.cjs`) — single Node.js CLI for SpecFlow operations
+  - `spec load <id>` — parse spec file, return frontmatter + sections as JSON
+  - `spec list [--status <s>]` — list specs with optional status filter
+  - `spec next-id` — next available SPEC-XXX number (checks specs/ + archive/)
+  - `queue next` — first actionable spec from queue
+  - `state get` / `state set-active <id> <status>` — STATE.md CRUD
+  - `resolve-model <agent-type>` — model resolution by profile
+  - `verify-structure` — `.specflow/` integrity checks
+  - `generate-slug <text>` — URL-safe slug generation
+  - Modular architecture: `bin/lib/core.cjs`, `state.cjs`, `spec.cjs`, `config.cjs`, `verify.cjs`
+  - 42 tests using Node.js `assert` (no external dependencies)
+
+### Fixed
+
+- Parent spec now correctly archived after `/sf:split`
+- `.specflow/` directory excluded from git tracking
+
+---
+
 ## [1.13.0] - 2026-02-11
 
 ### Added

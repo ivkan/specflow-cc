@@ -200,15 +200,16 @@ If issues are found, `/sf:fix` addresses them. Loop until approved.
 
 ---
 
-### 5. Verify (Optional)
+### 5. Validate & Verify (Optional)
 
 ```
+/sf:validate
 /sf:verify
 ```
 
-Automated checks confirm code exists and tests pass. But does it actually *work*?
+**Validate** runs the spec's validation checklist — automated test commands, code checks, and manual verification prompts. Pass/fail per item.
 
-This step walks you through manual verification:
+**Verify** walks you through interactive acceptance testing:
 
 - "Can you log in with OAuth?"
 - "Does the redirect work?"
@@ -216,7 +217,7 @@ This step walks you through manual verification:
 
 You confirm each item. If something's broken, the system helps diagnose and creates fix plans.
 
-**Creates:** Verification record
+**Creates:** Validation/verification record
 
 ---
 
@@ -237,12 +238,12 @@ Your spec becomes documentation: why the code exists, what decisions were made, 
 ```
                         /sf:quick (trivial tasks)
                               ↓
-/sf:new  →  /sf:audit  →  /sf:run  →  /sf:review  →  /sf:verify  →  /sf:done
-              ↓                          ↓              ↓
-         /sf:revise                  /sf:fix      (optional UAT)
-         (if needed)                 (if needed)
+/sf:new → /sf:audit → /sf:run → /sf:review → /sf:validate → /sf:verify → /sf:done
+            ↓                      ↓            ↓               ↓
+       /sf:revise              /sf:fix    (checklist)      (optional UAT)
+       (if needed)             (if needed)
 
-         /sf:autopilot — runs the entire flow above automatically
+       /sf:autopilot — runs the entire flow above automatically
 ```
 
 **Key principle:** Audits and reviews run in fresh context — no bias from creation.
@@ -312,6 +313,7 @@ Six months later, you can read the spec and understand not just *what* was built
 | `/sf:run` | Implement specification |
 | `/sf:review` | Review implementation (fresh context) |
 | `/sf:fix` | Fix based on review feedback |
+| `/sf:validate` | Run validation checklist from spec |
 | `/sf:verify` | Interactive user acceptance testing |
 | `/sf:done` | Complete and archive |
 | `/sf:autopilot` | Run full lifecycle autonomously |
@@ -396,6 +398,7 @@ before showing interactive options.
 | `/sf:deps` | Show spec dependencies |
 | `/sf:pause` | Save session context |
 | `/sf:resume` | Restore session |
+| `/sf:health` | Diagnose `.specflow/` integrity |
 | `/sf:help` | Command reference |
 
 ---
@@ -480,6 +483,10 @@ Use `max` for maximum quality everywhere, `quality` for critical features, `budg
 **Large spec taking too long?**
 - Use `/sf:split` to decompose into smaller specs
 - Or let the system auto-decompose during `/sf:run`
+
+**STATE.md or queue seems corrupted?**
+- Run `/sf:health` to diagnose issues
+- Use `/sf:health --repair` for safe auto-fixes
 
 ---
 
