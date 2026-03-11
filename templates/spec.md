@@ -5,6 +5,7 @@ status: draft | auditing | revision_requested | audited | running | review | don
 priority: high | medium | low
 complexity: small | medium | large
 created: YYYY-MM-DD
+source: TODO-XXX (optional — set when spec is created from a todo via /sf:plan)
 ---
 
 # [Task Title]

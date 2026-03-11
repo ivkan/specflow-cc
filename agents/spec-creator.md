@@ -139,7 +139,7 @@ If no specs exist in either directory, start with SPEC-001.
 
 Write to `.specflow/specs/SPEC-XXX.md` using the template structure:
 
-1. **Frontmatter:** id, type, status (draft), priority, complexity, created
+1. **Frontmatter:** id, type, status (draft), priority, complexity, created, source (if `<todo_context>` provided — set to the TODO ID, e.g., `source: TODO-006`)
 2. **Title:** Clear, action-oriented
 3. **Context:** Why this is needed
    - **If `<prior_discussion>` provided:** Add "Prior Discussion" subsection linking to PRE-XXX or DISC-XXX with key decisions

@@ -147,11 +147,15 @@ Use the priority from the todo as the spec's initial priority.
 ", subagent_type="sf-spec-creator", model="{profile_model}", description="Create specification from todo")
 ```
 
-## Step 7: Remove Todo from List
+## Step 7: Remove Todo from List — CRITICAL
 
-After spec is successfully created, remove the todo entry from TODO.md.
+**This step is MANDATORY. Do NOT skip it after the agent returns.**
 
-Update `*Last updated:` timestamp.
+1. Read `.specflow/todos/TODO.md`
+2. Remove the entire todo block (from `## TODO-XXX` heading through the next `---` separator, inclusive)
+3. Update `*Last updated:` timestamp with note: `TODO-XXX converted to SPEC-YYY`
+4. Write the updated TODO.md
+5. **Verify** by reading TODO.md again — the converted todo MUST NOT appear
 
 **Important:** Only remove after confirmed spec creation.
 

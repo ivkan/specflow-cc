@@ -219,6 +219,20 @@ If significant decisions found, add to STATE.md Decisions table:
 | {date} | SPEC-XXX | {decision description} |
 ```
 
+## Step 7.5: Clean Up Source TODO (safety net)
+
+Check if the spec frontmatter contains a `source:` field (e.g., `source: TODO-006`).
+
+**If `source:` field exists:**
+
+1. Read `.specflow/todos/TODO.md`
+2. Check if the referenced TODO-XXX entry still exists in the file
+3. **If it exists** — remove it (the entire block from `## TODO-XXX` heading through the next `---` separator, inclusive)
+4. Update `*Last updated:` timestamp with note: `TODO-XXX cleaned up (completed via SPEC-YYY)`
+5. Write the updated TODO.md
+
+**If no `source:` field or TODO already removed:** Skip — no action needed.
+
 ## Step 8: Archive Specification
 
 Move spec to archive:
@@ -364,6 +378,7 @@ git commit -m "docs(sf): complete SPEC-XXX"
 - [ ] Spec status updated to "done"
 - [ ] Completion section added
 - [ ] Decisions extracted (if any)
+- [ ] Source TODO cleaned up (if `source:` field exists in spec)
 - [ ] Spec moved to archive
 - [ ] STATE.md updated (cleared active, removed from queue)
 - [ ] Final commit created
