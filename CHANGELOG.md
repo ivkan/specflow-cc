@@ -5,6 +5,16 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.0] - 2026-03-11
+
+### Fixed
+
+- **TODO lifecycle cleanup** — TODOs now reliably removed when converted to specs via `/sf:plan` and completed via `/sf:done`
+  - `spec-creator` agent writes `source: TODO-XXX` in spec frontmatter when created from a todo
+  - `/sf:plan` Step 7 marked as CRITICAL with mandatory verification (re-reads TODO.md after removal)
+  - `/sf:done` adds Step 7.5 safety net: checks spec `source:` field and cleans up any remaining TODO
+  - Spec template updated with optional `source:` frontmatter field
+
 ## [1.14.1] - 2026-03-05
 
 ### Added
