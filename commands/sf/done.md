@@ -220,9 +220,9 @@ Check if the spec frontmatter contains `delta: true`.
 {List any new patterns, conventions, or architectural decisions introduced.
 If none: "None — followed existing patterns."}
 
-### Deviations
+### Spec Deviations
 
-{Any deviations from the original spec during implementation.
+{Any deviations from the original spec during implementation (unrelated to delta changes).
 If none: "None — implemented as specified."}
 ```
 
