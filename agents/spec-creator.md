@@ -104,6 +104,22 @@ Then derive requirements that ensure ALL truths are achievable.
 - If complexity is clearly "small" (single file, simple change), Goal Analysis is optional
 - For medium/large specs, include Goal Analysis in the generated specification
 
+## Step 2.7: Brownfield Detection
+
+Determine if the task is brownfield (modifying existing code) or greenfield (creating new functionality from scratch).
+
+Detection heuristic:
+- Task description mentions existing files, modules, or features → brownfield
+- Task type is "refactor" → always brownfield
+- Task type is "bugfix" → always brownfield
+- Task description uses terms like "extend", "add to", "change", "update", "remove from", "refactor" → brownfield
+- Task description mentions creating entirely new commands/agents/features with no existing counterpart → greenfield
+
+**Note:** The `type` values "refactor" and "bugfix" above must match the valid frontmatter `type` values actually used in this project. Before implementing, scan existing spec files (e.g., `ls .specflow/specs/`) and note which `type` values appear. If "refactor" or "bugfix" are not present in the schema, map the heuristic to the closest equivalent types that are. For any task `type` not recognized by the heuristic, fall back to keyword-based detection on the task description rather than failing or treating the task as greenfield by default.
+
+If brownfield: set `delta: true` in frontmatter and generate Delta section in Step 5.
+If greenfield: proceed with existing Requirements format (no change).
+
 ## Step 3: Critical Questions (if needed)
 
 If the task has genuine ambiguity that affects approach, use AskUserQuestion.
@@ -139,17 +155,40 @@ If no specs exist in either directory, start with SPEC-001.
 
 Write to `.specflow/specs/SPEC-XXX.md` using the template structure:
 
-1. **Frontmatter:** id, type, status (draft), priority, complexity, created, source (if `<todo_context>` provided — set to the TODO ID, e.g., `source: TODO-006`)
+1. **Frontmatter:** id, type, status (draft), priority, complexity, created, source (if `<todo_context>` provided — set to the TODO ID, e.g., `source: TODO-006`), and optionally `delta: true` (only for brownfield tasks detected in Step 2.7)
 2. **Title:** Clear, action-oriented
 3. **Context:** Why this is needed
    - **If `<prior_discussion>` provided:** Add "Prior Discussion" subsection linking to PRE-XXX or DISC-XXX with key decisions
 4. **Task:** What to do
-5. **Requirements:** Files, interfaces, deletions
-6. **Acceptance Criteria:** Specific, measurable
-7. **Validation Checklist** (medium/large specs only): 3-5 concrete verification steps with expected outcomes. Each item = action + expected result. Examples: "Run `npm test` — all pass", "POST /api/users with invalid email — returns 422", "Open settings page — new toggle visible"
-8. **Constraints:** What NOT to do
-9. **Assumptions:** What you assumed (clearly marked)
-   - **If `<prior_discussion>` provided:** Decisions from discussion are facts, not assumptions
+5. **Delta section (brownfield tasks only):** When `delta: true`, add a `## Delta` section immediately after Context:
+
+   ```markdown
+   ## Delta
+
+   ### ADDED
+   - `path/to/new-file.md` — Description of what this new file provides
+
+   ### MODIFIED
+   - `path/to/existing-file.md` — Description of what changes and why
+     - Section X: Add Y
+     - Section Z: Replace W with V
+
+   ### REMOVED
+   - `path/to/obsolete-file.md` — Why this file is no longer needed
+   ```
+
+   Rules for Delta section:
+   - Each subsection (ADDED/MODIFIED/REMOVED) is optional; omit if empty
+   - At least one subsection must be present
+   - MODIFIED entries include bullet points describing specific changes within the file
+   - The existing `## Requirements` section remains and contains the detailed specifications for each change (the Delta section is a summary/index)
+
+6. **Requirements:** Files, interfaces, deletions
+7. **Acceptance Criteria:** Specific, measurable
+8. **Validation Checklist** (medium/large specs only): 3-5 concrete verification steps with expected outcomes. Each item = action + expected result. Examples: "Run `npm test` — all pass", "POST /api/users with invalid email — returns 422", "Open settings page — new toggle visible"
+9. **Constraints:** What NOT to do
+10. **Assumptions:** What you assumed (clearly marked)
+    - **If `<prior_discussion>` provided:** Decisions from discussion are facts, not assumptions
 
 ## Step 5.5: Generate Implementation Tasks (for medium and large specs)
 
