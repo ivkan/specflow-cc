@@ -267,6 +267,44 @@ Set NEEDS_DECOMPOSITION if ANY of:
 - Recommend `/sf:run --parallel` mode
 - Set status to NEEDS_DECOMPOSITION (if no critical issues)
 
+## Step 3.6: Delta Validation
+
+**Detection:** Check if spec frontmatter contains `delta: true`.
+
+**If no delta field or delta is false:** Skip this check entirely.
+
+**If delta is true:**
+
+a. Verify `## Delta` section exists. If missing: Critical issue "Spec marked as delta but no Delta section found."
+
+b. Validate ADDED entries:
+   - For each file in ADDED: use Glob/Grep to check if file already exists in the codebase
+   - If file exists: Critical issue "Delta ADDED file `{path}` already exists. Should this be MODIFIED instead?"
+
+c. Validate MODIFIED entries:
+   - For each file in MODIFIED: use Glob/Grep to check if file exists in the codebase
+   - If file does NOT exist: Critical issue "Delta MODIFIED file `{path}` not found. Should this be ADDED instead?"
+   - Check that each MODIFIED entry has at least one sub-bullet describing the change
+   - If no sub-bullets: Warning "MODIFIED entry `{path}` lacks change description"
+
+d. Validate REMOVED entries:
+   - For each file in REMOVED: use Glob/Grep to check if file exists in the codebase
+   - If file does NOT exist: Warning "Delta REMOVED file `{path}` not found. Already removed or wrong path?"
+
+e. Cross-reference: Check that every file mentioned in `## Requirements` is also listed in `## Delta`
+   - Before comparing, normalize all paths: strip any leading `./` and any trailing `/` from both sides so that `./agents/foo.md`, `agents/foo.md`, and `agents/foo.md/` all resolve to the same key.
+   - Files in Requirements but not in Delta (after normalization): Warning "File `{path}` in Requirements but not in Delta section"
+   - Files in Delta but not in Requirements (after normalization): Warning "File `{path}` in Delta but no detailed requirements specified"
+
+**Record in audit output:**
+
+If delta was present, add to audit summary:
+```
+Delta validation: {pass_count}/{total_count} entries valid
+```
+
+If no delta: omit this line.
+
 ## Step 3.7: Goal-Backward Validation
 
 **Detection:** Check if Goal Analysis section exists in the spec.
