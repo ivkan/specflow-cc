@@ -5,6 +5,19 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.16.0] - 2026-03-23
+
+### Added
+
+- **Brownfield / Delta Specifications** — spec-creator now detects existing implementations and generates a `## Delta` section describing only what changes, preserving what already works
+- **Delta validation in spec-auditor** — auditor validates delta sections for completeness and correctness in brownfield specs
+- **Changes Applied subsection** in `/sf:done` — delta spec completion summaries now include a dedicated section listing what was actually changed
+
+### Fixed
+
+- **Init re-initialization safety** — `/sf:init` now safely handles re-initialization without overwriting existing `.specflow/` state
+- **Deviations subsection disambiguation** — delta completion template no longer collides subsection names when both Deviations and Delta Deviations are present
+
 ## [1.15.0] - 2026-03-11
 
 ### Fixed
