@@ -175,7 +175,58 @@ mkdir -p .specflow/archive
 Update frontmatter:
 - status → "done"
 
-Add completion summary section to the spec:
+Check if the spec frontmatter contains `delta: true`.
+
+**If delta spec (`delta: true`):** Add the following completion summary section, which includes a "Changes Applied" subsection populated from the spec's `## Delta` section content:
+
+```markdown
+---
+
+## Completion
+
+**Completed:** {date} {time}
+**Total Commits:** {count from Execution Summary}
+**Review Cycles:** {count of Review v[N] entries}
+
+### Outcome
+
+{1-2 sentence summary of what was delivered}
+
+### Key Files
+
+- `{path}` — {what it does/why it matters}
+
+### Changes Applied
+
+**Added:**
+- `path/to/new-file.md` — {brief description}
+
+**Modified:**
+- `path/to/existing-file.md` — {brief description of changes}
+
+**Removed:**
+- `path/to/obsolete-file.md` — {brief description}
+
+{Omit any subsection (Added/Modified/Removed) if it has no entries.}
+
+{If a /sf:review was performed before /sf:done, include this subsection noting differences between what the Delta section specified and what was actually implemented. If no deviations were found or no review was performed, omit this subsection entirely:}
+
+### Deviations from Delta
+
+- `path/to/file.md` — {description of how actual implementation differed from Delta entry}
+
+### Patterns Established
+
+{List any new patterns, conventions, or architectural decisions introduced.
+If none: "None — followed existing patterns."}
+
+### Deviations
+
+{Any deviations from the original spec during implementation.
+If none: "None — implemented as specified."}
+```
+
+**If NOT a delta spec:** Add the standard completion summary section (no "Changes Applied" or "Deviations from Delta" subsections):
 
 ```markdown
 ---
