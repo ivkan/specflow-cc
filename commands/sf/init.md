@@ -20,19 +20,88 @@ Initialize SpecFlow in the current project. Analyzes the codebase to understand 
 
 <workflow>
 
+## Step 0: Parse Arguments
+
+Check whether the user invoked `/sf:init --force`. Look at the invocation string for the `--force` flag. Set a mental variable `FORCE_MODE` to true or false accordingly.
+
 ## Step 1: Check if Already Initialized
 
 ```bash
 [ -d .specflow ] && echo "EXISTS" || echo "NOT_EXISTS"
 ```
 
-**If EXISTS:**
-```
-SpecFlow already initialized in this project.
+**If NOT_EXISTS:** proceed to Step 2.
 
-Use `/sf:status` to see current state.
+**If EXISTS:** scan for existing data files and directories.
+
+```bash
+# Check each file/directory individually
+[ -f .specflow/PROJECT.md ] && echo "HAS_PROJECT_MD" || true
+[ -f .specflow/STATE.md ] && echo "HAS_STATE_MD" || true
+[ -f .specflow/config.json ] && echo "HAS_CONFIG_JSON" || true
+[ -f .specflow/todos/TODO.md ] && echo "HAS_TODO_MD" || true
+[ "$(ls -A .specflow/specs 2>/dev/null)" ] && echo "HAS_SPECS" || true
+[ "$(ls -A .specflow/archive 2>/dev/null)" ] && echo "HAS_ARCHIVE" || true
 ```
-Exit.
+
+Collect which items exist. If ANY of the above are found:
+
+**If FORCE_MODE is false (no `--force` flag):**
+
+Print this warning (substituting actual found items):
+
+```
+WARNING: SpecFlow data already exists in this project.
+
+The following files/directories would be overwritten:
+[list each found item, one per line, e.g.:]
+  - .specflow/PROJECT.md
+  - .specflow/STATE.md
+  - .specflow/config.json
+  - .specflow/todos/TODO.md
+  - .specflow/specs/ (contains files)
+  - .specflow/archive/ (contains files)
+
+Re-running init will overwrite these files. Use `/sf:init --force` to reset.
+
+Tip: Run `/sf:status` to see current state.
+```
+
+Exit. Do NOT proceed.
+
+**If FORCE_MODE is true (`--force` was passed):**
+
+Print a warning listing all files that will be overwritten, then create a timestamped backup.
+
+```
+WARNING: --force flag detected. Existing SpecFlow data will be backed up and overwritten.
+
+The following files/directories will be backed up:
+[list each found item]
+```
+
+Create the backup directory with a timestamp:
+
+```bash
+BACKUP_DIR=".specflow/backup-$(date +%Y-%m-%d-%H%M%S)"
+mkdir -p "$BACKUP_DIR"
+echo "Backup directory: $BACKUP_DIR"
+```
+
+Copy all existing `.specflow/` content (except the backup directory itself) into the backup:
+
+```bash
+# Copy all existing .specflow content into backup
+# Use find to copy files while preserving structure, excluding backup dirs themselves
+find .specflow -maxdepth 1 -not -name "backup-*" -not -name ".specflow" | while read item; do
+  cp -r "$item" "$BACKUP_DIR/"
+done
+echo "Backup complete."
+```
+
+Then proceed to Step 2.
+
+**If EXISTS but no data files found** (empty directory): proceed to Step 2.
 
 ## Step 2: Detect Tech Stack
 
@@ -162,6 +231,14 @@ mkdir -p .specflow/specs .specflow/audits .specflow/archive .specflow/todos .spe
 
 ## Step 6: Generate PROJECT.md
 
+**Defense-in-depth guard:** Before writing, check if `.specflow/PROJECT.md` already exists AND `--force` was NOT used. If both conditions are true, skip writing this file and note it was skipped.
+
+```bash
+[ -f .specflow/PROJECT.md ] && echo "PROJECT_MD_EXISTS" || echo "PROJECT_MD_MISSING"
+```
+
+If `PROJECT_MD_MISSING` OR `FORCE_MODE` is true: write the file.
+
 Based on detected stack and patterns, create `.specflow/PROJECT.md`:
 
 ```markdown
@@ -201,6 +278,14 @@ Based on detected stack and patterns, create `.specflow/PROJECT.md`:
 
 ## Step 7: Generate STATE.md
 
+**Defense-in-depth guard:** Before writing, check if `.specflow/STATE.md` already exists AND `--force` was NOT used. If both conditions are true, skip writing this file and note it was skipped.
+
+```bash
+[ -f .specflow/STATE.md ] && echo "STATE_MD_EXISTS" || echo "STATE_MD_MISSING"
+```
+
+If `STATE_MD_MISSING` OR `FORCE_MODE` is true: write the file.
+
 Create `.specflow/STATE.md`:
 
 ```markdown
@@ -236,6 +321,14 @@ Create `.specflow/STATE.md`:
 ```
 
 ## Step 8: Generate config.json
+
+**Defense-in-depth guard:** Before writing, check if `.specflow/config.json` already exists AND `--force` was NOT used. If both conditions are true, skip writing this file and note it was skipped.
+
+```bash
+[ -f .specflow/config.json ] && echo "CONFIG_JSON_EXISTS" || echo "CONFIG_JSON_MISSING"
+```
+
+If `CONFIG_JSON_MISSING` OR `FORCE_MODE` is true: write the file.
 
 Create `.specflow/config.json`:
 
