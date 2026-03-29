@@ -123,12 +123,43 @@ Append to Audit History:
 **Applied:** [what was applied]
 
 **Changes:**
-1. [✓ if applied, ✗ if skipped] [Item description] — [what was done]
-2. [✓/✗] [Item description] — [what was done]
+1. [✓ if applied, ✗ if skipped, ⏸ if deferred] [Item description] — [what was done]
+2. [✓/✗/⏸] [Item description] — [what was done]
 
 {If any skipped:}
 **Skipped:** [reason for skipping recommendations]
+
+{If any deferred:}
+**Deferred:** [items deferred to follow-up work]
 ```
+
+## Step 5.5: Create TODOs for Deferred Items
+
+After recording the Response, check if any items were marked as deferred (⏸).
+
+**If no deferred items:** Skip this step.
+
+**If deferred items exist:**
+
+For each deferred item:
+
+1. Read `.specflow/todos/TODO.md` to find the highest existing TODO ID
+2. Generate next TODO ID (zero-padded to 3 digits, starting from 001)
+3. Create a new TODO entry with:
+   - **Description:** `{item description} (deferred from {SPEC-XXX} audit v{N})`
+   - **Priority:** —
+   - **Notes:** `Origin: {SPEC-XXX} Response v{N}. {reason for deferral}`
+
+4. Insert the new entry into `.specflow/todos/TODO.md` after the `# To-Do List` line
+
+5. Append a "TODOs Created" subsection to the Response in Audit History:
+
+```markdown
+**TODOs Created:**
+- TODO-{XXX} — {item description}
+```
+
+**Important:** This step is mandatory. Every deferred item MUST produce a TODO. If TODO creation fails, report the failure — do not silently skip.
 
 ## Step 6: Update Frontmatter
 
@@ -169,9 +200,16 @@ Output directly as formatted text (not wrapped in a code block):
 
 3. [✗] [Item] — [reason]
 
+{If any deferred:}
+### Deferred → TODOs Created
+
+4. [⏸] [Item] → TODO-{XXX}
+
 ### Files Modified
 
 - .specflow/specs/SPEC-XXX.md
+{If TODOs created:}
+- .specflow/todos/TODO.md
 
 ### Next Step
 
@@ -188,6 +226,8 @@ Tip: `/clear` recommended — auditor needs fresh context
 - [ ] User's revision scope understood
 - [ ] Changes applied precisely
 - [ ] Revision Response recorded in Audit History
+- [ ] Deferred items (if any) created as TODOs in `.specflow/todos/TODO.md`
+- [ ] TODOs Created subsection appended to Response (if deferred items exist)
 - [ ] Frontmatter status updated
 - [ ] STATE.md updated
 - [ ] Clear summary of changes provided

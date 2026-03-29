@@ -404,7 +404,13 @@ Items {N, M} require clarification before deciding.
 `/sf:audit` — re-audit with applied changes
 
 {If deferred items exist:}
-Note: Deferred items saved to `.specflow/todos/` for future consideration.
+### Deferred → TODOs Created
+
+| Deferred Item | TODO Created |
+|---------------|-------------|
+| {item description} | TODO-{XXX} |
+
+Note: Each deferred item has been saved as a TODO for future consideration.
 ```
 
 </workflow>
@@ -464,6 +470,19 @@ NEXT_VERSION=$((RESPONSE_COUNT + 1))
 **Summary:** Applied {X}/{Y} items, Skipped {Z}, Deferred {W}
 ```
 
+### Create TODOs for Deferred Items
+
+After recording the Response, if any items were marked "Deferred":
+
+1. Read `.specflow/todos/TODO.md` to find the highest existing TODO ID
+2. For each deferred item, create a new TODO entry:
+   - **Description:** `{item description} (deferred from {SPEC-XXX} audit v{N})`
+   - **Priority:** —
+   - **Notes:** `Origin: {SPEC-XXX} Response v{N}. {reason for deferral}`
+3. Append "**TODOs Created:**" subsection to the Response in Audit History listing created TODO IDs
+
+**This step is mandatory.** Every "Deferred" decision MUST produce a corresponding TODO.
+
 ### Update Status
 
 In spec frontmatter: `status: auditing`
@@ -480,6 +499,7 @@ In STATE.md:
 - [ ] Revision scope determined (all/specific/custom)
 - [ ] Changes applied correctly
 - [ ] Response recorded in Audit History
+- [ ] Deferred items (if any) created as TODOs in `.specflow/todos/TODO.md`
 - [ ] Spec frontmatter status updated
 - [ ] STATE.md updated
 - [ ] Clear summary of changes shown

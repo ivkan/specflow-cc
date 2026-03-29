@@ -267,6 +267,10 @@ Set NEEDS_DECOMPOSITION if ANY of:
 - Recommend `/sf:run --parallel` mode
 - Set status to NEEDS_DECOMPOSITION (if no critical issues)
 
+**If recommending scope reduction (removing requirements):**
+- Explicitly note in the audit that removed requirements MUST be captured as TODOs
+- Add to recommendations: "Any requirements removed during revision must be tracked via `/sf:todo` to prevent scope loss"
+
 ## Step 3.6: Delta Validation
 
 **Detection:** Check if spec frontmatter contains `delta: true`.

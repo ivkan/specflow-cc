@@ -5,6 +5,16 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.17.0] - 2026-03-29
+
+### Added
+
+- **Defer-to-TODO enforcement** — when spec-reviser defers requirements during scope reduction, TODOs are now automatically created in `.specflow/todos/TODO.md`
+  - New Step 5.5 in spec-reviser agent: mandatory TODO creation for every deferred item
+  - Revise command fallback mode also enforces TODO creation for deferred items
+  - Spec-auditor now reminds that removed requirements must be captured as TODOs when recommending scope reduction
+  - Closes a process gap where deferred work could be silently lost (discovered via SPEC-159 incident)
+
 ## [1.16.0] - 2026-03-23
 
 ### Added
