@@ -4,6 +4,7 @@ description: Add a new to-do item for future work
 allowed-tools:
   - Read
   - Write
+  - Edit
   - Bash
   - AskUserQuestion
 ---
@@ -84,7 +85,9 @@ Create from template:
 ```
 
 **If TODO.md exists:**
-Insert new todo after `# To-Do List` line:
+Use the **Edit** tool (NOT Write) to make two targeted edits:
+
+1. Insert new todo block after the first `---` following `# To-Do List`:
 
 ```markdown
 ## TODO-{XXX} — {YYYY-MM-DD}
@@ -95,7 +98,9 @@ Insert new todo after `# To-Do List` line:
 ---
 ```
 
-Also update `*Last updated:` line at the bottom.
+2. Update the `*Last updated:` line at the bottom.
+
+**CRITICAL:** Never rewrite the entire file. Use Edit to insert the new block and update the timestamp — this preserves all existing todos.
 
 ## Step 6: Display Confirmation
 

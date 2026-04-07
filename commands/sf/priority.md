@@ -4,6 +4,7 @@ description: Interactive prioritization of specifications and to-dos
 allowed-tools:
   - Read
   - Write
+  - Edit
   - Bash
   - Glob
   - AskUserQuestion
@@ -117,7 +118,7 @@ Your choice:
 If input matches pattern `{ID}={priority}`:
 
 1. Validate priority (high | medium | low)
-2. Update frontmatter in spec file OR priority line in TODO.md
+2. Update frontmatter in spec file OR use the **Edit** tool (NOT Write) to update the priority line in TODO.md — never rewrite the entire file
 3. Display confirmation
 4. Return to Step 3
 

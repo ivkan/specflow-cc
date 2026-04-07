@@ -5,6 +5,15 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.17.1] - 2026-04-07
+
+### Fixed
+
+- **TODO.md data loss prevention** — all 6 commands that modify TODO.md now use the `Edit` tool (targeted diff) instead of `Write` (full rewrite), preventing the agent from accidentally dropping entries when reconstructing large files
+  - Affected: `sf:todo`, `sf:plan`, `sf:done`, `sf:triage`, `sf:priority`, `spec-reviser`
+  - `Write` is now only used for initial TODO.md creation; all subsequent modifications use `Edit`
+  - Each command includes explicit "CRITICAL: never rewrite the entire file" guardrails
+
 ## [1.17.0] - 2026-03-29
 
 ### Added

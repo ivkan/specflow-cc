@@ -4,6 +4,7 @@ description: Convert scan findings into actionable TODO items
 allowed-tools:
   - Read
   - Write
+  - Edit
   - Bash
   - AskUserQuestion
 ---
@@ -182,7 +183,11 @@ If TODO.md doesn't exist, create with header:
 *Last updated: {YYYY-MM-DD}*
 ```
 
-If TODO.md exists, insert new entries after `# To-Do List` line and update timestamp.
+If TODO.md exists, use the **Edit** tool (NOT Write) to make two targeted edits:
+1. Insert new entries after the first `---` following `# To-Do List`
+2. Update the `*Last updated:` timestamp
+
+**CRITICAL:** Never rewrite the entire file with Write. Use Edit to insert new blocks and update the timestamp — this preserves all existing todos.
 
 ## Step 7: Display Results
 

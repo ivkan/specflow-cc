@@ -4,6 +4,7 @@ description: Convert a to-do item into a full specification
 allowed-tools:
   - Read
   - Write
+  - Edit
   - Bash
   - Glob
   - Grep
@@ -152,10 +153,11 @@ Use the priority from the todo as the spec's initial priority.
 **This step is MANDATORY. Do NOT skip it after the agent returns.**
 
 1. Read `.specflow/todos/TODO.md`
-2. Remove the entire todo block (from `## TODO-XXX` heading through the next `---` separator, inclusive)
-3. Update `*Last updated:` timestamp with note: `TODO-XXX converted to SPEC-YYY`
-4. Write the updated TODO.md
-5. **Verify** by reading TODO.md again — the converted todo MUST NOT appear
+2. Use the **Edit** tool (NOT Write) to remove the entire todo block (from `## TODO-XXX` heading through the next `---` separator, inclusive) — replace the block with empty string
+3. Use the **Edit** tool to update `*Last updated:` timestamp with note: `TODO-XXX converted to SPEC-YYY`
+4. **Verify** by reading TODO.md again — the converted todo MUST NOT appear
+
+**CRITICAL:** Never rewrite the entire file with Write. Use Edit to remove the specific block and update the timestamp — this preserves all other todos.
 
 **Important:** Only remove after confirmed spec creation.
 

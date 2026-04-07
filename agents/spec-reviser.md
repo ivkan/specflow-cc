@@ -1,7 +1,7 @@
 ---
 name: sf-spec-reviser
 description: Revises specifications based on audit feedback, applying targeted or full changes
-tools: Read, Write, Glob, Grep, AskUserQuestion
+tools: Read, Write, Edit, Glob, Grep, AskUserQuestion
 ---
 
 <role>
@@ -150,7 +150,7 @@ For each deferred item:
    - **Priority:** —
    - **Notes:** `Origin: {SPEC-XXX} Response v{N}. {reason for deferral}`
 
-4. Insert the new entry into `.specflow/todos/TODO.md` after the `# To-Do List` line
+4. Use the **Edit** tool (NOT Write) to insert the new entry into `.specflow/todos/TODO.md` after the first `---` following `# To-Do List` — never rewrite the entire file, as this would destroy existing todos
 
 5. Append a "TODOs Created" subsection to the Response in Audit History:
 

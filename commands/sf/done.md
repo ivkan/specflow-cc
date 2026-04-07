@@ -4,6 +4,7 @@ description: Finalize specification, archive, and update state
 allowed-tools:
   - Read
   - Write
+  - Edit
   - Bash
   - Glob
   - Grep
@@ -278,9 +279,10 @@ Check if the spec frontmatter contains a `source:` field (e.g., `source: TODO-00
 
 1. Read `.specflow/todos/TODO.md`
 2. Check if the referenced TODO-XXX entry still exists in the file
-3. **If it exists** — remove it (the entire block from `## TODO-XXX` heading through the next `---` separator, inclusive)
-4. Update `*Last updated:` timestamp with note: `TODO-XXX cleaned up (completed via SPEC-YYY)`
-5. Write the updated TODO.md
+3. **If it exists** — use the **Edit** tool (NOT Write) to remove the entire block (from `## TODO-XXX` heading through the next `---` separator, inclusive) — replace with empty string
+4. Use the **Edit** tool to update `*Last updated:` timestamp with note: `TODO-XXX cleaned up (completed via SPEC-YYY)`
+
+**CRITICAL:** Never rewrite the entire file with Write. Use Edit to remove the specific block and update the timestamp — this preserves all other todos.
 
 **If no `source:` field or TODO already removed:** Skip — no action needed.
 
