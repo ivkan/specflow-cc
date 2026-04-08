@@ -131,6 +131,7 @@ function cmdTodoList(cwd, raw, { showAll } = {}) {
     const blockRegex = /^## (TODO-\d+) — (\d{4}-\d{2}-\d{2})\s*\n([\s\S]*?)(?=^## TODO-|\Z)/gm;
     let match;
 
+    // Append sentinel heading so the last block's lazy [\s\S]*? terminates correctly
     while ((match = blockRegex.exec(legacyContent + '\n## TODO-END')) !== null) {
       const id = match[1];
       const created = match[2];
