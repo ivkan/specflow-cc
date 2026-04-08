@@ -250,7 +250,7 @@ Based on calculated metrics, generate 2-4 actionable insights:
 
 ## To-Do Backlog
 
-{If TODO.md exists and has items:}
+{If TODO count > 0:}
 | Metric         | Value |
 |----------------|-------|
 | Total items    | {N}   |
