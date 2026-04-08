@@ -226,7 +226,7 @@ Output directly as formatted text (not wrapped in a code block):
 
 - .specflow/specs/SPEC-XXX.md
 {If TODOs created:}
-- .specflow/todos/TODO.md
+- .specflow/todos/TODO-{XXX}.md
 
 ### Next Step
 
@@ -243,7 +243,7 @@ Tip: `/clear` recommended — auditor needs fresh context
 - [ ] User's revision scope understood
 - [ ] Changes applied precisely
 - [ ] Revision Response recorded in Audit History
-- [ ] Deferred items (if any) created as TODOs in `.specflow/todos/TODO.md`
+- [ ] Deferred items (if any) created as individual `.specflow/todos/TODO-XXX.md` files
 - [ ] TODOs Created subsection appended to Response (if deferred items exist)
 - [ ] Frontmatter status updated
 - [ ] STATE.md updated
