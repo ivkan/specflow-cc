@@ -143,16 +143,33 @@ After recording the Response, check if any items were marked as deferred (⏸).
 
 For each deferred item:
 
-1. Read `.specflow/todos/TODO.md` to find the highest existing TODO ID
-2. Generate next TODO ID (zero-padded to 3 digits, starting from 001)
-3. Create a new TODO entry with:
-   - **Description:** `{item description} (deferred from {SPEC-XXX} audit v{N})`
-   - **Priority:** —
-   - **Notes:** `Origin: {SPEC-XXX} Response v{N}. {reason for deferral}`
+1. Generate next TODO ID:
+   ```bash
+   node bin/sf-tools.cjs todo next-id --raw
+   ```
+2. Create `.specflow/todos/TODO-{XXX}.md` using the Write tool:
+   ```markdown
+   ---
+   id: TODO-{XXX}
+   title: "{item description} (deferred from {SPEC-XXX} audit v{N})"
+   priority: —
+   complexity: —
+   status: open
+   effort: —
+   depends_on: —
+   created: {YYYY-MM-DD}
+   ---
 
-4. Use the **Edit** tool (NOT Write) to insert the new entry into `.specflow/todos/TODO.md` after the first `---` following `# To-Do List` — never rewrite the entire file, as this would destroy existing todos
+   ## Description
 
-5. Append a "TODOs Created" subsection to the Response in Audit History:
+   {item description} (deferred from {SPEC-XXX} audit v{N})
+
+   ## Notes
+
+   Origin: {SPEC-XXX} Response v{N}. {reason for deferral}
+   ```
+
+3. Append a "TODOs Created" subsection to the Response in Audit History:
 
 ```markdown
 **TODOs Created:**

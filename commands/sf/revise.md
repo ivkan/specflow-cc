@@ -474,14 +474,34 @@ NEXT_VERSION=$((RESPONSE_COUNT + 1))
 
 After recording the Response, if any items were marked "Deferred":
 
-1. Read `.specflow/todos/TODO.md` to find the highest existing TODO ID
-2. For each deferred item, create a new TODO entry:
-   - **Description:** `{item description} (deferred from {SPEC-XXX} audit v{N})`
-   - **Priority:** —
-   - **Notes:** `Origin: {SPEC-XXX} Response v{N}. {reason for deferral}`
+1. For each deferred item, generate next TODO ID:
+   ```bash
+   node bin/sf-tools.cjs todo next-id --raw
+   ```
+2. Create `.specflow/todos/TODO-{XXX}.md` for each deferred item:
+   ```markdown
+   ---
+   id: TODO-{XXX}
+   title: "{item description} (deferred from {SPEC-XXX} audit v{N})"
+   priority: —
+   complexity: —
+   status: open
+   effort: —
+   depends_on: —
+   created: {YYYY-MM-DD}
+   ---
+
+   ## Description
+
+   {item description} (deferred from {SPEC-XXX} audit v{N})
+
+   ## Notes
+
+   Origin: {SPEC-XXX} Response v{N}. {reason for deferral}
+   ```
 3. Append "**TODOs Created:**" subsection to the Response in Audit History listing created TODO IDs
 
-**This step is mandatory.** Every "Deferred" decision MUST produce a corresponding TODO.
+**This step is mandatory.** Every "Deferred" decision MUST produce a corresponding TODO-XXX.md file.
 
 ### Update Status
 
@@ -499,7 +519,7 @@ In STATE.md:
 - [ ] Revision scope determined (all/specific/custom)
 - [ ] Changes applied correctly
 - [ ] Response recorded in Audit History
-- [ ] Deferred items (if any) created as TODOs in `.specflow/todos/TODO.md`
+- [ ] Deferred items (if any) created as individual TODO-XXX.md files in `.specflow/todos/`
 - [ ] Spec frontmatter status updated
 - [ ] STATE.md updated
 - [ ] Clear summary of changes shown

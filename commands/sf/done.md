@@ -277,12 +277,21 @@ Check if the spec frontmatter contains a `source:` field (e.g., `source: TODO-00
 
 **If `source:` field exists:**
 
-1. Read `.specflow/todos/TODO.md`
-2. Check if the referenced TODO-XXX entry still exists in the file
-3. **If it exists** — use the **Edit** tool (NOT Write) to remove the entire block (from `## TODO-XXX` heading through the next `---` separator, inclusive) — replace with empty string
-4. Use the **Edit** tool to update `*Last updated:` timestamp with note: `TODO-XXX cleaned up (completed via SPEC-YYY)`
+1. Check if `.specflow/todos/{source}.md` exists (per-file format):
 
-**CRITICAL:** Never rewrite the entire file with Write. Use Edit to remove the specific block and update the timestamp — this preserves all other todos.
+```bash
+[ -f .specflow/todos/{source}.md ] && echo "FOUND" || echo "NOT_FOUND"
+```
+
+2. **If FOUND:** Delete the file:
+
+```bash
+rm .specflow/todos/{source}.md
+```
+
+3. **If NOT_FOUND (backward compatibility):** Also check legacy format — look in `.specflow/todos/TODO.md` for the referenced ID. If found there, remove the block using the Edit tool.
+
+No "Last updated" lines to update in per-file format.
 
 **If no `source:` field or TODO already removed:** Skip — no action needed.
 
@@ -431,7 +440,7 @@ git commit -m "docs(sf): complete SPEC-XXX"
 - [ ] Spec status updated to "done"
 - [ ] Completion section added
 - [ ] Decisions extracted (if any)
-- [ ] Source TODO cleaned up (if `source:` field exists in spec)
+- [ ] Source TODO file deleted (if `source:` field exists in spec and file exists in todos/)
 - [ ] Spec moved to archive
 - [ ] STATE.md updated (cleared active, removed from queue)
 - [ ] Final commit created

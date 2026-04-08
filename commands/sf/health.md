@@ -50,15 +50,21 @@ Initialize collectors:
 |-------|------|----------|------------|
 | E001 | `.specflow/STATE.md` missing | error | Yes — regenerate minimal STATE.md |
 | E002 | `.specflow/STATE.md` missing `## Queue` section | error | No |
-| W001 | `.specflow/todos/TODO.md` missing | warning | Yes — create empty TODO.md |
+| W001 | `.specflow/todos/` directory missing | warning | Yes — create directory |
 | W002 | `.specflow/specs/` directory missing | warning | Yes — create directory |
 | W003 | `.specflow/archive/` directory missing | warning | Yes — create directory |
 | W004 | `.specflow/execution/` directory missing | warning | Yes — create directory |
+| W009 | TODO file without valid YAML frontmatter | warning | No — inspect manually |
+| W010 | Legacy `TODO.md` exists alongside per-file TODOs (suggest migration) | info | No — run `/sf:migrate-todos` |
 
 For each check:
 1. Test existence
 2. If missing and repairable and `--repair`: fix it, add to `repairs[]`
 3. If missing and not repairable: add to `errors[]` or `warnings[]`
+
+**For W009:** List all `TODO-*.md` files in `.specflow/todos/` and check each for valid YAML frontmatter (presence of `id:`, `status:`, `created:` fields).
+
+**For W010:** If both `TODO-*.md` files AND `TODO.md` exist in `.specflow/todos/`, add info note suggesting `/sf:migrate-todos` to complete migration.
 
 ### 3.2 STATE.md Integrity
 
@@ -181,7 +187,7 @@ Display final status.
 | E001 | error | STATE.md not found | Yes |
 | E002 | error | STATE.md missing Queue section | No |
 | E003 | error | Active spec references non-existent file | Yes |
-| W001 | warning | TODO.md not found | Yes |
+| W001 | warning | todos/ directory missing | Yes |
 | W002 | warning | specs/ directory missing | Yes |
 | W003 | warning | archive/ directory missing | Yes |
 | W004 | warning | execution/ directory missing | Yes |
@@ -189,6 +195,8 @@ Display final status.
 | W006 | warning | Queue has duplicate spec IDs | No |
 | W007 | warning | STATE.md missing required sections | No |
 | W008 | warning | Stale execution state files | Yes |
+| W009 | warning | TODO file without valid frontmatter | No |
+| W010 | info | Legacy TODO.md alongside per-file TODOs | No |
 | I001 | info | Spec not in queue (may be WIP) | No |
 | I002 | info | Completed spec not archived | No |
 
@@ -199,7 +207,7 @@ Display final status.
 | Action | Effect | Risk |
 |--------|--------|------|
 | Create STATE.md | Minimal template with empty queue | None |
-| Create TODO.md | Empty TODO template | None |
+| Create todos/ directory | Empty directory for per-file TODOs | None |
 | Create directories | specs/, archive/, execution/ | None |
 | Clear active spec | Set to "—" if spec file missing | Loses active reference |
 | Delete stale execution | Remove orphaned .json state files | None |

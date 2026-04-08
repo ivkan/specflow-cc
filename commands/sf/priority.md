@@ -16,7 +16,7 @@ Interactively prioritize specifications and to-do items. Allows reordering, sett
 
 <context>
 @.specflow/STATE.md
-@.specflow/todos/TODO.md
+@.specflow/todos/
 </context>
 
 <workflow>
@@ -51,9 +51,13 @@ For each spec, extract:
 
 ### Load Todos
 
-Read `.specflow/todos/TODO.md` and extract:
+```bash
+node bin/sf-tools.cjs todo list
+```
+
+Extract from the JSON array:
 - ID
-- Description
+- Title
 - Priority
 
 ## Step 3: Display Current Prioritization
@@ -118,9 +122,10 @@ Your choice:
 If input matches pattern `{ID}={priority}`:
 
 1. Validate priority (high | medium | low)
-2. Update frontmatter in spec file OR use the **Edit** tool (NOT Write) to update the priority line in TODO.md — never rewrite the entire file
-3. Display confirmation
-4. Return to Step 3
+2. **If ID is a spec (SPEC-XXX):** Update `priority:` in frontmatter of `.specflow/specs/SPEC-XXX.md` using the Edit tool
+3. **If ID is a TODO (TODO-XXX):** Read `.specflow/todos/TODO-XXX.md`, update `priority:` line in frontmatter using the Edit tool
+4. Display confirmation
+5. Return to Step 3
 
 ### Reorder Specifications
 
@@ -192,12 +197,12 @@ Use `/sf:next` to work on highest priority task.
 <success_criteria>
 - [ ] Initialization verified
 - [ ] All specs loaded with current priorities
-- [ ] All todos loaded with current priorities
+- [ ] All todos loaded via CLI tool (format-agnostic)
 - [ ] Combined numbered list displayed
 - [ ] Set priority command works
 - [ ] Reorder command works
 - [ ] Technical order suggestion available
-- [ ] Changes persisted to files
+- [ ] TODO priority updated in individual file frontmatter (not TODO.md)
 - [ ] STATE.md Queue updated after spec reorder
 - [ ] Clear feedback on changes
 </success_criteria>

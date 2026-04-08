@@ -156,6 +156,8 @@ If no specs exist in either directory, start with SPEC-001.
 Write to `.specflow/specs/SPEC-XXX.md` using the template structure:
 
 1. **Frontmatter:** id, type, status (draft), priority, complexity, created, source (if `<todo_context>` provided — set to the TODO ID, e.g., `source: TODO-006`), and optionally `delta: true` (only for brownfield tasks detected in Step 2.7)
+
+   **Note on `source:` field:** The `source: TODO-XXX` value refers to the identifier of a per-file TODO stored at `.specflow/todos/TODO-XXX.md`. It does NOT refer to an entry in a monolithic `TODO.md`. When `/sf:plan` converts a TODO and then `/sf:done` completes the spec, the cleanup step deletes `.specflow/todos/TODO-XXX.md` based on this field.
 2. **Title:** Clear, action-oriented
 3. **Context:** Why this is needed
    - **If `<prior_discussion>` provided:** Add "Prior Discussion" subsection linking to PRE-XXX or DISC-XXX with key decisions

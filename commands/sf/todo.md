@@ -4,17 +4,18 @@ description: Add a new to-do item for future work
 allowed-tools:
   - Read
   - Write
-  - Edit
   - Bash
   - AskUserQuestion
 ---
 
 <purpose>
 Add a new to-do item to the backlog. To-dos are ideas or tasks that don't need immediate specification but should be captured for later. They can later be converted to specifications with `/sf:plan`.
+
+Each TODO is stored as an individual file `.specflow/todos/TODO-XXX.md` with YAML frontmatter.
 </purpose>
 
 <context>
-@.specflow/todos/TODO.md
+@.specflow/todos/
 </context>
 
 <arguments>
@@ -56,53 +57,46 @@ Use AskUserQuestion:
 
 ## Step 4: Generate TODO ID
 
-Check existing TODO.md for highest ID:
+Run the CLI tool to get the next available ID:
 
 ```bash
-grep -oP 'TODO-\K\d+' .specflow/todos/TODO.md 2>/dev/null | sort -n | tail -1
+node bin/sf-tools.cjs todo next-id --raw
 ```
 
-If no existing todos, start with 001.
-Next ID = last + 1, zero-padded to 3 digits.
+This handles both per-file format (TODO-XXX.md) and legacy TODO.md automatically.
 
-## Step 5: Create or Update TODO.md
+## Step 5: Derive Title
 
-**If TODO.md doesn't exist:**
-Create from template:
+Extract the first sentence of the description (up to the first period, `?`, or `!`, or truncate at ~80 characters). This becomes the `title` field in frontmatter.
+
+## Step 6: Create TODO File
+
+Create `.specflow/todos/TODO-{XXX}.md` using the Write tool:
 
 ```markdown
-# To-Do List
-
+---
+id: TODO-{XXX}
+title: "{derived title}"
+priority: —
+complexity: —
+status: open
+effort: —
+depends_on: —
+created: {YYYY-MM-DD}
 ---
 
-## TODO-{XXX} — {YYYY-MM-DD}
-**Description:** {description}
-**Priority:** —
-**Notes:** —
+## Description
 
----
-*Last updated: {YYYY-MM-DD}*
+{description}
+
+## Notes
+
+—
 ```
 
-**If TODO.md exists:**
-Use the **Edit** tool (NOT Write) to make two targeted edits:
+Do NOT create or modify TODO.md. Do NOT update any "Last updated" lines.
 
-1. Insert new todo block after the first `---` following `# To-Do List`:
-
-```markdown
-## TODO-{XXX} — {YYYY-MM-DD}
-**Description:** {description}
-**Priority:** —
-**Notes:** —
-
----
-```
-
-2. Update the `*Last updated:` line at the bottom.
-
-**CRITICAL:** Never rewrite the entire file. Use Edit to insert the new block and update the timestamp — this preserves all existing todos.
-
-## Step 6: Display Confirmation
+## Step 7: Display Confirmation
 
 **IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
 
@@ -129,9 +123,9 @@ Use the **Edit** tool (NOT Write) to make two targeted edits:
 - [ ] Initialization verified
 - [ ] Todos directory exists
 - [ ] Description obtained (from arg or prompt)
-- [ ] Unique TODO-XXX ID generated
-- [ ] TODO.md created or updated
-- [ ] New todo added at top of list
-- [ ] Last updated timestamp refreshed
+- [ ] Unique TODO-XXX ID generated via CLI tool
+- [ ] Title derived from first sentence of description (~80 chars max)
+- [ ] TODO-XXX.md created with valid YAML frontmatter
+- [ ] All required frontmatter fields present (id, title, priority, complexity, status, effort, depends_on, created)
 - [ ] Clear confirmation and next actions shown
 </success_criteria>

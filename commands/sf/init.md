@@ -39,7 +39,7 @@ Check whether the user invoked `/sf:init --force`. Look at the invocation string
 [ -f .specflow/PROJECT.md ] && echo "HAS_PROJECT_MD" || true
 [ -f .specflow/STATE.md ] && echo "HAS_STATE_MD" || true
 [ -f .specflow/config.json ] && echo "HAS_CONFIG_JSON" || true
-[ -f .specflow/todos/TODO.md ] && echo "HAS_TODO_MD" || true
+[ -d .specflow/todos ] && echo "HAS_TODOS_DIR" || true
 [ "$(ls -A .specflow/specs 2>/dev/null)" ] && echo "HAS_SPECS" || true
 [ "$(ls -A .specflow/archive 2>/dev/null)" ] && echo "HAS_ARCHIVE" || true
 ```
@@ -58,7 +58,7 @@ The following files/directories would be overwritten:
   - .specflow/PROJECT.md
   - .specflow/STATE.md
   - .specflow/config.json
-  - .specflow/todos/TODO.md
+  - .specflow/todos/ (directory)
   - .specflow/specs/ (contains files)
   - .specflow/archive/ (contains files)
 

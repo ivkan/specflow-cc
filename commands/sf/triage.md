@@ -15,7 +15,7 @@ Review findings from the last codebase scan and selectively convert them to TODO
 
 <context>
 @.specflow/SCAN.md
-@.specflow/todos/TODO.md
+@.specflow/todos/
 </context>
 
 <arguments>
@@ -146,48 +146,47 @@ For each selected finding:
 ### 6.1 Generate TODO ID
 
 ```bash
-grep -oP 'TODO-\K\d+' .specflow/todos/TODO.md 2>/dev/null | sort -n | tail -1
+node bin/sf-tools.cjs todo next-id --raw
 ```
 
-### 6.2 Format TODO Entry
+This handles both per-file format and legacy TODO.md automatically (uses Node.js fs/regex — not grep -oP).
 
-```markdown
-## TODO-{XXX} — {YYYY-MM-DD}
-**Description:** {category}: {title}
-**Priority:** {high|medium|low}
-**Notes:**
-- Source: SCAN.md ({scan date})
-- Files: {files}
-- Problem: {problem}
-- Suggested fix: {fix}
-
----
-```
-
-### 6.3 Append to TODO.md
+### 6.2 Create TODO File
 
 Ensure `.specflow/todos/` directory exists:
 ```bash
 mkdir -p .specflow/todos
 ```
 
-If TODO.md doesn't exist, create with header:
+Create `.specflow/todos/TODO-{XXX}.md` using the Write tool:
+
 ```markdown
-# To-Do List
-
+---
+id: TODO-{XXX}
+title: "{category}: {title}"
+priority: {high|medium|low}
+complexity: —
+status: open
+effort: —
+depends_on: —
+created: {YYYY-MM-DD}
 ---
 
-{new todo entries}
+## Description
 
----
-*Last updated: {YYYY-MM-DD}*
+{category}: {title}
+
+{problem description}
+
+## Notes
+
+- Source: SCAN.md ({scan date})
+- Files: {files affected}
+- Problem: {problem}
+- Suggested fix: {fix}
 ```
 
-If TODO.md exists, use the **Edit** tool (NOT Write) to make two targeted edits:
-1. Insert new entries after the first `---` following `# To-Do List`
-2. Update the `*Last updated:` timestamp
-
-**CRITICAL:** Never rewrite the entire file with Write. Use Edit to insert new blocks and update the timestamp — this preserves all existing todos.
+Do NOT append to TODO.md. Do NOT update any "Last updated" lines. Each finding gets its own separate TODO-XXX.md file.
 
 ## Step 7: Display Results
 
@@ -252,8 +251,9 @@ Run /sf:triage again to review findings.
 - [ ] Findings extracted with priority levels
 - [ ] User shown summary of findings
 - [ ] Interactive selection completed (or --all used)
-- [ ] TODO items created with full context
+- [ ] Individual TODO-XXX.md files created (one per finding)
+- [ ] Each file has valid YAML frontmatter (id, title, priority, status, created)
 - [ ] Priority preserved from scan
-- [ ] Source reference included in notes
+- [ ] Source reference included in notes (scan date, files, problem)
 - [ ] Clear summary of created TODOs
 </success_criteria>

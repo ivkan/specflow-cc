@@ -17,7 +17,7 @@ Convert a to-do item from the backlog into a full specification. Reuses the spec
 </purpose>
 
 <context>
-@.specflow/todos/TODO.md
+@.specflow/todos/
 @.specflow/PROJECT.md
 @.specflow/STATE.md
 @~/.claude/specflow-cc/agents/spec-creator.md
@@ -46,10 +46,10 @@ Exit.
 ## Step 2: Check for Todos
 
 ```bash
-[ -f .specflow/todos/TODO.md ] && echo "EXISTS" || echo "NO_TODOS"
+node bin/sf-tools.cjs todo list --raw
 ```
 
-**If NO_TODOS:**
+**If empty output (no todos):**
 ```
 No to-do items found.
 
@@ -59,14 +59,16 @@ Exit.
 
 ## Step 3: Determine Target Todo
 
+Format detection is handled automatically by the CLI tool.
+
 **If argument is a number (e.g., "1", "2"):**
-Parse TODO.md, sort by priority, and select the Nth item.
+Run `node bin/sf-tools.cjs todo list` to get sorted array, pick the Nth item (1-indexed).
 
 **If argument is TODO-XXX format:**
-Find todo with matching ID.
+The target ID is known directly.
 
 **If no argument:**
-Display todos and prompt:
+Run `node bin/sf-tools.cjs todo list` and display todos, then prompt:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -86,13 +88,14 @@ Use AskUserQuestion with options as todo items.
 
 ## Step 4: Extract Todo Details
 
-Read the selected todo:
-- ID
-- Description
-- Priority
-- Notes (if any)
+Read `.specflow/todos/TODO-{XXX}.md` and parse frontmatter:
+- ID (from frontmatter `id:`)
+- Title (from frontmatter `title:`)
+- Description (from `## Description` body section)
+- Priority (from frontmatter `priority:`)
+- Notes (from `## Notes` body section, if any)
 
-**If todo not found:**
+**If todo file not found:**
 ```
 Todo "{arg}" not found.
 
@@ -148,18 +151,25 @@ Use the priority from the todo as the spec's initial priority.
 ", subagent_type="sf-spec-creator", model="{profile_model}", description="Create specification from todo")
 ```
 
-## Step 7: Remove Todo from List — CRITICAL
+## Step 7: Remove Todo File — CRITICAL
 
 **This step is MANDATORY. Do NOT skip it after the agent returns.**
 
-1. Read `.specflow/todos/TODO.md`
-2. Use the **Edit** tool (NOT Write) to remove the entire todo block (from `## TODO-XXX` heading through the next `---` separator, inclusive) — replace the block with empty string
-3. Use the **Edit** tool to update `*Last updated:` timestamp with note: `TODO-XXX converted to SPEC-YYY`
-4. **Verify** by reading TODO.md again — the converted todo MUST NOT appear
+1. Delete the file `.specflow/todos/TODO-{XXX}.md`:
 
-**CRITICAL:** Never rewrite the entire file with Write. Use Edit to remove the specific block and update the timestamp — this preserves all other todos.
+```bash
+rm .specflow/todos/TODO-{XXX}.md
+```
 
-**Important:** Only remove after confirmed spec creation.
+2. **Verify** the file no longer exists:
+
+```bash
+[ ! -f .specflow/todos/TODO-{XXX}.md ] && echo "DELETED" || echo "STILL_EXISTS"
+```
+
+**If STILL_EXISTS:** try deletion again and verify.
+
+**Important:** Only remove after confirmed spec creation. No "Last updated" lines to update.
 
 ## Step 8: Display Result
 
@@ -210,7 +220,7 @@ Consider `/sf:split SPEC-{YYY}` to decompose.
 
 ### Get Todo Details
 
-Read from TODO.md.
+Read `.specflow/todos/TODO-{XXX}.md` and parse frontmatter and body.
 
 ### Create Spec (same as /sf:new)
 
@@ -222,18 +232,19 @@ Use `/sf:new "{todo description}"` logic:
 
 ### Remove Todo
 
-Delete todo block from TODO.md.
+Delete the file `.specflow/todos/TODO-{XXX}.md`.
 
 </fallback>
 
 <success_criteria>
 - [ ] Initialization verified
-- [ ] TODO.md exists and has items
+- [ ] TODOs checked via CLI tool (format-agnostic)
 - [ ] Target todo identified (by ID or number)
-- [ ] Todo details extracted
+- [ ] Todo file read and details extracted (frontmatter + body)
 - [ ] Spec-creator agent spawned with context
 - [ ] SPEC-XXX.md created
 - [ ] Priority inherited from todo
-- [ ] Todo removed from TODO.md
+- [ ] TODO-XXX.md file deleted (not edited — whole file removed)
+- [ ] Deletion verified (file no longer exists)
 - [ ] Clear result with next step
 </success_criteria>

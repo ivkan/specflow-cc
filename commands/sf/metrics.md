@@ -17,7 +17,7 @@ Calculate and display project statistics including completion rates, quality met
 @.specflow/STATE.md
 @.specflow/specs/SPEC-*.md
 @.specflow/archive/SPEC-*.md
-@.specflow/todos/TODO.md
+@.specflow/todos/
 </context>
 
 <workflow>
@@ -79,12 +79,21 @@ For each `.specflow/archive/SPEC-*.md`:
 ### Parse To-Dos
 
 ```bash
-# Count todos
-TODO_COUNT=$(grep -c "^## TODO-" .specflow/todos/TODO.md 2>/dev/null || echo 0)
-
-# Count converted (todos that became specs - check STATE.md decisions)
-# This is approximated by todos with "converted" or spec reference
+# Count todos via CLI tool (format-agnostic, excludes eliminated by default)
+node bin/sf-tools.cjs todo list --raw
 ```
+
+This returns the list of open TODO IDs. For `--all` (including eliminated):
+```bash
+node bin/sf-tools.cjs todo list --all --raw
+```
+
+Parse priority breakdown from the JSON output to count by priority level.
+
+Also check:
+- `TODO_COUNT` = number of open TODOs (from default list)
+- `TODO_COUNT_ALL` = total including eliminated (from --all list)
+- Count converted (todos that became specs) approximated from decisions table
 
 ### Get Project Start Date
 

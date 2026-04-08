@@ -57,8 +57,8 @@ TOTAL=$(ls .specflow/specs/SPEC-*.md 2>/dev/null | wc -l)
 # Completed specs
 DONE=$(ls .specflow/archive/SPEC-*.md 2>/dev/null | wc -l)
 
-# Pending todos
-TODOS=$(ls .specflow/todos/*.md 2>/dev/null | wc -l)
+# Pending todos (count TODO-*.md files, exclude INDEX.md)
+TODOS=$(ls .specflow/todos/TODO-*.md 2>/dev/null | wc -l)
 ```
 
 ## Step 4.5: Validate State Consistency
