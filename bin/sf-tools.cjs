@@ -9,6 +9,9 @@
  *   spec load <id>                        Parse spec file, return frontmatter + body
  *   spec list                             List all specs
  *   spec next-id                          Next available SPEC-XXX number
+ *   todo load <id>                        Parse TODO file, return frontmatter + body
+ *   todo list [--all]                     List all TODOs sorted by priority
+ *   todo next-id                          Next available TODO-XXX number
  *   queue next                            First actionable spec from queue
  *   state get                             Current active spec, status, next step
  *   state set-active <id> <status> [next] Update active spec in STATE.md
@@ -22,6 +25,7 @@
 const { output, error, generateSlug } = require('./lib/core.cjs');
 const { cmdStateGet, cmdStateSetActive, cmdQueueNext } = require('./lib/state.cjs');
 const { cmdSpecLoad, cmdSpecList, cmdSpecNextId } = require('./lib/spec.cjs');
+const { cmdTodoLoad, cmdTodoList, cmdTodoNextId } = require('./lib/todo.cjs');
 const { cmdResolveModel } = require('./lib/config.cjs');
 const { cmdVerifyStructure } = require('./lib/verify.cjs');
 
@@ -34,6 +38,14 @@ const filteredArgs = args.filter(a => a !== '--raw');
  * Command dispatch table.
  * Keys are "command subcommand" or just "command".
  */
+const flags = {};
+for (const arg of filteredArgs) {
+  if (arg.startsWith('--')) {
+    const key = arg.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+    flags[key] = true;
+  }
+}
+
 const COMMANDS = {
   'spec load':       () => {
     if (!filteredArgs[2]) error('Missing spec ID. Usage: spec load <id>');
@@ -41,6 +53,12 @@ const COMMANDS = {
   },
   'spec list':       () => cmdSpecList(cwd, raw),
   'spec next-id':    () => cmdSpecNextId(cwd, raw),
+  'todo load':       () => {
+    if (!filteredArgs[2]) error('Missing TODO ID. Usage: todo load <id>');
+    cmdTodoLoad(cwd, filteredArgs[2], raw);
+  },
+  'todo list':       () => cmdTodoList(cwd, raw, { showAll: flags.all ?? false }),
+  'todo next-id':    () => cmdTodoNextId(cwd, raw),
   'queue next':      () => cmdQueueNext(cwd, raw),
   'state get':       () => cmdStateGet(cwd, raw),
   'state set-active': () => {
@@ -69,6 +87,9 @@ Commands:
   spec load <id>                          Parse spec file, return frontmatter + body
   spec list                               List all specs from .specflow/specs/
   spec next-id                            Next available SPEC-XXX number
+  todo load <id>                          Parse TODO file, return frontmatter + body
+  todo list [--all]                       List TODOs sorted by priority (--all includes eliminated)
+  todo next-id                            Next available TODO-XXX number
   queue next                              First actionable spec from queue table
   state get                               Current active spec, status, next step
   state set-active <id> <status> [next]   Update active spec, status, next step
