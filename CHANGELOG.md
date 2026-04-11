@@ -5,6 +5,16 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.2] - 2026-04-11
+
+### Fixed
+
+- **Installer no longer corrupts `settings.json`** — the installer wrote the `context-monitor` PostToolUse hook as a flat `{ type, command }` object, but Claude Code expects every `PostToolUse` entry to be a matcher group of the shape `{ matcher?, hooks: [{ type, command }] }`. Claude Code failed to parse `settings.json` with `"Expected array, but received undefined"`, and permission rules in the affected file were silently disabled
+  - The hook is now written as a proper matcher group
+  - Broken duplicate-detection fixed: the installer previously checked `entry.command` on the top-level entry, but in the correct format the command lives inside `entry.hooks[i].command`. As a result, every repeat install pushed a new (broken) entry. Detection now walks `entry.hooks[]` and matches the existing hook correctly, so repeat installs are idempotent
+  - Smoke test extended with four new cases: format assertion, presence check, repeat-install idempotency, and preservation of a pre-existing correctly-formatted hook
+  - **Heads-up:** if you already ran `1.18.0` or `1.18.1` against a `settings.json` that had a pre-existing PostToolUse hook, you may have a duplicate flat entry. Remove any `PostToolUse` element that lacks a `hooks:` array (i.e. has `type`/`command` at the top level) and re-run the installer
+
 ## [1.18.1] - 2026-04-11
 
 ### Fixed
