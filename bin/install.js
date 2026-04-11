@@ -213,6 +213,20 @@ function install(isGlobal) {
     }
   }
 
+  // Copy bin (CLI tools) — exclude install.js, which is the installer itself
+  const binSrc = path.join(src, 'bin');
+  if (fs.existsSync(binSrc)) {
+    const binDest = path.join(specflowDir, 'bin');
+    copyWithPathReplacement(binSrc, binDest, pathPrefix);
+    const installerCopy = path.join(binDest, 'install.js');
+    if (fs.existsSync(installerCopy)) fs.unlinkSync(installerCopy);
+    if (verifyInstalled(binDest, 'bin')) {
+      console.log(`  ${green}✓${reset} Installed bin (CLI tools)`);
+    } else {
+      failures.push('bin');
+    }
+  }
+
   // Copy hooks
   const hooksSrc = path.join(src, 'hooks');
   if (fs.existsSync(hooksSrc)) {
