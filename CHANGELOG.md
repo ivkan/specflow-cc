@@ -5,6 +5,13 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.3] - 2026-04-11
+
+### Fixed
+
+- **Auto-heal for users upgrading from 1.18.0 / 1.18.1** — the installer now scans `hooks.PostToolUse` during every install and removes any flat `{ type, command }` entry that references `context-monitor`. These entries were written by the buggy `1.18.0`/`1.18.1` installer and would otherwise linger in `settings.json` next to the newly written correct matcher group, still tripping Claude Code's `"Expected array, but received undefined"` parse error. Foreign flat entries (belonging to other tools) are left untouched — only entries unambiguously written by prior SpecFlow versions are removed.
+- Three new smoke tests cover clean auto-heal, preservation of foreign flat entries, and the mixed state (pre-existing correct hook + flat broken duplicate).
+
 ## [1.18.2] - 2026-04-11
 
 ### Fixed
