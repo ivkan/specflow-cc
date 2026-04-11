@@ -5,6 +5,15 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.1] - 2026-04-11
+
+### Fixed
+
+- **Installer now copies `bin/`** — the installer previously shipped `agents/`, `templates/`, `commands/`, and `hooks/` into `~/.claude/specflow-cc/` but never copied `bin/`, so any slash command invoking `node bin/sf-tools.cjs ...` failed with `MODULE_NOT_FOUND` in user projects. Affected commands: `/sf:todos`, `/sf:priority`, `/sf:metrics`, `/sf:plan`, `/sf:triage`, `/sf:revise`, `/sf:todo`
+  - Installer now copies `bin/` recursively (excluding `install.js` itself) via the existing `copyWithPathReplacement` helper
+  - All 12 affected command invocations rewritten to use the absolute path `node ~/.claude/specflow-cc/bin/sf-tools.cjs` (auto-rewritten to `./.claude/specflow-cc/` for local installs by the existing path-replacement pass)
+  - New smoke test `tests/install-bin-cli.test.cjs` runs the full installer in a temp project and invokes the installed CLI end-to-end, preventing regression
+
 ## [1.18.0] - 2026-04-08
 
 ### Added
