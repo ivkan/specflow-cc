@@ -150,6 +150,120 @@ test('sf-tools.cjs todo list returns fixture TODO from user project', () => {
 });
 
 console.log('');
+console.log('settings.json hook configuration:');
+
+function readSettings(tmp) {
+  const p = path.join(tmp, '.claude', 'settings.json');
+  return JSON.parse(fs.readFileSync(p, 'utf8'));
+}
+
+test('PostToolUse entries are matcher groups (no flat {type, command})', () => {
+  const tmp = makeTempProject();
+  try {
+    runInstaller(tmp);
+    const settings = readSettings(tmp);
+    const entries = settings.hooks.PostToolUse;
+    assert.ok(Array.isArray(entries), 'PostToolUse must be an array');
+    assert.ok(entries.length > 0, 'PostToolUse must not be empty after install');
+    for (const entry of entries) {
+      assert.ok(
+        Array.isArray(entry.hooks),
+        'every PostToolUse entry must be a matcher group with hooks[] array, got: ' +
+          JSON.stringify(entry)
+      );
+      assert.ok(entry.type === undefined,
+        'entry must NOT be a flat {type, command}: ' + JSON.stringify(entry));
+    }
+  } finally {
+    cleanup(tmp);
+  }
+});
+
+test('context-monitor hook present in matcher group', () => {
+  const tmp = makeTempProject();
+  try {
+    runInstaller(tmp);
+    const settings = readSettings(tmp);
+    const found = settings.hooks.PostToolUse.some(entry =>
+      Array.isArray(entry.hooks) &&
+      entry.hooks.some(h => h.command && h.command.includes('context-monitor'))
+    );
+    assert.ok(found, 'context-monitor hook missing from PostToolUse');
+  } finally {
+    cleanup(tmp);
+  }
+});
+
+test('running installer twice does not duplicate context-monitor hook', () => {
+  const tmp = makeTempProject();
+  try {
+    runInstaller(tmp);
+    runInstaller(tmp);
+    const settings = readSettings(tmp);
+    let count = 0;
+    for (const entry of settings.hooks.PostToolUse) {
+      if (!Array.isArray(entry.hooks)) continue;
+      for (const h of entry.hooks) {
+        if (h.command && h.command.includes('context-monitor')) count++;
+      }
+    }
+    assert.equal(count, 1,
+      'expected exactly 1 context-monitor hook after repeat install, got ' + count);
+  } finally {
+    cleanup(tmp);
+  }
+});
+
+test('installer does not corrupt pre-existing correctly-formatted hook', () => {
+  const tmp = makeTempProject();
+  try {
+    // Simulate a user who already has a correctly-formatted context-monitor hook
+    // from a prior install or manual configuration.
+    const claudeDir = path.join(tmp, '.claude');
+    fs.mkdirSync(claudeDir, { recursive: true });
+    const preExisting = {
+      hooks: {
+        PostToolUse: [
+          {
+            hooks: [
+              {
+                type: 'command',
+                command: 'node "$HOME/.claude/hooks/context-monitor.js"'
+              }
+            ]
+          }
+        ]
+      }
+    };
+    fs.writeFileSync(
+      path.join(claudeDir, 'settings.json'),
+      JSON.stringify(preExisting, null, 2) + '\n'
+    );
+
+    runInstaller(tmp);
+
+    const settings = readSettings(tmp);
+    // Every entry must still be a matcher group
+    for (const entry of settings.hooks.PostToolUse) {
+      assert.ok(Array.isArray(entry.hooks),
+        'pre-existing entry was mangled: ' + JSON.stringify(entry));
+    }
+    // Exactly one context-monitor hook — installer should have detected the
+    // existing one and NOT pushed a duplicate.
+    let count = 0;
+    for (const entry of settings.hooks.PostToolUse) {
+      for (const h of entry.hooks) {
+        if (h.command && h.command.includes('context-monitor')) count++;
+      }
+    }
+    assert.equal(count, 1,
+      'expected exactly 1 context-monitor hook when one already existed, got ' + count);
+  } finally {
+    cleanup(tmp);
+  }
+});
+
+console.log('');
 console.log('Results: ' + passed + ' passed, ' + failed + ' failed');
 
 if (failed > 0) {
