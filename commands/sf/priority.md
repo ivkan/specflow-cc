@@ -52,7 +52,7 @@ For each spec, extract:
 ### Load Todos
 
 ```bash
-node bin/sf-tools.cjs todo list
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo list
 ```
 
 Extract from the JSON array:

@@ -60,7 +60,7 @@ Use AskUserQuestion:
 Run the CLI tool to get the next available ID:
 
 ```bash
-node bin/sf-tools.cjs todo next-id --raw
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo next-id --raw
 ```
 
 This handles both per-file format (TODO-XXX.md) and legacy TODO.md automatically.

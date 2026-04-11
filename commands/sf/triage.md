@@ -146,7 +146,7 @@ For each selected finding:
 ### 6.1 Generate TODO ID
 
 ```bash
-node bin/sf-tools.cjs todo next-id --raw
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo next-id --raw
 ```
 
 This handles both per-file format and legacy TODO.md automatically (uses Node.js fs/regex — not grep -oP).

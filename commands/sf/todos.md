@@ -41,12 +41,12 @@ Call the CLI tool, which handles format detection automatically:
 
 **If `--all` flag was passed:**
 ```bash
-node bin/sf-tools.cjs todo list --all
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo list --all
 ```
 
 **Otherwise:**
 ```bash
-node bin/sf-tools.cjs todo list
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo list
 ```
 
 The tool returns a JSON array of `{ id, title, priority, status, complexity, created }` objects, sorted by priority (high > medium > low > unset), then by created date (oldest first).
@@ -135,7 +135,7 @@ Use the format from `templates/todo-index.md`:
 
 <success_criteria>
 - [ ] Initialization verified
-- [ ] TODOs listed via `node bin/sf-tools.cjs todo list` (format-agnostic)
+- [ ] TODOs listed via `node ~/.claude/specflow-cc/bin/sf-tools.cjs todo list` (format-agnostic)
 - [ ] Empty state handled with helpful message
 - [ ] Sorted by priority then date (oldest first within same priority)
 - [ ] Numbered list displayed with Status column

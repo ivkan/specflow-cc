@@ -80,12 +80,12 @@ For each `.specflow/archive/SPEC-*.md`:
 
 ```bash
 # Count todos via CLI tool (format-agnostic, excludes eliminated by default)
-node bin/sf-tools.cjs todo list --raw
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo list --raw
 ```
 
 This returns the list of open TODO IDs. For `--all` (including eliminated):
 ```bash
-node bin/sf-tools.cjs todo list --all --raw
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo list --all --raw
 ```
 
 Parse priority breakdown from the JSON output to count by priority level.

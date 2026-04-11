@@ -46,7 +46,7 @@ Exit.
 ## Step 2: Check for Todos
 
 ```bash
-node bin/sf-tools.cjs todo list --raw
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo list --raw
 ```
 
 **If empty output (no todos):**
@@ -62,13 +62,13 @@ Exit.
 Format detection is handled automatically by the CLI tool.
 
 **If argument is a number (e.g., "1", "2"):**
-Run `node bin/sf-tools.cjs todo list` to get sorted array, pick the Nth item (1-indexed).
+Run `node ~/.claude/specflow-cc/bin/sf-tools.cjs todo list` to get sorted array, pick the Nth item (1-indexed).
 
 **If argument is TODO-XXX format:**
 The target ID is known directly.
 
 **If no argument:**
-Run `node bin/sf-tools.cjs todo list` and display todos, then prompt:
+Run `node ~/.claude/specflow-cc/bin/sf-tools.cjs todo list` and display todos, then prompt:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

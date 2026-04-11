@@ -476,7 +476,7 @@ After recording the Response, if any items were marked "Deferred":
 
 1. For each deferred item, generate next TODO ID:
    ```bash
-   node bin/sf-tools.cjs todo next-id --raw
+   node ~/.claude/specflow-cc/bin/sf-tools.cjs todo next-id --raw
    ```
 2. Create `.specflow/todos/TODO-{XXX}.md` for each deferred item:
    ```markdown
