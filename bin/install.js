@@ -289,13 +289,21 @@ function finishInstall(settingsPath, settings, statuslineCommand, shouldInstallS
   if (!settings.hooks) settings.hooks = {};
   if (!settings.hooks.PostToolUse) settings.hooks.PostToolUse = [];
 
-  const hasMonitor = settings.hooks.PostToolUse.some(h =>
-    h.command && h.command.includes('context-monitor')
+  // Claude Code expects each PostToolUse entry to be a matcher group:
+  //   { matcher?: string, hooks: [{ type, command }, ...] }
+  // Detect an existing context-monitor hook inside any matcher group.
+  const hasMonitor = settings.hooks.PostToolUse.some(entry =>
+    Array.isArray(entry && entry.hooks) &&
+    entry.hooks.some(h => h && h.command && h.command.includes('context-monitor'))
   );
   if (!hasMonitor) {
     settings.hooks.PostToolUse.push({
-      type: 'command',
-      command: monitorCommand
+      hooks: [
+        {
+          type: 'command',
+          command: monitorCommand
+        }
+      ]
     });
     console.log(`  ${green}✓${reset} Configured context monitor hook`);
   }
