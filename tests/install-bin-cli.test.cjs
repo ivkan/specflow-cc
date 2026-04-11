@@ -214,6 +214,142 @@ test('running installer twice does not duplicate context-monitor hook', () => {
   }
 });
 
+test('auto-heals flat broken context-monitor entry from prior install', () => {
+  const tmp = makeTempProject();
+  try {
+    // Simulate settings.json left by installer 1.18.0/1.18.1: a flat
+    // { type, command } entry at the top level of PostToolUse, which is
+    // invalid per Claude Code's schema.
+    const claudeDir = path.join(tmp, '.claude');
+    fs.mkdirSync(claudeDir, { recursive: true });
+    const broken = {
+      hooks: {
+        PostToolUse: [
+          {
+            type: 'command',
+            command: 'node "$HOME/.claude/hooks/context-monitor.js"'
+          }
+        ]
+      }
+    };
+    fs.writeFileSync(
+      path.join(claudeDir, 'settings.json'),
+      JSON.stringify(broken, null, 2) + '\n'
+    );
+
+    runInstaller(tmp);
+
+    const settings = readSettings(tmp);
+    // No flat entries should remain.
+    for (const entry of settings.hooks.PostToolUse) {
+      assert.ok(Array.isArray(entry.hooks),
+        'flat entry was not healed: ' + JSON.stringify(entry));
+    }
+    // Exactly one context-monitor hook — the correctly-formatted one the
+    // installer pushed after removing the broken flat entry.
+    let count = 0;
+    for (const entry of settings.hooks.PostToolUse) {
+      for (const h of entry.hooks) {
+        if (h.command && h.command.includes('context-monitor')) count++;
+      }
+    }
+    assert.equal(count, 1,
+      'expected exactly 1 context-monitor hook after auto-heal, got ' + count);
+  } finally {
+    cleanup(tmp);
+  }
+});
+
+test('auto-heal preserves flat entries that are NOT context-monitor', () => {
+  const tmp = makeTempProject();
+  try {
+    // A flat entry that doesn't reference context-monitor should be left
+    // alone by auto-heal — it may belong to some other tool. (It will still
+    // be invalid per Claude Code's schema, but that's not our problem to
+    // fix; we only clean up after our own prior bug.)
+    const claudeDir = path.join(tmp, '.claude');
+    fs.mkdirSync(claudeDir, { recursive: true });
+    const preExisting = {
+      hooks: {
+        PostToolUse: [
+          {
+            type: 'command',
+            command: 'node /some/other/tool.js'
+          }
+        ]
+      }
+    };
+    fs.writeFileSync(
+      path.join(claudeDir, 'settings.json'),
+      JSON.stringify(preExisting, null, 2) + '\n'
+    );
+
+    runInstaller(tmp);
+
+    const settings = readSettings(tmp);
+    const foreignStillThere = settings.hooks.PostToolUse.some(e =>
+      e && e.command === 'node /some/other/tool.js'
+    );
+    assert.ok(foreignStillThere,
+      'auto-heal must not touch foreign flat entries');
+  } finally {
+    cleanup(tmp);
+  }
+});
+
+test('auto-heal handles mix of correct + flat broken context-monitor', () => {
+  const tmp = makeTempProject();
+  try {
+    // Simulate the real user case: a correctly-formatted hook was already
+    // present, AND installer 1.18.0/1.18.1 added a flat broken duplicate.
+    const claudeDir = path.join(tmp, '.claude');
+    fs.mkdirSync(claudeDir, { recursive: true });
+    const mixed = {
+      hooks: {
+        PostToolUse: [
+          {
+            hooks: [
+              {
+                type: 'command',
+                command: 'node "$HOME/.claude/hooks/context-monitor.js"'
+              }
+            ]
+          },
+          {
+            type: 'command',
+            command: 'node "$HOME/.claude/hooks/context-monitor.js"'
+          }
+        ]
+      }
+    };
+    fs.writeFileSync(
+      path.join(claudeDir, 'settings.json'),
+      JSON.stringify(mixed, null, 2) + '\n'
+    );
+
+    runInstaller(tmp);
+
+    const settings = readSettings(tmp);
+    // Flat entry gone
+    for (const entry of settings.hooks.PostToolUse) {
+      assert.ok(Array.isArray(entry.hooks),
+        'flat entry survived auto-heal: ' + JSON.stringify(entry));
+    }
+    // Exactly one context-monitor hook — the pre-existing correct one.
+    // Installer must not push a new duplicate after healing.
+    let count = 0;
+    for (const entry of settings.hooks.PostToolUse) {
+      for (const h of entry.hooks) {
+        if (h.command && h.command.includes('context-monitor')) count++;
+      }
+    }
+    assert.equal(count, 1,
+      'expected exactly 1 context-monitor hook after heal+install, got ' + count);
+  } finally {
+    cleanup(tmp);
+  }
+});
+
 test('installer does not corrupt pre-existing correctly-formatted hook', () => {
   const tmp = makeTempProject();
   try {

@@ -289,6 +289,32 @@ function finishInstall(settingsPath, settings, statuslineCommand, shouldInstallS
   if (!settings.hooks) settings.hooks = {};
   if (!settings.hooks.PostToolUse) settings.hooks.PostToolUse = [];
 
+  // Auto-heal: remove flat, broken context-monitor entries written by
+  // installer versions 1.18.0 and 1.18.1. Those versions pushed
+  // { type: "command", command: "..." } directly into PostToolUse, but
+  // Claude Code requires every PostToolUse entry to be a matcher group
+  // of shape { matcher?, hooks: [{ type, command }, ...] }. A flat entry
+  // makes Claude Code fail to parse settings.json entirely. Only entries
+  // that are unambiguously ours (flat + command references context-monitor)
+  // are removed; everything else is left untouched.
+  {
+    const before = settings.hooks.PostToolUse.length;
+    settings.hooks.PostToolUse = settings.hooks.PostToolUse.filter(entry => {
+      const isFlatBrokenMonitor =
+        entry &&
+        !Array.isArray(entry.hooks) &&
+        entry.type === 'command' &&
+        typeof entry.command === 'string' &&
+        entry.command.includes('context-monitor');
+      return !isFlatBrokenMonitor;
+    });
+    const removed = before - settings.hooks.PostToolUse.length;
+    if (removed > 0) {
+      const plural = removed === 1 ? 'y' : 'ies';
+      console.log(`  ${green}✓${reset} Repaired settings.json (removed ${removed} broken hook entr${plural} from prior install)`);
+    }
+  }
+
   // Claude Code expects each PostToolUse entry to be a matcher group:
   //   { matcher?: string, hooks: [{ type, command }, ...] }
   // Detect an existing context-monitor hook inside any matcher group.
