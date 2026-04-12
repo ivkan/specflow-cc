@@ -5,6 +5,16 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.19.0] - 2026-04-12
+
+### Added
+
+- **Deferred work detection in auditor** — the auditor now detects deferred work items (TODOs, FIXMEs, placeholder implementations) in the spec and flags them as findings (step 3.9.5)
+
+### Fixed
+
+- **TODO INDEX.md auto-sync** — `INDEX.md` in `.specflow/todos/` was getting out of sync because `/sf:todo` and `/sf:done` modified TODO files without regenerating the index. Added `todo reindex` command to `sf-tools.cjs` and wired it into both `/sf:todo` (Step 6.5) and `/sf:done` (Step 7.5, after TODO file deletion)
+
 ## [1.18.3] - 2026-04-11
 
 ### Fixed
