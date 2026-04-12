@@ -457,6 +457,55 @@ Check if spec includes items marked as "Out of Scope" or "Deferred" in PROJECT.m
 **If compliant:**
 - Add to audit output: "Project compliance: ✓ Honors PROJECT.md decisions"
 
+## Step 3.9.5: Deferred Work Detection
+
+Scan the specification's prose sections for mentions of work that is explicitly deferred, out of scope, or planned for a follow-up. This prevents deferred work from being silently lost when the spec is archived.
+
+### 3.9.5.1 Scan Sections
+
+Search the following sections of the spec for deferred work signals:
+- Context
+- Goal Analysis
+- Requirements
+- Constraints
+- Assumptions
+- Acceptance Criteria
+
+**Signal patterns to detect** (case-insensitive):
+- "defer", "deferred"
+- "follow-up", "follow up", "followup"
+- "future work", "future spec", "future phase"
+- "separate spec", "separate task"
+- "out of scope", "out-of-scope"
+- "not in this spec", "not included in this spec"
+- "will be added later", "added in a later"
+- "TBD", "to be determined"
+- "planned for", "tracked as", "tracked in"
+
+### 3.9.5.2 Cross-Reference with TODOs
+
+For each deferred item found:
+
+1. Extract a short description of the deferred work from the surrounding sentence
+2. Check if a corresponding TODO already exists:
+   - Search `.specflow/todos/` files for keywords from the deferred item description
+   - If a matching TODO exists: note as covered
+   - If no matching TODO found: flag as untracked
+
+### 3.9.5.3 Deferred Work Verdict
+
+**If untracked deferred items found:**
+- Add **Recommendation** with prefix `[Deferred]` for each:
+  - `"Deferred work mentioned but no TODO found: '{quoted phrase from spec}'. Create via /sf:todo to prevent scope loss."`
+
+**If all deferred items have matching TODOs:**
+- Add to audit output: `"Deferred work: ✓ All deferred items tracked"`
+
+**If no deferred work mentions found:**
+- Omit from audit output (no line needed)
+
+**Note:** This is always a Recommendation, never Critical — the spec itself may be correct, and the TODO may have been created outside SpecFlow or may be intentionally deferred to a later planning session.
+
 ## Step 3.10: Language Profile Check
 
 **Detection:** Check if PROJECT.md contains a `## Language Profile` section.
@@ -840,6 +889,7 @@ Tip: `/clear` recommended before `/sf:run` — executor needs fresh context
 - [ ] PROJECT.md context loaded
 - [ ] All 10 dimensions evaluated (clarity, completeness, testability, scope, feasibility, architecture, duplication, cognitive load, strategic fit, project compliance)
 - [ ] Language profile checked (if present in PROJECT.md)
+- [ ] Deferred work scanned and cross-referenced with TODOs
 - [ ] Assumptions extracted and impact assessed
 - [ ] Project alignment verified
 - [ ] Project compliance verified (decisions, constraints, out-of-scope)
