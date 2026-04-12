@@ -12,6 +12,7 @@
  *   todo load <id>                        Parse TODO file, return frontmatter + body
  *   todo list [--all]                     List all TODOs sorted by priority
  *   todo next-id                          Next available TODO-XXX number
+ *   todo reindex                          Regenerate INDEX.md from TODO files
  *   queue next                            First actionable spec from queue
  *   state get                             Current active spec, status, next step
  *   state set-active <id> <status> [next] Update active spec in STATE.md
@@ -25,7 +26,7 @@
 const { output, error, generateSlug } = require('./lib/core.cjs');
 const { cmdStateGet, cmdStateSetActive, cmdQueueNext } = require('./lib/state.cjs');
 const { cmdSpecLoad, cmdSpecList, cmdSpecNextId } = require('./lib/spec.cjs');
-const { cmdTodoLoad, cmdTodoList, cmdTodoNextId } = require('./lib/todo.cjs');
+const { cmdTodoLoad, cmdTodoList, cmdTodoNextId, cmdTodoReindex } = require('./lib/todo.cjs');
 const { cmdResolveModel } = require('./lib/config.cjs');
 const { cmdVerifyStructure } = require('./lib/verify.cjs');
 
@@ -59,6 +60,7 @@ const COMMANDS = {
   },
   'todo list':       () => cmdTodoList(cwd, raw, { showAll: flags.all ?? false }),
   'todo next-id':    () => cmdTodoNextId(cwd, raw),
+  'todo reindex':    () => cmdTodoReindex(cwd, raw),
   'queue next':      () => cmdQueueNext(cwd, raw),
   'state get':       () => cmdStateGet(cwd, raw),
   'state set-active': () => {
@@ -90,6 +92,7 @@ Commands:
   todo load <id>                          Parse TODO file, return frontmatter + body
   todo list [--all]                       List TODOs sorted by priority (--all includes eliminated)
   todo next-id                            Next available TODO-XXX number
+  todo reindex                            Regenerate INDEX.md from TODO files
   queue next                              First actionable spec from queue table
   state get                               Current active spec, status, next step
   state set-active <id> <status> [next]   Update active spec, status, next step

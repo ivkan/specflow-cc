@@ -283,10 +283,14 @@ Check if the spec frontmatter contains a `source:` field (e.g., `source: TODO-00
 [ -f .specflow/todos/{source}.md ] && echo "FOUND" || echo "NOT_FOUND"
 ```
 
-2. **If FOUND:** Delete the file:
+2. **If FOUND:** Delete the file and reindex:
 
 ```bash
 rm .specflow/todos/{source}.md
+```
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex
 ```
 
 3. **If NOT_FOUND (backward compatibility):** Also check legacy format — look in `.specflow/todos/TODO.md` for the referenced ID. If found there, remove the block using the Edit tool.

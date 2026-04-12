@@ -96,6 +96,12 @@ created: {YYYY-MM-DD}
 
 Do NOT create or modify TODO.md. Do NOT update any "Last updated" lines.
 
+## Step 6.5: Reindex
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex
+```
+
 ## Step 7: Display Confirmation
 
 **IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:

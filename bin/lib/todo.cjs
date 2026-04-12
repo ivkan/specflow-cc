@@ -231,8 +231,102 @@ function cmdTodoNextId(cwd, raw) {
   }, raw, nextId);
 }
 
+/**
+ * Reindex: scan TODO-*.md files, regenerate INDEX.md.
+ *
+ * @param {string} cwd - Working directory
+ * @param {boolean} raw - Output raw string
+ */
+function cmdTodoReindex(cwd, raw) {
+  const todosDir = path.join(cwd, '.specflow', 'todos');
+
+  // Collect per-file TODOs
+  let perFiles;
+  try {
+    perFiles = fs.readdirSync(todosDir).filter(f => /^TODO-\d+\.md$/.test(f)).sort();
+  } catch (e) {
+    perFiles = [];
+  }
+
+  const todos = [];
+
+  for (const file of perFiles) {
+    const content = safeReadFile(path.join(todosDir, file));
+    if (!content) continue;
+
+    const parsed = parseFrontmatter(content);
+    const fm = parsed.frontmatter;
+
+    // Strip surrounding quotes from title (YAML may preserve them)
+    let title = fm.title || '';
+    if ((title.startsWith('"') && title.endsWith('"')) || (title.startsWith("'") && title.endsWith("'"))) {
+      title = title.slice(1, -1);
+    }
+
+    todos.push({
+      id: fm.id || file.replace('.md', ''),
+      title,
+      priority: fm.priority || '—',
+      status: fm.status || 'open',
+      created: fm.created || '',
+    });
+  }
+
+  // Sort by priority (high > medium > low > unset), then by created date
+  todos.sort((a, b) => {
+    const pa = priorityKey(a.priority);
+    const pb = priorityKey(b.priority);
+    if (pa !== pb) return pa - pb;
+    if (a.created < b.created) return -1;
+    if (a.created > b.created) return 1;
+    return 0;
+  });
+
+  // Count by priority
+  const counts = { high: 0, medium: 0, low: 0, unset: 0 };
+  for (const t of todos) {
+    if (t.priority === 'high') counts.high++;
+    else if (t.priority === 'medium') counts.medium++;
+    else if (t.priority === 'low') counts.low++;
+    else counts.unset++;
+  }
+
+  // Build INDEX.md
+  const lines = [
+    '# To-Do Index',
+    '',
+    '> Auto-generated from individual TODO files. Do not edit manually.',
+    '> Regenerate with `/sf:todos`.',
+    '',
+    '| # | ID | Title | Priority | Status | Created |',
+    '|---|-----|-------|----------|--------|---------|',
+  ];
+
+  for (let i = 0; i < todos.length; i++) {
+    const t = todos[i];
+    let title = t.title;
+    if (title.length > 50) title = title.slice(0, 50) + '...';
+    lines.push(`| ${i + 1} | ${t.id} | ${title} | ${t.priority} | ${t.status} | ${t.created} |`);
+  }
+
+  lines.push('');
+  lines.push(`**Total:** ${todos.length} items (${counts.high} high, ${counts.medium} medium, ${counts.low} low, ${counts.unset} unset)`);
+  lines.push('');
+  lines.push('---');
+  const now = new Date();
+  const timestamp = now.toISOString().replace('T', ' ').slice(0, 16);
+  lines.push(`*Last regenerated: ${timestamp}*`);
+  lines.push('');
+
+  const indexPath = path.join(todosDir, 'INDEX.md');
+  fs.writeFileSync(indexPath, lines.join('\n'), 'utf8');
+
+  output({ reindexed: todos.length, path: indexPath }, raw, `Reindexed ${todos.length} TODOs → INDEX.md`);
+}
+
 module.exports = {
   cmdTodoLoad,
   cmdTodoList,
   cmdTodoNextId,
+  cmdTodoReindex,
 };
