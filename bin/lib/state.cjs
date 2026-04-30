@@ -6,9 +6,8 @@
 
 'use strict';
 
-const fs = require('fs');
 const path = require('path');
-const { output, error, safeReadFile } = require('./core.cjs');
+const { output, error, safeReadFile, atomicWrite } = require('./core.cjs');
 
 /**
  * Extract a bold-field value from STATE.md content.
@@ -188,7 +187,7 @@ function cmdStateSetActive(cwd, id, status, nextStep, raw) {
     result.push(lines[i]);
   }
 
-  fs.writeFileSync(statePath, result.join('\n'), 'utf8');
+  atomicWrite(statePath, result.join('\n'));
 
   const resultObj = {
     updated: true,

@@ -95,6 +95,31 @@ function parseFrontmatter(content) {
 }
 
 /**
+ * Atomically write a file via tmp + rename. Prevents torn writes if the
+ * process is interrupted mid-write, and prevents readers (e.g. the statusline
+ * hook) from observing a half-written file when a command writes concurrently.
+ *
+ * Note: this does NOT prevent the read-modify-write race between two writers
+ * (both read old state, both write, second wins). For SpecFlow's interactive
+ * single-session model that race is rare; preventing torn files is the goal.
+ *
+ * @param {string} filePath - Absolute path to write
+ * @param {string} content - File contents (utf8)
+ */
+function atomicWrite(filePath, content) {
+  const dir = path.dirname(filePath);
+  const base = path.basename(filePath);
+  const tmpPath = path.join(dir, '.' + base + '.tmp.' + process.pid + '.' + Date.now());
+  try {
+    fs.writeFileSync(tmpPath, content, 'utf8');
+    fs.renameSync(tmpPath, filePath);
+  } catch (e) {
+    try { fs.unlinkSync(tmpPath); } catch (_) {}
+    throw e;
+  }
+}
+
+/**
  * Generate a URL-safe slug from text.
  * Lowercase, replace spaces/special chars with hyphens, collapse multiples, trim edges.
  *
@@ -115,6 +140,7 @@ module.exports = {
   output,
   error,
   safeReadFile,
+  atomicWrite,
   parseFrontmatter,
   generateSlug,
 };

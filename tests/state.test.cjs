@@ -218,6 +218,22 @@ SPEC-001
   }
 });
 
+test('set-active leaves no .tmp.* sidecar files (atomic write)', () => {
+  const tmpDir = createFixture(SAMPLE_STATE);
+  try {
+    const origWrite = process.stdout.write;
+    process.stdout.write = () => {};
+    cmdStateSetActive(tmpDir, 'SPEC-009', 'drafting', undefined, false);
+    process.stdout.write = origWrite;
+
+    const sfDir = path.join(tmpDir, '.specflow');
+    const leftover = fs.readdirSync(sfDir).filter(f => f.includes('.tmp.'));
+    assert.deepEqual(leftover, [], 'No .tmp.* sidecars should remain after atomic write');
+  } finally {
+    cleanup(tmpDir);
+  }
+});
+
 // --- Summary ---
 
 console.log('');
