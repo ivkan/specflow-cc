@@ -14,8 +14,13 @@
  *   todo next-id                          Next available TODO-XXX number
  *   todo reindex                          Regenerate INDEX.md from TODO files
  *   queue next                            First actionable spec from queue
- *   state get                             Current active spec, status, next step
- *   state set-active <id> <status> [next] Update active spec in STATE.md
+ *   state get                             Current active spec, status, next step (legacy shim)
+ *   state set-active <id> <status> [next] Update active spec in STATE.md (legacy shim)
+ *   state list-active                     List all active specs from Active Specifications table
+ *   state add-active <id> <status> <next> Append/update one row in Active Specifications table
+ *   state remove-active <id>              Remove one row from Active Specifications table
+ *   state resolve [id]                    Resolve active spec; emit JSON contract
+ *   state migrate                         One-shot idempotent migration to new schema
  *   resolve-model <agent-type>            Model for agent by current profile
  *   verify-structure                      Check .specflow/ integrity
  *   generate-slug <text>                  Text to URL-safe slug
@@ -24,7 +29,16 @@
 'use strict';
 
 const { output, error, generateSlug } = require('./lib/core.cjs');
-const { cmdStateGet, cmdStateSetActive, cmdQueueNext } = require('./lib/state.cjs');
+const {
+  cmdStateGet,
+  cmdStateSetActive,
+  cmdStateListActive,
+  cmdStateAddActive,
+  cmdStateRemoveActive,
+  cmdStateResolve,
+  cmdStateMigrate,
+  cmdQueueNext,
+} = require('./lib/state.cjs');
 const { cmdSpecLoad, cmdSpecList, cmdSpecNextId } = require('./lib/spec.cjs');
 const { cmdTodoLoad, cmdTodoList, cmdTodoNextId, cmdTodoReindex } = require('./lib/todo.cjs');
 const { cmdResolveModel } = require('./lib/config.cjs');
@@ -62,13 +76,42 @@ const COMMANDS = {
   'todo next-id':    () => cmdTodoNextId(cwd, raw),
   'todo reindex':    () => cmdTodoReindex(cwd, raw),
   'queue next':      () => cmdQueueNext(cwd, raw),
+
+  // Legacy shims (backwards compatible)
   'state get':       () => cmdStateGet(cwd, raw),
   'state set-active': () => {
     if (!filteredArgs[2] || !filteredArgs[3]) {
       error('Missing arguments. Usage: state set-active <id> <status> [next_step]');
     }
-    cmdStateSetActive(cwd, filteredArgs[2], filteredArgs[3], filteredArgs[4], raw);
+    Promise.resolve(cmdStateSetActive(cwd, filteredArgs[2], filteredArgs[3], filteredArgs[4], raw))
+      .catch(e => error(e.message));
   },
+
+  // New multi-spec state commands
+  'state list-active': () => cmdStateListActive(cwd, raw),
+  'state add-active':  () => {
+    if (!filteredArgs[2] || !filteredArgs[3]) {
+      error('Missing arguments. Usage: state add-active <id> <status> <next_step>');
+    }
+    Promise.resolve(cmdStateAddActive(cwd, filteredArgs[2], filteredArgs[3], filteredArgs[4] || '', raw))
+      .catch(e => error(e.message));
+  },
+  'state remove-active': () => {
+    if (!filteredArgs[2]) {
+      error('Missing arguments. Usage: state remove-active <id>');
+    }
+    Promise.resolve(cmdStateRemoveActive(cwd, filteredArgs[2], raw))
+      .catch(e => error(e.message));
+  },
+  'state resolve': () => {
+    // Optional specId argument (filteredArgs[2])
+    cmdStateResolve(cwd, filteredArgs[2] || undefined, raw);
+  },
+  'state migrate': () => {
+    Promise.resolve(cmdStateMigrate(cwd, raw))
+      .catch(e => error(e.message));
+  },
+
   'resolve-model':   () => {
     if (!filteredArgs[1]) error('Missing agent type. Usage: resolve-model <agent-type>');
     cmdResolveModel(cwd, filteredArgs[1], raw);
@@ -94,8 +137,13 @@ Commands:
   todo next-id                            Next available TODO-XXX number
   todo reindex                            Regenerate INDEX.md from TODO files
   queue next                              First actionable spec from queue table
-  state get                               Current active spec, status, next step
-  state set-active <id> <status> [next]   Update active spec, status, next step
+  state get                               Current active spec, status, next step (legacy shim)
+  state set-active <id> <status> [next]   Update active spec, status, next step (legacy shim)
+  state list-active                       List all rows in Active Specifications table
+  state add-active <id> <status> <next>   Append/update one row (under advisory lock)
+  state remove-active <id>               Remove one row (under advisory lock)
+  state resolve [SPEC-ID]                Resolve active spec; emit JSON contract
+  state migrate                          One-shot idempotent migration to new schema
   resolve-model <agent-type>              Resolve model for agent by current profile
   verify-structure                        Check .specflow/ directory integrity
   generate-slug <text>                    Convert text to URL-safe slug

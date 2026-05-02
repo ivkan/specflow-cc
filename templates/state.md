@@ -2,11 +2,13 @@
 
 <!-- This file is kept compact (<100 lines). Old decisions are automatically rotated to DECISIONS_ARCHIVE.md. -->
 
-## Current Position
+## Active Specifications
 
-- **Active Specification:** [none | SPEC-XXX]
-- **Status:** [idle | drafting | auditing | revision_requested | external_review | running | reviewing]
-- **Next Step:** [/sf:new | /sf:audit | /sf:revise | /sf:run | /sf:review | /sf:done]
+<!-- Multi-spec registry. Zero rows = no active specs. One row = single-spec ergonomics (no prompt). -->
+<!-- Multiple rows = resolver emits AskUserQuestion picker when no SPEC-ID argument provided. -->
+
+| SPEC-ID | Status | Next Step |
+|---------|--------|-----------|
 
 ## Queue
 
