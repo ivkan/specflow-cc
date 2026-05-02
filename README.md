@@ -64,6 +64,7 @@ SpecFlow fixes this with **Fresh Context Auditing**:
 | **Quality Control** | Self-correction (biased) | Independent Auditor (unbiased) |
 | **Verification** | "Looks good to me" | Verified against contract |
 | **Execution** | Linear, single agent | Atomic waves, parallel agents |
+| **Concurrency** | One task at a time | Multiple specs in parallel sessions |
 | **Result** | Hidden bugs ship | Issues caught before code exists |
 
 > The auditor has no memory of your conversation. It only sees the spec. If the spec says "use the flux capacitor API" — the auditor asks "what is that?"
@@ -433,7 +434,7 @@ Use `max` for maximum quality everywhere, `quality` for critical features, `budg
 ```
 .specflow/
 ├── PROJECT.md      # Project context (patterns, conventions)
-├── STATE.md        # Current state and queue
+├── STATE.md        # Multi-active state and queue (parallel-safe)
 ├── config.json     # Settings
 ├── specs/          # Active specifications
 ├── research/       # Research documents
@@ -465,6 +466,13 @@ Use `max` for maximum quality everywhere, `quality` for critical features, `budg
 # Or skip manual steps — run everything autonomously
 /sf:autopilot                            # Process active spec end-to-end
 /sf:autopilot --all                      # Process entire queue
+
+# Parallel sessions (since 1.20.0)
+# Session A:
+/sf:run SPEC-042                         # Work on one spec
+# Session B (separate Claude Code window, same project):
+/sf:run SPEC-043                         # Work on a different spec concurrently
+# STATE.md is locked per-write — no torn files, both rows visible
 ```
 
 ---

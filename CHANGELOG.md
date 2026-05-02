@@ -5,6 +5,39 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.0] - 2026-05-02
+
+### Added
+
+- **Parallel specification execution** — STATE.md now supports multiple active specifications in a `## Active Specifications` table (multi-row registry), enabling concurrent work across separate Claude Code sessions
+  - Run two specs in parallel: open a second session and either `/sf:next` or `/sf:run SPEC-XXX` — each session resolves its own target
+  - Single-spec workflows are unchanged: when only one spec is active, no command requires a SPEC-ID argument
+- **Advisory file-rename lock** — new `bin/lib/lock.cjs` exposes `withStateLock(fn)` to serialize STATE.md read-modify-write across concurrent processes. Uses Node's built-in `fs.openSync(path, 'wx')` + atomic-rename pattern — no native `flock(2)`, no shell-out, no new runtime dependencies. Per-process reentrancy via module-scope `_depth` counter; cross-process exclusivity via the `wx` flag
+  - Includes EPERM-aware stale-PID detection (`isProcessAlive` treats EPERM as alive per POSIX semantics)
+- **Centralized spec resolution** — new `bin/lib/resolve.cjs` and `node bin/sf-tools.cjs state resolve [SPEC-ID]` CLI. All 15 spec-touching commands now resolve their target spec through this single helper. Returns one of four JSON shapes:
+  - `{action: "use", id: "SPEC-XXX"}` — N=1 implicit or explicit-match
+  - `{action: "ask", options: [...]}` — N>1 with no SPEC-ID provided (commands present an `AskUserQuestion` picker)
+  - `{action: "error", code: "NO_ACTIVE_SPEC"}` — N=0
+  - `{action: "error", code: "SPEC_NOT_ACTIVE"}` — explicit SPEC-ID not in active table
+- **Idempotent legacy migration** — new `bin/lib/migrate-state.cjs` upgrades old `Active Specification` / `Status` / `Next Step` triples to the new `## Active Specifications` table. Handles both heading-style and bullet-style legacy fixtures. Invoked on `/sf:health` entry; second run is zero-diff
+- **New `state` subcommands** — `state list-active`, `state add-active <id> <status> <next>`, `state remove-active <id>`, `state resolve [id?]`, `state migrate`. Legacy `state get` and `state set-active` shims preserved for backwards compatibility
+- **`/sf:autopilot` N>1 guard** — autopilot fails fast with an explicit message when more than one spec is active and no SPEC-ID is provided (no auto-pick, no `AskUserQuestion`). The `--all` flag does NOT override this guard; multi-spec autopilot iteration is intentionally out of scope
+- 38 new tests across `test/lock.test.cjs`, `test/resolve.test.cjs`, `test/migrate.test.cjs`, `test/integration.test.cjs` — covering reentrancy, concurrent-write convergence (two child processes), all 5 resolution scenarios, both legacy formats, and end-to-end CLI flows. Full suite: 43 tests pass under Node 22's default parallel runner
+
+### Changed
+
+- **All 15 spec-touching commands** now use `state resolve` instead of inline STATE.md parsing: `audit`, `autopilot`, `discuss`, `done`, `fix`, `health`, `help`, `pause`, `review`, `revise`, `run`, `show`, `split`, `status`, `verify`. STATE.md mutations route through `state add-active` / `state remove-active`
+- **`templates/state.md`** — replaced single-spec `Active Specification` / `Status` / `Next Step` block with `## Active Specifications` table (`| SPEC-ID | Status | Next Step |`)
+- **All STATE.md writes** — every mutator in `bin/lib/state.cjs` now wraps writes in `withStateLock(...)`. The grep contract `writeFile*(STATE.md, ...)` outside `bin/lib/lock.cjs` returns zero hits; this is enforced by a top-of-file comment in `lock.cjs`
+
+### Fixed
+
+- **Atomic STATE.md writes** — pre-existing torn-file risk addressed: STATE.md writes now use the temp-file + rename pattern, eliminating partial reads under concurrent access (commit `e674656`)
+
+### Migration notes
+
+Existing projects with the legacy STATE.md schema are migrated automatically on the next `/sf:health` invocation. No manual steps required. Single-spec workflows continue to work without any user-visible change.
+
 ## [1.19.0] - 2026-04-12
 
 ### Added
