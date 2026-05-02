@@ -62,9 +62,10 @@ Determine discussion mode from arguments:
 - Mode: `requirements-gathering`
 
 **Case E: No arguments**
-- Check STATE.md for active spec
-- If active spec exists: discuss that spec
-- If no active spec: ask what to discuss
+- Call `node bin/sf-tools.cjs state resolve` to resolve active spec
+- `{"action":"use","id":"SPEC-XXX"}` → discuss that spec
+- `{"action":"error","code":"NO_ACTIVE_SPEC"}` → ask what to discuss
+- `{"action":"ask","options":[...]}` → use AskUserQuestion to pick which spec to discuss
 
 ## 3. Load Context
 

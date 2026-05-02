@@ -1,6 +1,7 @@
 ---
 name: sf:fix
 description: Fix implementation based on review feedback
+# SPEC-011: Accepts optional SPEC-XXX as first positional arg; resolves via state resolve
 allowed-tools:
   - Read
   - Write
@@ -38,17 +39,27 @@ Run `/sf:init` first.
 ```
 Exit.
 
-## Step 2: Get Active Specification
+## Step 2: Resolve Active Specification
 
-Read `.specflow/STATE.md` and extract Active Specification.
+Call `node bin/sf-tools.cjs state resolve $ARGUMENTS` (pass the optional SPEC-XXX arg if provided).
 
-**If no active specification:**
-```
-No active specification to fix.
+Parse the JSON response:
+- `{"action":"use","id":"SPEC-XXX"}` → proceed with SPEC-XXX
+- `{"action":"error","code":"NO_ACTIVE_SPEC"}` → display error and exit:
+  ```
+  No active specification to fix.
 
-Run `/sf:new "task description"` to create one.
-```
-Exit.
+  Run `/sf:new "task description"` to create one.
+  ```
+- `{"action":"error","code":"SPEC_NOT_ACTIVE","id":"SPEC-XXX"}` → display error and exit:
+  ```
+  SPEC-XXX is not in the Active Specifications table.
+  ```
+- `{"action":"ask","options":[...]}` → use AskUserQuestion to show picker:
+  ```
+  Multiple active specifications. Which one to fix?
+  Options: {id — title (status)} for each entry
+  ```
 
 ## Step 3: Load Specification
 
@@ -164,8 +175,9 @@ Append to Review History:
 
 ## Step 8: Update STATE.md
 
-- Status → "review" (ready for re-review)
-- Next Step → "/sf:review"
+```bash
+node bin/sf-tools.cjs state add-active SPEC-XXX review /sf:review
+```
 
 ## Step 9: Display Result
 

@@ -2,6 +2,7 @@
 name: sf:autopilot
 description: Run full spec lifecycle autonomously (audit -> run -> review -> done)
 argument-hint: "[SPEC-XXX] [--all]"
+# SPEC-011: Accepts optional SPEC-XXX; resolves via state resolve; FAILS when N>1 and no ID (no picker)
 allowed-tools:
   - Read
   - Write
@@ -43,25 +44,42 @@ Parse the command argument to determine execution mode:
 
 | Argument | Mode | Behavior |
 |----------|------|----------|
-| (none) | single | Process the active spec in STATE.md |
-| `SPEC-XXX` | single | Set SPEC-XXX as active, then process it |
-| `--all` | batch | Process all actionable specs in Queue order |
+| (none) | single | Resolve active spec; fail fast if N>1 (no picker) |
+| `SPEC-XXX` | single | Process this explicit spec ID |
+| `--all` | batch | Process all actionable specs in Queue order; still requires explicit SPEC-ID if N>1 |
 
-**If single mode:**
-- If SPEC-XXX argument provided: update STATE.md to set it as active spec
-- If no argument and no active spec exists: display error and exit
+**CRITICAL — N>1 guard (autopilot must be unambiguous):**
+
+Call `node bin/sf-tools.cjs state resolve $SPEC_ID_ARG` (pass SPEC-ID arg if provided; omit if not).
+
+Parse the JSON response:
+- `{"action":"use","id":"SPEC-XXX"}` → proceed with SPEC-XXX
+- `{"action":"error","code":"NO_ACTIVE_SPEC"}` → display error and exit:
+  ```
+  No active specification to process.
+
+  Provide a spec ID: `/sf:autopilot SPEC-XXX`
+  Or run on all specs: `/sf:autopilot --all`
+  ```
+- `{"action":"error","code":"SPEC_NOT_ACTIVE","id":"SPEC-XXX"}` → display error and exit:
+  ```
+  SPEC-XXX is not in the Active Specifications table.
+  ```
+- `{"action":"ask","options":[...]}` → **FAIL FAST** (do NOT show picker):
+  ```
+  Autopilot requires explicit SPEC-ID when >1 active specs.
+
+  Active specs: {list SPEC-IDs from options}
+
+  Provide a spec ID: `/sf:autopilot SPEC-XXX`
+  ```
+  Exit. (This applies to both plain `/sf:autopilot` AND `/sf:autopilot --all` without a SPEC-ID. `--all` controls within-spec behavior, not multi-spec iteration.)
+
+**If single mode with explicit SPEC-ID:**
+- SPEC-ID was resolved via state resolve above (action:use)
 
 **If batch mode (--all):**
 - Identify all actionable specs from Queue (any spec with status: draft, auditing, revision_requested, audited, running, review)
-
-**Error case (single mode, no active, no argument):**
-```
-No active specification to process.
-
-Provide a spec ID: `/sf:autopilot SPEC-XXX`
-Or run on all specs: `/sf:autopilot --all`
-```
-Exit.
 
 ## Step 3: Set Configuration Constants
 
@@ -107,8 +125,7 @@ current_spec = null
 
 ### 5.1 Load Current Spec State
 
-Read `.specflow/STATE.md` to get active specification.
-Read `.specflow/specs/SPEC-XXX.md` to get frontmatter status.
+Read `.specflow/specs/SPEC-XXX.md` to get frontmatter status (spec ID resolved in Step 2).
 
 ### 5.2 Determine Current Phase
 
@@ -255,10 +272,11 @@ mv .specflow/specs/SPEC-XXX.md .specflow/archive/
 ```
 
 5. **Update STATE.md:**
-   - Active Specification → "none"
-   - Status → "idle"
-   - Next Step → "/sf:new or /sf:next"
-   - Remove SPEC-XXX row from Queue table
+   Remove SPEC-XXX from Active Specifications table:
+   ```bash
+   node bin/sf-tools.cjs state remove-active SPEC-XXX
+   ```
+   Remove SPEC-XXX row from Queue table (using Read+Write).
 
 6. **Check STATE.md size and rotate** (same logic as 5.5 step 2)
 
