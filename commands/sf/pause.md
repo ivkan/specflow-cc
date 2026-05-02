@@ -1,6 +1,7 @@
 ---
 name: sf:pause
 description: Save current work context for later resumption
+# SPEC-011: Accepts optional SPEC-XXX as first positional arg; resolves via state resolve
 allowed-tools:
   - Read
   - Write
@@ -33,20 +34,26 @@ Run `/sf:init` to start.
 ```
 Exit.
 
-## Step 2: Get Current State
+## Step 2: Resolve Active Specification
 
-Read `.specflow/STATE.md` and extract:
-- Active Specification
-- Status
-- Next Step
+Call `node bin/sf-tools.cjs state resolve $ARGUMENTS` (pass the optional SPEC-XXX arg if provided).
 
-**If no active specification:**
-```
-No active work to pause.
+Parse the JSON response:
+- `{"action":"use","id":"SPEC-XXX"}` → proceed with SPEC-XXX
+- `{"action":"error","code":"NO_ACTIVE_SPEC"}` → display info and allow general notes:
+  ```
+  No active work to pause.
 
-Current state: idle
-```
-But still allow pausing to capture general notes.
+  Current state: idle
+  ```
+  Still allow pausing to capture general notes.
+- `{"action":"ask","options":[...]}` → use AskUserQuestion to show picker:
+  ```
+  Multiple active specifications. Which session to pause?
+  Options: {id — title (status)} for each entry
+  ```
+
+Also call `node bin/sf-tools.cjs state list-active` to capture all active specs in the pause file.
 
 ## Step 3: Load Active Specification Details
 

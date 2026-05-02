@@ -1,6 +1,7 @@
 ---
 name: sf:run
 description: Execute the specification (implement the code)
+# SPEC-011: Accepts optional SPEC-XXX as first positional arg; resolves via state resolve
 allowed-tools:
   - Read
   - Write
@@ -39,17 +40,27 @@ Run `/sf:init` first.
 ```
 Exit.
 
-## Step 2: Get Active Specification
+## Step 2: Resolve Active Specification
 
-Read `.specflow/STATE.md` and extract Active Specification.
+Call `node bin/sf-tools.cjs state resolve $ARGUMENTS` (pass the optional SPEC-XXX arg if provided).
 
-**If no active specification:**
-```
-No active specification to execute.
+Parse the JSON response:
+- `{"action":"use","id":"SPEC-XXX"}` → proceed with SPEC-XXX
+- `{"action":"error","code":"NO_ACTIVE_SPEC"}` → display error and exit:
+  ```
+  No active specification to execute.
 
-Run `/sf:new "task description"` to create one.
-```
-Exit.
+  Run `/sf:new "task description"` to create one.
+  ```
+- `{"action":"error","code":"SPEC_NOT_ACTIVE","id":"SPEC-XXX"}` → display error and exit:
+  ```
+  SPEC-XXX is not in the Active Specifications table.
+  ```
+- `{"action":"ask","options":[...]}` → use AskUserQuestion to show picker:
+  ```
+  Multiple active specifications. Which one to run?
+  Options: {id — title (status)} for each entry
+  ```
 
 ## Step 3: Load Specification
 
@@ -182,9 +193,9 @@ Use model for `spec-executor` or `spec-executor-orchestrator` from selected prof
 
 ## Step 7: Update Status
 
-Update STATE.md:
-- Status → "running"
-- Next Step → "(in progress)"
+```bash
+node bin/sf-tools.cjs state add-active SPEC-XXX running "(in progress)"
+```
 
 Update spec frontmatter:
 - status → "running"

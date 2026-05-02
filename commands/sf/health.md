@@ -2,6 +2,7 @@
 name: sf:health
 description: Diagnose .specflow/ directory health and optionally repair issues
 argument-hint: [--repair]
+# SPEC-011: Invokes migrate-state on entry; re-stamps STATE.md header from template after migration (--repair path)
 allowed-tools:
   - Read
   - Bash
@@ -32,7 +33,19 @@ SpecFlow not initialized. Run `/sf:init` first.
 ```
 Exit.
 
-## Step 2: Parse Arguments
+## Step 2: Invoke STATE.md Migration (entry point)
+
+Run migration on entry — idempotent, no-op when already migrated:
+
+```bash
+node bin/sf-tools.cjs state migrate
+```
+
+Parse the response:
+- `{"migrated":true,...}` → Migration completed. After migration, re-stamp the `## Active Specifications` header block in STATE.md from `templates/state.md` to reconcile any format drift (non-destructive: Queue, Decisions, Notes sections are preserved; only the Active Specifications block is normalized). This is the `--repair` path.
+- `{"migrated":false,...}` → Already migrated, no action needed.
+
+## Step 2.5: Parse Arguments
 
 Check if `--repair` flag is present.
 
@@ -71,9 +84,9 @@ For each check:
 Read STATE.md and validate:
 
 **E003: Active spec references non-existent file**
-- Extract active spec ID from `## Active Specification`
-- If not "—" or empty, check `.specflow/specs/{ID}.md` exists
-- If missing: error (repairable — clear active spec to "—")
+- List all active specs via `node bin/sf-tools.cjs state list-active`
+- For each SPEC-ID, check `.specflow/specs/{ID}.md` exists
+- If missing: error (repairable — remove that row via `state remove-active`)
 
 **W005: Queue references non-existent spec file**
 - Parse queue table rows

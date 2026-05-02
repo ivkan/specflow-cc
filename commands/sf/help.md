@@ -1,6 +1,7 @@
 ---
 name: sf:help
 description: Show SpecFlow help and command reference
+# SPEC-011: Uses state list-active to show active specs in overview; no state resolve needed (no single-spec operations)
 allowed-tools:
   - Read
   - Glob
@@ -202,6 +203,11 @@ recommendations (Apply/Discuss/Skip) before showing review options. Use
 Exit.
 
 ## Step 2b: Overview Help
+
+Show active specs count (uses list-active for multi-spec awareness):
+```bash
+node bin/sf-tools.cjs state list-active --raw
+```
 
 Display full command reference:
 
