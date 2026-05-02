@@ -15,9 +15,9 @@ const os = require('os');
 let passed = 0;
 let failed = 0;
 
-function test(name, fn) {
+async function test(name, fn) {
   try {
-    fn();
+    await fn();
     passed++;
     console.log('  PASS: ' + name);
   } catch (e) {
@@ -64,130 +64,129 @@ SPEC-007
 Some notes here.
 `;
 
-console.log('state.test.cjs');
-console.log('');
+(async () => {
+  console.log('state.test.cjs');
+  console.log('');
 
-// --- extractActiveSpec tests ---
+  // --- extractActiveSpec tests ---
 
-console.log('extractActiveSpec:');
+  console.log('extractActiveSpec:');
 
-test('extracts active spec ID', () => {
-  assert.equal(extractActiveSpec(SAMPLE_STATE), 'SPEC-007');
-});
+  await test('extracts active spec ID', () => {
+    assert.equal(extractActiveSpec(SAMPLE_STATE), 'SPEC-007');
+  });
 
-test('returns null when no active spec section', () => {
-  assert.equal(extractActiveSpec('# No active section here'), null);
-});
+  await test('returns null when no active spec section', () => {
+    assert.equal(extractActiveSpec('# No active section here'), null);
+  });
 
-// --- cmdStateGet (integration) ---
+  // --- cmdStateGet (integration) ---
 
-console.log('');
-console.log('cmdStateGet (integration):');
+  console.log('');
+  console.log('cmdStateGet (integration):');
 
-test('state get returns correct fields via public API', () => {
-  const tmpDir = createFixture(SAMPLE_STATE);
-  try {
-    const origWrite = process.stdout.write;
-    let captured = '';
-    process.stdout.write = (s) => { captured += s; };
-    cmdStateGet(tmpDir, false);
-    process.stdout.write = origWrite;
+  await test('state get returns correct fields via public API', () => {
+    const tmpDir = createFixture(SAMPLE_STATE);
+    try {
+      const origWrite = process.stdout.write;
+      let captured = '';
+      process.stdout.write = (s) => { captured += s; };
+      cmdStateGet(tmpDir, false);
+      process.stdout.write = origWrite;
 
-    const result = JSON.parse(captured);
-    assert.equal(result.active_spec, 'SPEC-007');
-    assert.equal(result.status, 'running');
-    assert.equal(result.next_step, '/sf:implement');
-  } finally {
-    cleanup(tmpDir);
-  }
-});
+      const result = JSON.parse(captured);
+      assert.equal(result.active_spec, 'SPEC-007');
+      assert.equal(result.status, 'running');
+      assert.equal(result.next_step, '/sf:implement');
+    } finally {
+      cleanup(tmpDir);
+    }
+  });
 
-test('state get returns null fields for empty STATE.md', () => {
-  const tmpDir = createFixture('# SpecFlow State\n\n## Active Specification\n\n');
-  try {
-    const origWrite = process.stdout.write;
-    let captured = '';
-    process.stdout.write = (s) => { captured += s; };
-    cmdStateGet(tmpDir, false);
-    process.stdout.write = origWrite;
+  await test('state get returns null fields for empty STATE.md', () => {
+    const tmpDir = createFixture('# SpecFlow State\n\n## Active Specification\n\n');
+    try {
+      const origWrite = process.stdout.write;
+      let captured = '';
+      process.stdout.write = (s) => { captured += s; };
+      cmdStateGet(tmpDir, false);
+      process.stdout.write = origWrite;
 
-    const result = JSON.parse(captured);
-    assert.equal(result.active_spec, null);
-    assert.equal(result.status, null);
-  } finally {
-    cleanup(tmpDir);
-  }
-});
+      const result = JSON.parse(captured);
+      assert.equal(result.active_spec, null);
+      assert.equal(result.status, null);
+    } finally {
+      cleanup(tmpDir);
+    }
+  });
 
-// --- cmdStateSetActive (integration via file) ---
+  // --- cmdStateSetActive (integration via file) ---
 
-console.log('');
-console.log('cmdStateSetActive (integration):');
+  console.log('');
+  console.log('cmdStateSetActive (integration):');
 
-test('set-active updates status and preserves next step when not provided', () => {
-  const tmpDir = createFixture(SAMPLE_STATE);
-  try {
-    // Simulate what cmdStateSetActive does
-    const { cmdStateSetActive } = require('../bin/lib/state.cjs');
-    // Capture stdout
-    const origWrite = process.stdout.write;
-    let captured = '';
-    process.stdout.write = (s) => { captured += s; };
-    cmdStateSetActive(tmpDir, 'SPEC-009', 'drafting', undefined, false);
-    process.stdout.write = origWrite;
+  await test('set-active updates status and preserves next step when not provided', async () => {
+    const tmpDir = createFixture(SAMPLE_STATE);
+    try {
+      const { cmdStateSetActive } = require('../bin/lib/state.cjs');
+      const origWrite = process.stdout.write;
+      let captured = '';
+      process.stdout.write = (s) => { captured += s; };
+      await cmdStateSetActive(tmpDir, 'SPEC-009', 'drafting', undefined, false);
+      process.stdout.write = origWrite;
 
-    const updated = fs.readFileSync(path.join(tmpDir, '.specflow', 'STATE.md'), 'utf8');
-    assert.ok(updated.includes('SPEC-009'), 'Should contain new spec ID');
-    assert.ok(updated.includes('**Status:** drafting'), 'Should contain new status');
-    assert.ok(updated.includes('**Next Step:** /sf:implement'), 'Should preserve existing next step');
-    assert.ok(updated.includes('## Notes'), 'Should preserve other content');
-  } finally {
-    cleanup(tmpDir);
-  }
-});
+      const updated = fs.readFileSync(path.join(tmpDir, '.specflow', 'STATE.md'), 'utf8');
+      assert.ok(updated.includes('SPEC-009'), 'Should contain new spec ID');
+      assert.ok(updated.includes('**Status:** drafting'), 'Should contain new status');
+      assert.ok(updated.includes('**Next Step:** /sf:implement'), 'Should preserve existing next step');
+      assert.ok(updated.includes('## Notes'), 'Should preserve other content');
+    } finally {
+      cleanup(tmpDir);
+    }
+  });
 
-test('set-active updates next step when provided', () => {
-  const tmpDir = createFixture(SAMPLE_STATE);
-  try {
-    const { cmdStateSetActive } = require('../bin/lib/state.cjs');
-    const origWrite = process.stdout.write;
-    let captured = '';
-    process.stdout.write = (s) => { captured += s; };
-    cmdStateSetActive(tmpDir, 'SPEC-009', 'drafting', '/sf:review', false);
-    process.stdout.write = origWrite;
+  await test('set-active updates next step when provided', async () => {
+    const tmpDir = createFixture(SAMPLE_STATE);
+    try {
+      const { cmdStateSetActive } = require('../bin/lib/state.cjs');
+      const origWrite = process.stdout.write;
+      let captured = '';
+      process.stdout.write = (s) => { captured += s; };
+      await cmdStateSetActive(tmpDir, 'SPEC-009', 'drafting', '/sf:review', false);
+      process.stdout.write = origWrite;
 
-    const updated = fs.readFileSync(path.join(tmpDir, '.specflow', 'STATE.md'), 'utf8');
-    assert.ok(updated.includes('SPEC-009'), 'Should contain new spec ID');
-    assert.ok(updated.includes('**Status:** drafting'), 'Should contain new status');
-    assert.ok(updated.includes('**Next Step:** /sf:review'), 'Should contain new next step');
-  } finally {
-    cleanup(tmpDir);
-  }
-});
+      const updated = fs.readFileSync(path.join(tmpDir, '.specflow', 'STATE.md'), 'utf8');
+      assert.ok(updated.includes('SPEC-009'), 'Should contain new spec ID');
+      assert.ok(updated.includes('**Status:** drafting'), 'Should contain new status');
+      assert.ok(updated.includes('**Next Step:** /sf:review'), 'Should contain new next step');
+    } finally {
+      cleanup(tmpDir);
+    }
+  });
 
-// --- cmdQueueNext (integration) ---
+  // --- cmdQueueNext (integration) ---
 
-console.log('');
-console.log('cmdQueueNext (integration):');
+  console.log('');
+  console.log('cmdQueueNext (integration):');
 
-test('queue next returns first actionable (not done/complete)', () => {
-  const tmpDir = createFixture(SAMPLE_STATE);
-  try {
-    const origWrite = process.stdout.write;
-    let captured = '';
-    process.stdout.write = (s) => { captured += s; };
-    cmdQueueNext(tmpDir, false);
-    process.stdout.write = origWrite;
+  await test('queue next returns first actionable (not done/complete)', () => {
+    const tmpDir = createFixture(SAMPLE_STATE);
+    try {
+      const origWrite = process.stdout.write;
+      let captured = '';
+      process.stdout.write = (s) => { captured += s; };
+      cmdQueueNext(tmpDir, false);
+      process.stdout.write = origWrite;
 
-    const result = JSON.parse(captured);
-    assert.equal(result.id, 'SPEC-006');
-  } finally {
-    cleanup(tmpDir);
-  }
-});
+      const result = JSON.parse(captured);
+      assert.equal(result.id, 'SPEC-006');
+    } finally {
+      cleanup(tmpDir);
+    }
+  });
 
-test('queue next returns null when all done', () => {
-  const allDone = `# SpecFlow State
+  await test('queue next returns null when all done', () => {
+    const allDone = `# SpecFlow State
 
 ## Active Specification
 
@@ -203,42 +202,43 @@ SPEC-001
 | p1 | SPEC-001 | A | done | small | -- |
 | p1 | SPEC-002 | B | complete | small | -- |
 `;
-  const tmpDir = createFixture(allDone);
-  try {
-    const origWrite = process.stdout.write;
-    let captured = '';
-    process.stdout.write = (s) => { captured += s; };
-    cmdQueueNext(tmpDir, false);
-    process.stdout.write = origWrite;
+    const tmpDir = createFixture(allDone);
+    try {
+      const origWrite = process.stdout.write;
+      let captured = '';
+      process.stdout.write = (s) => { captured += s; };
+      cmdQueueNext(tmpDir, false);
+      process.stdout.write = origWrite;
 
-    const result = JSON.parse(captured);
-    assert.equal(result.id, null);
-  } finally {
-    cleanup(tmpDir);
+      const result = JSON.parse(captured);
+      assert.equal(result.id, null);
+    } finally {
+      cleanup(tmpDir);
+    }
+  });
+
+  await test('set-active leaves no .tmp.* sidecar files (atomic write)', async () => {
+    const tmpDir = createFixture(SAMPLE_STATE);
+    try {
+      const origWrite = process.stdout.write;
+      process.stdout.write = () => {};
+      await cmdStateSetActive(tmpDir, 'SPEC-009', 'drafting', undefined, false);
+      process.stdout.write = origWrite;
+
+      const sfDir = path.join(tmpDir, '.specflow');
+      const leftover = fs.readdirSync(sfDir).filter(f => f.includes('.tmp.'));
+      assert.deepEqual(leftover, [], 'No .tmp.* sidecars should remain after atomic write');
+    } finally {
+      cleanup(tmpDir);
+    }
+  });
+
+  // --- Summary ---
+
+  console.log('');
+  console.log('Results: ' + passed + ' passed, ' + failed + ' failed');
+
+  if (failed > 0) {
+    process.exit(1);
   }
-});
-
-test('set-active leaves no .tmp.* sidecar files (atomic write)', () => {
-  const tmpDir = createFixture(SAMPLE_STATE);
-  try {
-    const origWrite = process.stdout.write;
-    process.stdout.write = () => {};
-    cmdStateSetActive(tmpDir, 'SPEC-009', 'drafting', undefined, false);
-    process.stdout.write = origWrite;
-
-    const sfDir = path.join(tmpDir, '.specflow');
-    const leftover = fs.readdirSync(sfDir).filter(f => f.includes('.tmp.'));
-    assert.deepEqual(leftover, [], 'No .tmp.* sidecars should remain after atomic write');
-  } finally {
-    cleanup(tmpDir);
-  }
-});
-
-// --- Summary ---
-
-console.log('');
-console.log('Results: ' + passed + ' passed, ' + failed + ' failed');
-
-if (failed > 0) {
-  process.exit(1);
-}
+})();
