@@ -1,6 +1,7 @@
 ---
 name: sf:split
 description: Split a large specification into smaller sub-specifications
+# SPEC-011: Accepts optional SPEC-XXX as first positional arg; resolves via state resolve when no arg
 allowed-tools:
   - Read
   - Write
@@ -57,18 +58,22 @@ Use `/sf:list` to see available specifications.
 Exit.
 
 **If no ID provided:**
-Read active specification from `.specflow/STATE.md`:
-- Parse "Active Specification" field
-- Use that ID
+Call `node bin/sf-tools.cjs state resolve` to get active spec.
 
-**If no active specification:**
-```
-No specification specified and no active specification.
+Parse the JSON response:
+- `{"action":"use","id":"SPEC-XXX"}` → use SPEC-XXX
+- `{"action":"error","code":"NO_ACTIVE_SPEC"}` → display error and exit:
+  ```
+  No specification specified and no active specification.
 
-Usage: `/sf:split SPEC-001`
-   or: Set active spec with `/sf:show SPEC-001`
-```
-Exit.
+  Usage: `/sf:split SPEC-001`
+     or: Set active spec with `/sf:show SPEC-001`
+  ```
+- `{"action":"ask","options":[...]}` → use AskUserQuestion to show picker:
+  ```
+  Multiple active specifications. Which one to split?
+  Options: {id — title (status)} for each entry
+  ```
 
 ## Step 3: Check Complexity
 
@@ -356,9 +361,13 @@ Add split reference to archived parent.
 
 ### Update STATE.md
 
-- Remove parent from Queue
-- Add children to Queue
-- Set first child as Active Specification
+- Remove parent from Queue (using Read+Write)
+- Add children to Queue (using Read+Write)
+- Register first child in Active Specifications table:
+  ```bash
+  node bin/sf-tools.cjs state remove-active SPEC-PARENT
+  node bin/sf-tools.cjs state add-active SPEC-XXXa draft /sf:audit
+  ```
 
 </fallback>
 

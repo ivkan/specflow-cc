@@ -1,6 +1,7 @@
 ---
 name: sf:status
 description: Show current SpecFlow state and recommended next step
+# SPEC-011: Uses state list-active and state resolve for multi-spec awareness
 allowed-tools:
   - Read
   - Bash
@@ -34,13 +35,22 @@ Exit.
 
 ## Step 2: Load State
 
-Read `.specflow/STATE.md` and extract:
-- Active Specification
-- Status
-- Next Step
-- Queue
-- Recent Decisions
-- Warnings
+Read `.specflow/STATE.md` and extract Queue, Recent Decisions, Warnings.
+
+Get active specs:
+```bash
+node bin/sf-tools.cjs state list-active
+```
+
+For single-spec display, also call:
+```bash
+node bin/sf-tools.cjs state resolve
+```
+
+Parse the resolve response:
+- `{"action":"use","id":"SPEC-XXX"}` → show single active spec
+- `{"action":"error","code":"NO_ACTIVE_SPEC"}` → show idle state
+- `{"action":"ask","options":[...]}` → show all active specs in table format
 
 ## Step 3: Load Project Info
 

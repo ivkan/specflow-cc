@@ -1,6 +1,7 @@
 ---
 name: sf:show
 description: Display full specification details
+# SPEC-011: Accepts optional SPEC-XXX as first positional arg; resolves via state resolve when no arg
 allowed-tools:
   - Read
   - Bash
@@ -41,16 +42,22 @@ Exit.
 Use provided ID (e.g., SPEC-003).
 
 **If no argument:**
-Read `.specflow/STATE.md` and get Active Specification.
+Call `node bin/sf-tools.cjs state resolve` to get active spec.
 
-**If no active specification and no argument:**
-```
-No specification specified and no active specification.
+Parse the JSON response:
+- `{"action":"use","id":"SPEC-XXX"}` → use SPEC-XXX
+- `{"action":"error","code":"NO_ACTIVE_SPEC"}` → display error and exit:
+  ```
+  No specification specified and no active specification.
 
-Use `/sf:show SPEC-XXX` to view a specific spec
-or `/sf:list` to see all specifications.
-```
-Exit.
+  Use `/sf:show SPEC-XXX` to view a specific spec
+  or `/sf:list` to see all specifications.
+  ```
+- `{"action":"ask","options":[...]}` → use AskUserQuestion to show picker:
+  ```
+  Multiple active specifications. Which one to show?
+  Options: {id — title (status)} for each entry
+  ```
 
 ## Step 3: Find Specification File
 
