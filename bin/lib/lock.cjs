@@ -86,6 +86,8 @@ function isProcessAlive(pid) {
     process.kill(pid, 0);
     return true;
   } catch (e) {
+    // EPERM = process exists but is owned by another user — still alive
+    if (e.code === 'EPERM') return true;
     return false;
   }
 }
