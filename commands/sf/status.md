@@ -87,10 +87,10 @@ for f in .specflow/specs/SPEC-*.md; do
 done
 ```
 
-**If STATE.md shows "Active Specification: None" but specs exist in specs/:**
+**If the Active Specifications table is empty (no rows) but specs exist in specs/:**
 Add warning:
 ```
-STATE MISMATCH: Found {N} spec(s) in specs/ but STATE.md shows no active spec.
+STATE MISMATCH: Found {N} spec(s) in specs/ but the Active Specifications table is empty.
 Likely cause: STATE.md was not updated after spec creation.
 Run: Read the spec file and manually update STATE.md, or delete orphan spec if duplicate.
 ```
