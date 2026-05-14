@@ -1,7 +1,9 @@
 # To-Do Index
 
-> Auto-generated from individual TODO files. Do not edit manually.
-> Regenerate with `/sf:todos`.
+> Cache of individual TODO files. Refreshed when `/sf:todos` runs OR when an
+> INDEX-mutating command explicitly invokes the regen helper
+> (`node bin/sf-tools.cjs todo reindex`). Do not edit manually — changes will
+> be overwritten on the next regen.
 
 | # | ID | Title | Priority | Status | Created |
 |---|-----|-------|----------|--------|---------|

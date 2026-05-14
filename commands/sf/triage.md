@@ -188,6 +188,16 @@ created: {YYYY-MM-DD}
 
 Do NOT append to TODO.md. Do NOT update any "Last updated" lines. Each finding gets its own separate TODO-XXX.md file.
 
+### 6.3 Refresh INDEX.md
+
+After all selected TODO files have been written, regenerate the cache once:
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex
+```
+
+This is mandatory whenever the triage loop creates at least one TODO. Skipping it leaves INDEX.md missing the just-created entries until the next `/sf:todos` run.
+
 ## Step 7: Display Results
 
 **IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
@@ -255,5 +265,6 @@ Run /sf:triage again to review findings.
 - [ ] Each file has valid YAML frontmatter (id, title, priority, status, created)
 - [ ] Priority preserved from scan
 - [ ] Source reference included in notes (scan date, files, problem)
+- [ ] INDEX.md refreshed via `node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex` (skip only if zero TODOs created)
 - [ ] Clear summary of created TODOs
 </success_criteria>

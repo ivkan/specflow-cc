@@ -103,6 +103,30 @@ Likely cause: Spec numbering bug - archive was not checked when generating ID.
 Fix: Rename the spec in specs/ to next available ID.
 ```
 
+### TODO Index Freshness
+
+Compare the set of TODO files on disk to the IDs listed in `.specflow/todos/INDEX.md`:
+
+```bash
+node bin/sf-tools.cjs todo check-stale
+```
+
+Parse the JSON response. If `stale: true`, add a warning to the Warnings section:
+
+```
+INDEX.md stale — run /sf:todos (or `node bin/sf-tools.cjs todo reindex`).
+{If missing_from_index is non-empty:}
+  Missing from INDEX.md (TODO file exists on disk but not listed):
+    {comma-separated list}
+{If extra_in_index is non-empty:}
+  Stale entries in INDEX.md (listed but TODO file no longer exists):
+    {comma-separated list}
+{If !index_exists and todo_count > 0:}
+  INDEX.md does not exist yet but {todo_count} TODO file(s) are on disk.
+```
+
+This is a safety net — every command that mutates `todos/` is supposed to call the regen helper itself, but external edits, manual `rm`, or a missed call will surface here. Do NOT auto-fix from `/sf:status`; only report. The user runs `/sf:todos` (or the helper directly) to clear the warning.
+
 ## Step 5: Determine Next Action
 
 Based on current status:
@@ -208,6 +232,7 @@ Based on state, provide additional guidance:
 - [ ] STATE.md loaded
 - [ ] PROJECT.md info extracted
 - [ ] Statistics calculated
+- [ ] TODO index freshness checked via `node bin/sf-tools.cjs todo check-stale` (warning surfaced if stale)
 - [ ] Current position displayed
 - [ ] Queue shown
 - [ ] Recommended next step clear

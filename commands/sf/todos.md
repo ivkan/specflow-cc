@@ -8,7 +8,7 @@ allowed-tools:
 ---
 
 <purpose>
-Display all to-do items from the backlog, sorted by priority. Reads individual TODO-XXX.md files (or legacy TODO.md for backward compatibility). Writes an auto-generated INDEX.md after display. Provides quick access to convert items to specifications.
+Display all to-do items from the backlog, sorted by priority. Reads individual TODO-XXX.md files (or legacy TODO.md for backward compatibility). Refreshes the INDEX.md cache via the shared regen helper after display. Provides quick access to convert items to specifications.
 </purpose>
 
 <context>
@@ -109,27 +109,15 @@ From the list:
 
 ## Step 6: Regenerate INDEX.md
 
-After displaying the list, write `.specflow/todos/INDEX.md` using the Write tool.
+After displaying the list, regenerate `.specflow/todos/INDEX.md` by invoking the shared helper:
 
-Use the format from `templates/todo-index.md`:
-
-```markdown
-# To-Do Index
-
-> Auto-generated from individual TODO files. Do not edit manually.
-> Regenerate with `/sf:todos`.
-
-| # | ID | Title | Priority | Status | Created |
-|---|-----|-------|----------|--------|---------|
-{rows from sorted list — one row per TODO}
-
-**Total:** {N} items ({high} high, {medium} medium, {low} low, {unset} unset)
-
----
-*Last regenerated: {YYYY-MM-DD HH:MM}*
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex
 ```
 
-**Important:** INDEX.md is a display cache only. Never edit it manually — it is regenerated here each time `/sf:todos` runs.
+The helper scans `.specflow/todos/TODO-*.md`, sorts the rows the same way Step 2 does, and writes INDEX.md in the format defined by `templates/todo-index.md`. It is the single source of truth for INDEX layout — do NOT write INDEX.md manually here.
+
+**Important:** INDEX.md is a cache. Other commands that mutate `todos/` (`/sf:todo`, `/sf:plan`, `/sf:done`, `/sf:triage`, `/sf:revise`, `/sf:priority`, `/sf:migrate-todos`, and the `sf-spec-reviser` agent) must call the same helper after their mutation so the cache stays consistent between `/sf:todos` invocations. `/sf:status` runs `todo check-stale` and warns if drift is detected.
 
 </workflow>
 
@@ -142,6 +130,6 @@ Use the format from `templates/todo-index.md`:
 - [ ] `--all` flag shows eliminated items visually distinct
 - [ ] Statistics shown (total, by priority)
 - [ ] Clear actions provided
-- [ ] INDEX.md written to `.specflow/todos/INDEX.md` after display
-- [ ] INDEX.md contains "Do not edit manually" notice
+- [ ] INDEX.md regenerated via `node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex` after display
+- [ ] INDEX.md header describes it as a cache refreshed by `/sf:todos` or the regen helper
 </success_criteria>

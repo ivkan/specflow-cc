@@ -13,6 +13,7 @@
  *   todo list [--all]                     List all TODOs sorted by priority
  *   todo next-id                          Next available TODO-XXX number
  *   todo reindex                          Regenerate INDEX.md from TODO files
+ *   todo check-stale                      Report drift between TODO-*.md and INDEX.md
  *   queue next                            First actionable spec from queue
  *   state get                             Current active spec, status, next step (legacy shim)
  *   state set-active <id> <status> [next] Update active spec in STATE.md (legacy shim)
@@ -40,7 +41,7 @@ const {
   cmdQueueNext,
 } = require('./lib/state.cjs');
 const { cmdSpecLoad, cmdSpecList, cmdSpecNextId } = require('./lib/spec.cjs');
-const { cmdTodoLoad, cmdTodoList, cmdTodoNextId, cmdTodoReindex } = require('./lib/todo.cjs');
+const { cmdTodoLoad, cmdTodoList, cmdTodoNextId, cmdTodoReindex, cmdTodoCheckStale } = require('./lib/todo.cjs');
 const { cmdResolveModel } = require('./lib/config.cjs');
 const { cmdVerifyStructure } = require('./lib/verify.cjs');
 
@@ -75,6 +76,7 @@ const COMMANDS = {
   'todo list':       () => cmdTodoList(cwd, raw, { showAll: flags.all ?? false }),
   'todo next-id':    () => cmdTodoNextId(cwd, raw),
   'todo reindex':    () => cmdTodoReindex(cwd, raw),
+  'todo check-stale': () => cmdTodoCheckStale(cwd, raw),
   'queue next':      () => cmdQueueNext(cwd, raw),
 
   // Legacy shims (backwards compatible)
@@ -136,6 +138,7 @@ Commands:
   todo list [--all]                       List TODOs sorted by priority (--all includes eliminated)
   todo next-id                            Next available TODO-XXX number
   todo reindex                            Regenerate INDEX.md from TODO files
+  todo check-stale                        Report drift between TODO-*.md and INDEX.md
   queue next                              First actionable spec from queue table
   state get                               Current active spec, status, next step (legacy shim)
   state set-active <id> <status> [next]   Update active spec, status, next step (legacy shim)

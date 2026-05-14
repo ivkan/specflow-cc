@@ -5,6 +5,21 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.1] - 2026-05-14
+
+### Fixed
+
+- **INDEX.md staleness across all TODO-mutating paths** — `1.19.0` wired the `todo reindex` helper into `/sf:todo` and `/sf:done`, but every other command that mutates `.specflow/todos/` (`/sf:plan` `rm`, `/sf:triage` create, `/sf:revise` deferred-TODO creation, `/sf:priority` priority edits, `/sf:migrate-todos`, and the `sf-spec-reviser` agent) still left INDEX.md silently out of sync. All of these now invoke `node bin/sf-tools.cjs todo reindex` after the mutation. `/sf:todos` no longer writes INDEX.md inline — it delegates to the same helper, making the reindex routine the single source of truth for INDEX layout.
+
+### Added
+
+- **`todo check-stale` CLI subcommand** in `bin/sf-tools.cjs` — compares the set of `TODO-*.md` files on disk to the set of IDs in `INDEX.md` and returns `{stale, index_exists, todo_count, index_count, missing_from_index, extra_in_index}`. Used by `/sf:status` as a safety-net freshness check: if any drift is detected (external edits, manual `rm`, a missed helper call), `/sf:status` surfaces an "INDEX.md stale" warning naming the specific divergences. No auto-fix — the user re-runs `/sf:todos` or the helper.
+- 9 new tests in `tests/todo-index.test.cjs` covering reindex idempotency, header content, drop-after-delete, and all `check-stale` scenarios (fresh, extra-in-index, missing-from-index, no-INDEX-with-files, empty-both, raw output).
+
+### Changed
+
+- **INDEX.md header text** rewritten to describe actual behaviour. Old wording ("Auto-generated from individual TODO files. Do not edit manually. Regenerate with `/sf:todos`.") implied a self-maintaining file. New wording: "Cache of individual TODO files. Refreshed when `/sf:todos` runs OR when an INDEX-mutating command explicitly invokes the regen helper (`node bin/sf-tools.cjs todo reindex`). Do not edit manually — changes will be overwritten on the next regen." Applied in both `bin/lib/todo.cjs` (the source of truth) and `templates/todo-index.md`.
+
 ## [1.20.0] - 2026-05-02
 
 ### Added

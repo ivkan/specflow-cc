@@ -295,8 +295,10 @@ function cmdTodoReindex(cwd, raw) {
   const lines = [
     '# To-Do Index',
     '',
-    '> Auto-generated from individual TODO files. Do not edit manually.',
-    '> Regenerate with `/sf:todos`.',
+    '> Cache of individual TODO files. Refreshed when `/sf:todos` runs OR when an',
+    '> INDEX-mutating command explicitly invokes the regen helper',
+    '> (`node bin/sf-tools.cjs todo reindex`). Do not edit manually — changes will',
+    '> be overwritten on the next regen.',
     '',
     '| # | ID | Title | Priority | Status | Created |',
     '|---|-----|-------|----------|--------|---------|',
@@ -324,9 +326,79 @@ function cmdTodoReindex(cwd, raw) {
   output({ reindexed: todos.length, path: indexPath }, raw, `Reindexed ${todos.length} TODOs → INDEX.md`);
 }
 
+/**
+ * Check whether INDEX.md is stale relative to TODO-*.md files.
+ *
+ * Stale = the set of TODO-XXX IDs on disk diverges from the set of TODO-XXX IDs
+ * listed in INDEX.md (file deleted but still in INDEX, or file present but missing).
+ *
+ * NOTE: Eliminated TODOs (`status: eliminated`) still appear in `/sf:todos --all`
+ * regenerated INDEX.md output, so they are NOT filtered here — both sides see them.
+ *
+ * Output JSON: { stale, missing_from_index, extra_in_index, index_exists }
+ *  - missing_from_index: file exists on disk but not in INDEX.md
+ *  - extra_in_index: ID listed in INDEX.md but no file on disk
+ *
+ * @param {string} cwd - Working directory
+ * @param {boolean} raw - Output mode
+ */
+function cmdTodoCheckStale(cwd, raw) {
+  const todosDir = path.join(cwd, '.specflow', 'todos');
+  const indexPath = path.join(todosDir, 'INDEX.md');
+
+  // Collect IDs from disk
+  const diskIds = new Set();
+  try {
+    for (const f of fs.readdirSync(todosDir)) {
+      const m = f.match(/^(TODO-\d+)\.md$/);
+      if (m) diskIds.add(m[1]);
+    }
+  } catch (e) {
+    // todos dir missing — treat as empty
+  }
+
+  // Collect IDs referenced in INDEX.md (parse only the table rows)
+  const indexIds = new Set();
+  const indexContent = safeReadFile(indexPath);
+  const indexExists = indexContent !== null;
+
+  if (indexContent) {
+    // Match TODO-XXX in pipe-table cells: "| N | TODO-001 | ..."
+    const regex = /\|\s*\d+\s*\|\s*(TODO-\d+)\s*\|/g;
+    let m;
+    while ((m = regex.exec(indexContent)) !== null) {
+      indexIds.add(m[1]);
+    }
+  }
+
+  const missingFromIndex = [...diskIds].filter(id => !indexIds.has(id)).sort();
+  const extraInIndex = [...indexIds].filter(id => !diskIds.has(id)).sort();
+
+  // If INDEX.md does not exist but there are TODO files, INDEX is stale.
+  // If INDEX.md does not exist and no TODO files, not stale (nothing to track).
+  const stale =
+    missingFromIndex.length > 0 ||
+    extraInIndex.length > 0 ||
+    (!indexExists && diskIds.size > 0);
+
+  output(
+    {
+      stale,
+      index_exists: indexExists,
+      todo_count: diskIds.size,
+      index_count: indexIds.size,
+      missing_from_index: missingFromIndex,
+      extra_in_index: extraInIndex,
+    },
+    raw,
+    stale ? 'STALE' : 'FRESH'
+  );
+}
+
 module.exports = {
   cmdTodoLoad,
   cmdTodoList,
   cmdTodoNextId,
   cmdTodoReindex,
+  cmdTodoCheckStale,
 };

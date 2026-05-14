@@ -123,7 +123,12 @@ If input matches pattern `{ID}={priority}`:
 
 1. Validate priority (high | medium | low)
 2. **If ID is a spec (SPEC-XXX):** Update `priority:` in frontmatter of `.specflow/specs/SPEC-XXX.md` using the Edit tool
-3. **If ID is a TODO (TODO-XXX):** Read `.specflow/todos/TODO-XXX.md`, update `priority:` line in frontmatter using the Edit tool
+3. **If ID is a TODO (TODO-XXX):**
+   a. Read `.specflow/todos/TODO-XXX.md`, update `priority:` line in frontmatter using the Edit tool
+   b. Refresh INDEX.md so the cached priority column matches:
+      ```bash
+      node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex
+      ```
 4. Display confirmation
 5. Return to Step 3
 
@@ -203,6 +208,7 @@ Use `/sf:next` to work on highest priority task.
 - [ ] Reorder command works
 - [ ] Technical order suggestion available
 - [ ] TODO priority updated in individual file frontmatter (not TODO.md)
+- [ ] INDEX.md refreshed via `node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex` after any TODO priority change
 - [ ] STATE.md Queue updated after spec reorder
 - [ ] Clear feedback on changes
 </success_criteria>

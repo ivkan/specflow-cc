@@ -13,7 +13,7 @@ Migrate an existing monolithic `.specflow/todos/TODO.md` to the new per-file for
 This is a one-time migration command. After migration:
 - `TODO.md` is renamed to `TODO.md.bak` (NOT deleted — safety net)
 - Each TODO becomes its own `TODO-XXX.md` file
-- `INDEX.md` is generated from the new files
+- `INDEX.md` is regenerated from the new files via the shared `todo reindex` helper
 - All other commands will use the new per-file format automatically
 
 Use `--dry-run` to preview the migration without writing any files.
@@ -173,23 +173,13 @@ created: {YYYY-MM-DD}
 
 ## Step 7: Generate INDEX.md
 
-Write `.specflow/todos/INDEX.md` with all migrated TODOs, sorted by priority then date:
+Invoke the shared regen helper to build `.specflow/todos/INDEX.md` from the migrated files:
 
-```markdown
-# To-Do Index
-
-> Auto-generated from individual TODO files. Do not edit manually.
-> Regenerate with `/sf:todos`.
-
-| # | ID | Title | Priority | Status | Created |
-|---|-----|-------|----------|--------|---------|
-{one row per TODO, sorted by priority then created date}
-
-**Total:** {N} items ({high} high, {medium} medium, {low} low, {unset} unset)
-
----
-*Last regenerated: {YYYY-MM-DD HH:MM}*
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex
 ```
+
+Do NOT write INDEX.md inline — the helper is the single source of truth for its layout (see `templates/todo-index.md`).
 
 ## Step 8: Rename Legacy TODO.md
 
@@ -245,7 +235,7 @@ Migrated {N} TODOs from TODO.md to per-file format.
 - [ ] Individual TODO-XXX.md files created for each block
 - [ ] Each file has valid YAML frontmatter (id, title, priority, status, created)
 - [ ] Title derived from description (first sentence, ~80 chars)
-- [ ] INDEX.md generated from migrated files
+- [ ] INDEX.md regenerated via `node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex`
 - [ ] TODO.md renamed to TODO.md.bak (NOT deleted)
 - [ ] Clear migration summary shown
 - [ ] Cleanup instructions provided

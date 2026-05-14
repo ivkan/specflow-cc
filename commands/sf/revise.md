@@ -511,8 +511,12 @@ After recording the Response, if any items were marked "Deferred":
    Origin: {SPEC-XXX} Response v{N}. {reason for deferral}
    ```
 3. Append "**TODOs Created:**" subsection to the Response in Audit History listing created TODO IDs
+4. After the loop completes (at least one TODO created), refresh INDEX.md:
+   ```bash
+   node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex
+   ```
 
-**This step is mandatory.** Every "Deferred" decision MUST produce a corresponding TODO-XXX.md file.
+**This step is mandatory.** Every "Deferred" decision MUST produce a corresponding TODO-XXX.md file AND the reindex helper MUST run if any TODO was created — otherwise INDEX.md silently drifts out of sync with `todos/`.
 
 ### Update Status
 
@@ -532,6 +536,7 @@ node bin/sf-tools.cjs state add-active SPEC-XXX auditing /sf:audit
 - [ ] Changes applied correctly
 - [ ] Response recorded in Audit History
 - [ ] Deferred items (if any) created as individual TODO-XXX.md files in `.specflow/todos/`
+- [ ] INDEX.md refreshed via `node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex` (if any TODO was created)
 - [ ] Spec frontmatter status updated
 - [ ] STATE.md updated
 - [ ] Clear summary of changes shown

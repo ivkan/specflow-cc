@@ -176,7 +176,13 @@ For each deferred item:
 - TODO-{XXX} — {item description}
 ```
 
-**Important:** This step is mandatory. Every deferred item MUST produce a TODO. If TODO creation fails, report the failure — do not silently skip.
+4. After the loop completes (at least one TODO created), refresh the INDEX.md cache so it reflects the newly-created files:
+
+```bash
+node bin/sf-tools.cjs todo reindex
+```
+
+**Important:** Both substeps are mandatory. Every deferred item MUST produce a TODO, and if any TODO is created the reindex helper MUST run before reporting completion. Skipping the reindex leaves `.specflow/todos/INDEX.md` missing the just-created entries, which the `/sf:status` freshness check will then flag. If TODO creation fails, report the failure — do not silently skip.
 
 ## Step 6: Update Frontmatter
 
@@ -245,6 +251,7 @@ Tip: `/clear` recommended — auditor needs fresh context
 - [ ] Revision Response recorded in Audit History
 - [ ] Deferred items (if any) created as individual `.specflow/todos/TODO-XXX.md` files
 - [ ] TODOs Created subsection appended to Response (if deferred items exist)
+- [ ] INDEX.md refreshed via `node bin/sf-tools.cjs todo reindex` (if any TODO was created)
 - [ ] Frontmatter status updated
 - [ ] STATE.md updated
 - [ ] Clear summary of changes provided

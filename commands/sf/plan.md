@@ -171,6 +171,14 @@ rm .specflow/todos/TODO-{XXX}.md
 
 **Important:** Only remove after confirmed spec creation. No "Last updated" lines to update.
 
+3. **Refresh INDEX.md** via the shared regen helper so the cache no longer references the removed file:
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex
+```
+
+This is mandatory — skipping it leaves INDEX.md listing a TODO that no longer exists on disk, which trips the `/sf:status` freshness check and breaks downstream consumers.
+
 ## Step 8: Display Result
 
 **IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
@@ -232,7 +240,12 @@ Use `/sf:new "{todo description}"` logic:
 
 ### Remove Todo
 
-Delete the file `.specflow/todos/TODO-{XXX}.md`.
+Delete the file `.specflow/todos/TODO-{XXX}.md`, then refresh INDEX.md:
+
+```bash
+rm .specflow/todos/TODO-{XXX}.md
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex
+```
 
 </fallback>
 
@@ -246,5 +259,6 @@ Delete the file `.specflow/todos/TODO-{XXX}.md`.
 - [ ] Priority inherited from todo
 - [ ] TODO-XXX.md file deleted (not edited — whole file removed)
 - [ ] Deletion verified (file no longer exists)
+- [ ] INDEX.md refreshed via `node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex`
 - [ ] Clear result with next step
 </success_criteria>
