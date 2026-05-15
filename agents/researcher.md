@@ -66,6 +66,8 @@ Use Glob and Grep to find:
 - Similar implementations
 - Configuration patterns
 
+**Reading archived specs:** When the research touches completed specs in `.specflow/archive/`, prefer `<SPEC-ID>.summary.md` over `<SPEC-ID>.md`. The summary is 10–15 lines and surfaces the goal, key decisions, and touched files — sufficient for most research queries. Read the full spec only if the summary lacks the specific detail you need. If `.summary.md` does not exist (transitional state during rollout), fall back gracefully to the full spec.
+
 ## Step 4: External Research (if needed)
 
 For topics requiring external knowledge:

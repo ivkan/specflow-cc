@@ -136,6 +136,8 @@ Read `.specflow/PROJECT.md` for:
 - Patterns (to check alignment)
 - Constraints (to verify compliance)
 
+**Reading archived specs:** When you need to consult completed specs (e.g., to check pattern compliance or prior decisions), read `.specflow/archive/<SPEC-ID>.summary.md` first. The summary is 10–15 lines and surfaces the goal, key decisions, and touched files. Open the full `<SPEC-ID>.md` only when the summary does not contain the detail you need. If `.summary.md` does not exist (transitional state during rollout), fall back gracefully to the full spec.
+
 ## Step 3: Audit Dimensions
 
 Evaluate each dimension:

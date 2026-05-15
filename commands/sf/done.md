@@ -318,6 +318,16 @@ Move spec to archive:
 mv .specflow/specs/SPEC-XXX.md .specflow/archive/
 ```
 
+## Step 8.5: Generate L1 Summary
+
+Generate a compact summary of the just-archived spec for agent consumption:
+
+    node ~/.claude/specflow-cc/bin/sf-tools.cjs archive summarize SPEC-XXX
+
+On success, `.specflow/archive/SPEC-XXX.summary.md` exists.
+
+If the command fails (parser cannot extract required fields), log a warning to the completion summary but do NOT abort archival — the full spec is already archived and the summary can be regenerated later via `node ~/.claude/specflow-cc/bin/sf-tools.cjs archive backfill`.
+
 ## Step 9: Update STATE.md
 
 ### Remove from Active Specifications Table
@@ -457,6 +467,7 @@ git commit -m "docs(sf): complete SPEC-XXX"
 - [ ] Decisions extracted (if any)
 - [ ] Source TODO file deleted (if `source:` field exists in spec and file exists in todos/)
 - [ ] Spec moved to archive
+- [ ] L1 summary file created at .specflow/archive/SPEC-XXX.summary.md (or warning logged)
 - [ ] STATE.md updated (cleared active, removed from queue)
 - [ ] Final commit created
 - [ ] Clear completion summary shown
