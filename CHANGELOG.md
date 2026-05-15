@@ -5,6 +5,20 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.21.0] - 2026-05-15
+
+### Added
+
+- **L1 archive summary layer** — every archived spec now has a sibling `.specflow/archive/<SPEC-ID>.summary.md` file (~24 lines: goal, key decisions, key files, tests, completion date, link to full spec). Modelled on TencentDB Agent Memory's atomic-facts tier: agents read the summary first and drill down to the full archived spec only when the summary is insufficient. Measured against the existing 22-spec archive: ~94% token reduction when consulting completed-spec history (435-line average full spec → 24-line average summary; ~5.2k → ~0.3k tokens per spec).
+- **`archive summarize <SPEC-ID>` CLI subcommand** in `bin/sf-tools.cjs` — parses an archived spec's frontmatter and `## Goal Analysis` / `## Completion` / `## Delta` sections and writes the `.summary.md` sibling via atomic temp-rename. Falls back to first paragraph of `## Context` for older specs lacking `## Goal Analysis`.
+- **`archive backfill [--force]` CLI subcommand** — iterates `.specflow/archive/SPEC-*.md` and generates missing summaries. Idempotent by default (existing summaries are skipped, zero-diff on second run); `--force` regenerates everything.
+- **`/sf:done` Step 8.5** — automatically generates the L1 summary for every newly archived spec. Non-fatal: summary failure logs a warning but does not abort archival (the full spec is already on disk and `archive backfill` can regenerate later).
+- **Prefer-summary guidance in four agent prompts** — `sf-spec-auditor`, `sf-researcher`, `sf-spec-creator`, and `sf-spec-reviser` now read `<SPEC-ID>.summary.md` first when consulting completed-spec history. Graceful fallback: if no `.summary.md` exists (transitional state during rollout), the agent silently reads the full spec — no error, no warning.
+- `bin/lib/archive-summary.cjs` — pure-Node parser/renderer/generator module (`parseArchivedSpec`, `renderSummary`, `generateSummary`); zero npm dependencies (only `fs`/`path` from stdlib); atomic temp-rename writes consistent with `bin/lib/core.cjs`.
+- `templates/archive-summary.md` — canonical L1 template defining the summary structure; reviewed and stable.
+- `scripts/measure-archive-tokens.cjs` — re-runnable measurement script that scans `.specflow/archive/`, computes average line counts and approximate tokens (lines × ~12 tokens/line), and prints a markdown-formatted ratio report so future contributors can detect regression in the L1 layer's compactness.
+- 11 new tests in `test/archive-summary.test.cjs` covering parser correctness (extracts goal/decisions/keyFiles from fixture specs), older-style spec fallback (no `## Goal Analysis` → goal derived from `## Context`), renderer truncation caps (top 5 decisions, top 6 key files), generator atomic-write behaviour, backfill idempotency, `--force` regeneration, and `archive summarize` error paths.
+
 ## [1.20.1] - 2026-05-14
 
 ### Fixed
