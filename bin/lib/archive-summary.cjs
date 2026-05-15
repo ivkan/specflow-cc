@@ -400,4 +400,109 @@ function generateSummary(specPath, templatePath, outputPath) {
   return { written: true };
 }
 
-module.exports = { parseArchivedSpec, renderSummary, generateSummary };
+// ---------------------------------------------------------------------------
+// CLI command implementations
+// ---------------------------------------------------------------------------
+
+/**
+ * CLI handler for `archive summarize <SPEC-ID>`.
+ * Generates (or regenerates with --force) a .summary.md for one archived spec.
+ *
+ * @param {string} cwd - Working directory
+ * @param {string} specId - Spec ID (e.g. "SPEC-011")
+ * @param {{ force?: boolean }} [opts]
+ */
+function cmdArchiveSummarize(cwd, specId, opts) {
+  const { force = false } = opts || {};
+  const archiveDir = path.join(cwd, '.specflow', 'archive');
+  const specPath = path.join(archiveDir, specId + '.md');
+  const outputPath = path.join(archiveDir, specId + '.summary.md');
+  const templatePath = path.join(cwd, 'templates', 'archive-summary.md');
+
+  // Validate spec exists in archive
+  if (!fs.existsSync(specPath)) {
+    process.stderr.write('Error: Spec not found in archive: ' + specPath + '\n');
+    process.exit(1);
+  }
+
+  // Skip if summary already exists and not --force
+  if (!force && fs.existsSync(outputPath)) {
+    process.stdout.write(JSON.stringify({ written: false, reason: 'already exists (use --force to overwrite)', path: outputPath }, null, 2) + '\n');
+    return;
+  }
+
+  const result = generateSummary(specPath, templatePath, outputPath);
+  if (!result.written) {
+    process.stderr.write('Error: Failed to generate summary: ' + result.reason + '\n');
+    process.exit(1);
+  }
+  process.stdout.write(JSON.stringify({ written: true, path: outputPath }, null, 2) + '\n');
+}
+
+/**
+ * CLI handler for `archive backfill [--force]`.
+ * Generates summary files for all archived specs that lack them.
+ * With --force, regenerates all summaries.
+ *
+ * @param {string} cwd - Working directory
+ * @param {{ force?: boolean }} [opts]
+ */
+function cmdArchiveBackfill(cwd, opts) {
+  const { force = false } = opts || {};
+  const archiveDir = path.join(cwd, '.specflow', 'archive');
+  const templatePath = path.join(cwd, 'templates', 'archive-summary.md');
+
+  let files;
+  try {
+    files = fs.readdirSync(archiveDir);
+  } catch (e) {
+    process.stderr.write('Error: Cannot read archive directory: ' + archiveDir + '\n');
+    process.exit(1);
+  }
+
+  // Identify spec files (SPEC-*.md, not *.summary.md)
+  const specFiles = files
+    .filter(f => f.match(/^SPEC-[A-Z0-9-]+\.md$/) && !f.endsWith('.summary.md'))
+    .sort();
+
+  const results = [];
+  let written = 0;
+  let skipped = 0;
+  let failed = 0;
+
+  for (const file of specFiles) {
+    const specId = file.replace(/\.md$/, '');
+    const specPath = path.join(archiveDir, file);
+    const outputPath = path.join(archiveDir, specId + '.summary.md');
+
+    // Skip if summary exists and not --force
+    if (!force && fs.existsSync(outputPath)) {
+      skipped++;
+      results.push({ specId, written: false, reason: 'already exists' });
+      continue;
+    }
+
+    const result = generateSummary(specPath, templatePath, outputPath);
+    if (result.written) {
+      written++;
+      results.push({ specId, written: true, path: outputPath });
+    } else {
+      failed++;
+      results.push({ specId, written: false, reason: result.reason });
+    }
+  }
+
+  process.stdout.write(JSON.stringify({
+    total: specFiles.length,
+    written,
+    skipped,
+    failed,
+    results,
+  }, null, 2) + '\n');
+
+  if (failed > 0) {
+    process.exit(1);
+  }
+}
+
+module.exports = { parseArchivedSpec, renderSummary, generateSummary, cmdArchiveSummarize, cmdArchiveBackfill };

@@ -22,6 +22,8 @@
  *   state remove-active <id>              Remove one row from Active Specifications table
  *   state resolve [id]                    Resolve active spec; emit JSON contract
  *   state migrate                         One-shot idempotent migration to new schema
+ *   archive summarize <SPEC-ID>           Generate L1 summary for one archived spec
+ *   archive backfill [--force]            Generate missing summaries for all archived specs
  *   resolve-model <agent-type>            Model for agent by current profile
  *   verify-structure                      Check .specflow/ integrity
  *   generate-slug <text>                  Text to URL-safe slug
@@ -44,6 +46,7 @@ const { cmdSpecLoad, cmdSpecList, cmdSpecNextId } = require('./lib/spec.cjs');
 const { cmdTodoLoad, cmdTodoList, cmdTodoNextId, cmdTodoReindex, cmdTodoCheckStale } = require('./lib/todo.cjs');
 const { cmdResolveModel } = require('./lib/config.cjs');
 const { cmdVerifyStructure } = require('./lib/verify.cjs');
+const { cmdArchiveSummarize, cmdArchiveBackfill } = require('./lib/archive-summary.cjs');
 
 const cwd = process.cwd();
 const args = process.argv.slice(2);
@@ -114,6 +117,14 @@ const COMMANDS = {
       .catch(e => error(e.message));
   },
 
+  'archive summarize': () => {
+    if (!filteredArgs[2]) error('Missing SPEC-ID. Usage: archive summarize <SPEC-ID>');
+    cmdArchiveSummarize(cwd, filteredArgs[2], { force: flags.force });
+  },
+  'archive backfill': () => {
+    cmdArchiveBackfill(cwd, { force: flags.force });
+  },
+
   'resolve-model':   () => {
     if (!filteredArgs[1]) error('Missing agent type. Usage: resolve-model <agent-type>');
     cmdResolveModel(cwd, filteredArgs[1], raw);
@@ -147,6 +158,8 @@ Commands:
   state remove-active <id>               Remove one row (under advisory lock)
   state resolve [SPEC-ID]                Resolve active spec; emit JSON contract
   state migrate                          One-shot idempotent migration to new schema
+  archive summarize <SPEC-ID>            Generate L1 summary for one archived spec
+  archive backfill [--force]             Generate missing summaries for all archived specs
   resolve-model <agent-type>              Resolve model for agent by current profile
   verify-structure                        Check .specflow/ directory integrity
   generate-slug <text>                    Convert text to URL-safe slug
