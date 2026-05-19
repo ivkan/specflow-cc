@@ -283,6 +283,31 @@ Append to specification's Review History:
 **Summary:** {Brief overall assessment}
 ```
 
+## Step 7.5: Emit Recommendation
+
+Using the Critical, Major, and Minor counts determined in Step 5:
+
+1. Shell out to obtain the recommendation:
+   ```
+   node bin/sf-tools.cjs recommend --source review --critical <N> --major <M> --minor <K>
+   ```
+
+2. Parse the JSON response: `{ "action": "...", "reason": "..." }`
+
+3. In the REVIEW RESULT output block (within the "Next Step" section), emit:
+   ```
+   **Recommendation:** {action} — {reason}
+   ```
+
+4. Also append the same line to the Review History entry (in Step 7) below the existing fields:
+   ```
+   **Recommendation:** {action}
+   ```
+
+**Verb mapping per source:** For `source=review`, blocker verb is `fix` (matches STATE.md canonical `/sf:fix`); non-blocker verbs are `done` / `done --apply=minor`. This asymmetry is deliberate: Recommendation verbs align with the existing per-path canonical commands.
+
+**Note:** STATE.md Next Step (Step 8) continues to use the canonical command (`/sf:done`, `/sf:fix`) without any `--apply=minor` suffix. The Recommendation line is advisory and appears only in agent output and review history.
+
 ## Step 8: Update STATE.md
 
 - If APPROVED: Status → "done", Next Step → "/sf:done"
@@ -344,14 +369,21 @@ Output directly as formatted text (not wrapped in a code block):
 ## Next Step
 
 {If APPROVED with NO minor issues:}
+**Recommendation:** {action} — {reason}
+
 `/sf:done` — finalize and archive
 
 {If APPROVED WITH minor issues:}
+**Recommendation:** {action} — {reason}
+
 Choose one:
 • `/sf:done` — finalize as-is (minor issues are optional)
 • `/sf:fix` — address minor issues first
+• `/sf:done --apply=minor` — apply minor fixes inline and finalize in one step
 
 {If CHANGES_REQUESTED:}
+**Recommendation:** {action} — {reason}
+
 `/sf:fix` — address issues
 
 Options:

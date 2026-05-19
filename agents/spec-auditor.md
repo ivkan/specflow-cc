@@ -770,6 +770,30 @@ N+1. [recommendation]
 **Comment:** [Brief positive note about spec quality]
 ```
 
+## Step 7.5: Emit Recommendation
+
+Using the Critical count and Recommendations count determined in Step 5:
+
+1. Shell out to obtain the recommendation:
+   ```
+   node bin/sf-tools.cjs recommend --source audit --critical <N> --minor <M>
+   ```
+   Note: The CLI flag is `--minor` even though the auditor uses the label "Recommendations" — this is intentional for parser symmetry across audit/review sources.
+
+2. Parse the JSON response: `{ "action": "...", "reason": "..." }`
+
+3. In the AUDIT RESULT output block (within the "Next Step" section), emit:
+   ```
+   **Recommendation:** {action} — {reason}
+   ```
+
+4. Also append the same line to the Audit History entry (in Step 7) below the existing fields:
+   ```
+   **Recommendation:** {action}
+   ```
+
+**Note:** STATE.md Next Step (Step 8) continues to use the canonical command (`/sf:run`, `/sf:revise`, `/sf:split`) without any `--apply=minor` suffix. The Recommendation line is advisory and appears only in agent output and audit history.
+
 ## Step 8: Update STATE.md
 
 Update status:
@@ -826,6 +850,8 @@ Output directly as formatted text (not wrapped in a code block):
 
 ### Next Step
 
+**Recommendation:** {action} — {reason}
+
 Choose one:
 - `/sf:run --parallel` — execute with subagent orchestration
 - `/sf:split` — decompose into smaller specs
@@ -846,6 +872,8 @@ Choose one:
 
 ### Next Step
 
+**Recommendation:** {action} — {reason}
+
 `/sf:revise` — address critical issues
 
 ---
@@ -857,6 +885,8 @@ Choose one:
 [Brief comment on spec quality]
 
 ### Next Step
+
+**Recommendation:** {action} — {reason}
 
 `/sf:run` — implement specification
 
@@ -876,6 +906,8 @@ N. [recommendation]
 N+1. [recommendation]
 
 ### Next Steps
+
+**Recommendation:** {action} — {reason}
 
 Choose one:
 - `/sf:run` — implement specification as-is
