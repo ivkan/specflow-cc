@@ -290,12 +290,16 @@ After the agent updates STATE.md, check if rotation is needed:
 
 ## Next Step
 
+**Recommendation:** run — spec is clean, ready for execution
+
 `/sf:run` — implement specification
 
 Tip: `/clear` recommended — executor needs fresh context for implementation
 ```
 
 ### If APPROVED (with optional recommendations):
+
+The `Recommendation:` line is emitted by the auditor agent (Step 7.5 in `agents/spec-auditor.md`) using `node bin/sf-tools.cjs recommend --source audit --critical 0 --minor N`. The STATE.md Next Step remains `/sf:run` (without the `--apply=minor` suffix) — the suffix is advisory here only.
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -318,8 +322,11 @@ Tip: `/clear` recommended — executor needs fresh context for implementation
 
 ## Next Step
 
+**Recommendation:** run --apply=minor — {N} non-blocking recommendation(s), apply inline
+
 Choose one:
 • `/sf:run` — implement specification as-is
+• `/sf:run --apply=minor` — apply recommendations inline then execute
 • `/sf:revise` — apply optional recommendations first ({N} items)
 
 Tip: `/clear` recommended before `/sf:run` — executor needs fresh context
@@ -351,6 +358,8 @@ Tip: `/clear` recommended before `/sf:run` — executor needs fresh context
 ---
 
 ## Next Step
+
+**Recommendation:** revise — {N} critical issue(s) block execution
 
 `/sf:revise` — address critical issues
 

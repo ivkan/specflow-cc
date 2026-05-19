@@ -158,6 +158,8 @@ After the agent updates STATE.md, check if rotation is needed:
 
 ### If APPROVED (no minor issues):
 
+The `Recommendation:` line is emitted by the reviewer agent (Step 7.5 in `agents/impl-reviewer.md`) using `node bin/sf-tools.cjs recommend --source review --critical 0 --major 0 --minor 0`. The STATE.md Next Step remains `/sf:done` (canonical).
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  REVIEW PASSED
@@ -185,10 +187,14 @@ After the agent updates STATE.md, check if rotation is needed:
 
 ## Next Step
 
+**Recommendation:** done — implementation is clean, ready to finalize
+
 `/sf:done` — finalize and archive specification
 ```
 
 ### If APPROVED (with minor suggestions):
+
+The `Recommendation:` line uses action `done --apply=minor` when only Minor findings exist. STATE.md Next Step stays `/sf:done` (canonical; the `--apply=minor` suffix is advisory here only).
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -218,12 +224,17 @@ After the agent updates STATE.md, check if rotation is needed:
 
 ## Next Step
 
+**Recommendation:** done --apply=minor — {N} minor finding(s), apply inline before finalize
+
 Choose one:
 • `/sf:done` — finalize and archive as-is
-• `/sf:fix` — apply minor suggestions first ({N} items)
+• `/sf:done --apply=minor` — apply minor fixes inline and finalize in one step
+• `/sf:fix` — apply minor suggestions first ({N} items) then finalize
 ```
 
 ### If CHANGES_REQUESTED:
+
+The `Recommendation:` line uses action `fix` when Critical or Major findings exist (STATE.md Next Step is `/sf:fix`).
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -261,6 +272,8 @@ Choose one:
 ---
 
 ## Next Step
+
+**Recommendation:** fix — {N} critical/major finding(s) block finalize
 
 `/sf:fix` — address the issues
 
