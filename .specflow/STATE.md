@@ -3,13 +3,11 @@
 
 | SPEC-ID | Status | Next Step |
 |---------|--------|-----------|
-| SPEC-013 | review | /sf:review |
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| p1 | SPEC-013 | Audit/Review Recommendation Field + --apply=minor Quick-Fix Path | audited | medium | -- |
 | p1 | SPEC-006 | Adopt Superpowers Patterns: Debugging, Evidence, Anti-Patterns, Two-Stage Review, TDD | draft | large | -- |
 | p2 | SPEC-009 | Delta Specs for Brownfield Tasks — ADDED/MODIFIED/REMOVED Change Sections | draft | medium | -- |
 
@@ -33,6 +31,8 @@
 | 2026-05-19 | SPEC-013: Audit v2 APPROVED — all 3 v1 criticals resolved + Goal Analysis added; 2 optional recs applied directly (R2.5 `spec validate` contract + G3/G4 parser spot-check); status `auditing` → `audited`, ready for /sf:run |
 | 2026-05-19 | SPEC-013: Audit v2 APPROVED — all 3 v1 criticals cleanly resolved; symmetric --internal on fix.md added; Goal Analysis added; 2 optional recommendations remain |
 | 2026-05-19 | SPEC-013: EXECUTED — 5 commits, 3 files created (recommend.cjs, recommend.test.cjs, spec-validate.test.cjs), 9 files modified, 88 tests pass; ready for /sf:review |
+| 2026-05-19 | SPEC-013: Review v1 APPROVED — all 20 acceptance criteria pass, 88/88 tests pass, no issues found; ready for /sf:done |
+| 2026-05-19 | SPEC-013: COMPLETED — Recommendation line on /sf:audit & /sf:review output; --apply=minor on /sf:done & /sf:run; --internal flag on /sf:fix & /sf:revise; 88 tests pass |
 
 ## Notes
 
@@ -59,6 +59,7 @@
 - SPEC-010: Migrate TODO Storage from Monolithic TODO.md to Per-Task Files
 - SPEC-011: Parallel Specification Execution — Multi-Active STATE.md and Per-Command Spec ID Resolution
 - SPEC-012: L1 Archive Summary Layer — Compact Summaries Over Completed Specs
+- SPEC-013: Audit/Review Recommendation Field + --apply=minor Quick-Fix Path
 
 ### Architecture Alignment with GSD
 | Aspect | SF Status |
@@ -80,4 +81,4 @@
 | Multi-Active STATE.md | Implemented (SPEC-011) - DONE |
 
 ---
-*Last updated: 2026-05-19 (SPEC-013 EXECUTED — recommend.cjs module, CLI dispatches, agent wiring, --apply=minor command handlers, documentation; 88/88 tests pass; ready for /sf:review)*
+*Last updated: 2026-05-19 (SPEC-013 COMPLETED — Recommendation line + --apply=minor quick-fix path delivered; archived)*
