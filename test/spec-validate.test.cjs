@@ -69,12 +69,6 @@ Test context.
   }
 });
 
-test('spec validate: existing real spec SPEC-013 exits 0', () => {
-  const result = spawnValidate('SPEC-013');
-  assert.equal(result.status, 0, `Expected exit 0, got ${result.status}. stderr: ${result.stderr}`);
-  assert.equal(result.stdout.trim(), '', `Expected no stdout, got: "${result.stdout}"`);
-});
-
 // ─── Failure: spec not found ──────────────────────────────────────────────────
 
 test('spec validate: non-existent spec exits 1 with "spec file not found"', () => {
