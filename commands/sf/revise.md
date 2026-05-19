@@ -14,6 +14,8 @@ allowed-tools:
 
 <purpose>
 Revise the active specification based on audit feedback. Can apply all comments, specific numbered items, or custom changes described by user.
+
+Accepts an `--internal` flag: when present, Step 8 STATE.md mutation (status → `auditing`, Next Step → `/sf:audit`) is suppressed. Used by `/sf:run --apply=minor` to apply Recommendations inline without advancing the spec lifecycle status prematurely.
 </purpose>
 
 <context>
@@ -330,7 +332,9 @@ Apply the specified changes and record the revision response.
 
 ## Step 8: Handle Agent Response
 
-The agent will:
+**If `--internal` flag was passed:** The agent applies revisions and records Response v[N] in Audit History, but DOES NOT update status to "auditing" and DOES NOT update STATE.md. Return to caller after revisions are applied.
+
+**If `--internal` is NOT set (normal invocation),** the agent will:
 1. Parse the latest audit
 2. Apply requested revisions
 3. Record Response v[N] in Audit History
@@ -519,6 +523,10 @@ After recording the Response, if any items were marked "Deferred":
 **This step is mandatory.** Every "Deferred" decision MUST produce a corresponding TODO-XXX.md file AND the reindex helper MUST run if any TODO was created — otherwise INDEX.md silently drifts out of sync with `todos/`.
 
 ### Update Status
+
+**If `--internal` flag was passed:** SKIP this step entirely. Do NOT mutate STATE.md or spec frontmatter status. The caller (`/sf:run --apply=minor`) owns the status transition and needs the status to remain `audited` until its structural-validate gate passes.
+
+**If `--internal` is NOT set (normal invocation):**
 
 In spec frontmatter: `status: auditing`
 

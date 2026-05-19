@@ -66,6 +66,77 @@ Parse the JSON response:
 
 Read the active spec file: `.specflow/specs/SPEC-XXX.md`
 
+## Step 3.5: Handle `--apply=minor` Flag
+
+**Check if `--apply=minor` was passed in the invocation arguments.**
+
+**If `--apply=minor` is NOT present:** Continue to Step 4 (existing behavior unchanged).
+
+**If `--apply=minor` IS present:**
+
+### 3.5.a Verify Status Precondition
+
+Confirm the resolved spec has `status == "audited"` in its frontmatter.
+
+If status is NOT `audited`:
+```
+Error: --apply=minor requires status 'audited' (current: {status})
+```
+Exit 1. No state mutation.
+
+### 3.5.b Parse Severity Counts from Latest Audit History
+
+Read the spec file and find the most recent `### Audit v[N]` entry in Audit History.
+
+Extract Critical count and Recommendations count from that entry. Map Recommendations count to `--minor` (per R2 CLI contract).
+
+Run:
+```bash
+node bin/sf-tools.cjs recommend --source audit --critical N --minor M
+```
+
+Parse the JSON response.
+
+If `action != "run --apply=minor"`:
+```
+Error: --apply=minor requires only Recommendations (found {N} Critical). Run /sf:revise instead.
+```
+Exit 1. No state mutation.
+
+### 3.5.c Apply Recommendations via `/sf:revise` Machinery
+
+Parse the latest Audit History Recommendations list and extract numbered items as a comma-separated string (e.g. `"2,3,5"` — the sequence numbers as they appear in the Recommendations section).
+
+Invoke existing `/sf:revise` machinery passing the numbered target list and `--internal` flag (so `/sf:revise` Step 8 does NOT mutate STATE.md — the caller owns the status transition; status must remain `audited` until the structural-validate gate passes):
+```
+/sf:revise SPEC-XXX "{N,M,K}" --internal
+```
+
+This reuses `/sf:revise`'s existing per-item commit behavior. Do NOT duplicate revise logic.
+
+### 3.5.d Structural Validation Gate
+
+Run spec structural validation:
+```bash
+node bin/sf-tools.cjs spec validate SPEC-XXX
+```
+
+This is the exact gate specified in R2.5: verifies frontmatter parses, required fields present (`id`, `type`, `status`, `priority`), and `## Requirements` heading present. No fallback path.
+
+If `spec validate` exits non-zero:
+- Print error output
+- Leave STATE.md status as `audited` (no transition)
+- Exit 1
+- Note: Revise commits remain in git history; user can manually `git revert` or run full `/sf:revise` cycle. STATE.md status is the sole rollback signal.
+
+### 3.5.e On Gate Success: Continue to Execution
+
+On validation passing: skip Steps 4–7 (audit status check, mode determination, pre-execution summary, model profile, status update) and proceed directly to Step 8 (Spawn Executor Agent) with mode="orchestrated" (or "single" based on the spec's Implementation Tasks section — same logic as Step 4.5).
+
+All STATE.md mutations use Read+Write per SPEC-004 (not Bash/awk/sed).
+
+---
+
 ## Step 4: Check Audit Status
 
 **If status is "audited":**

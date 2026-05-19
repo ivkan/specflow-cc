@@ -59,6 +59,87 @@ Parse the JSON response:
   Options: {id — title (status)} for each entry
   ```
 
+## Step 2.5: Handle `--apply=minor` Flag
+
+**Check if `--apply=minor` was passed in the invocation arguments.**
+
+**If `--apply=minor` is NOT present:** Continue to Step 3 (existing behavior unchanged).
+
+**If `--apply=minor` IS present:**
+
+### 2.5.a Verify Status Precondition
+
+Confirm the resolved spec has `status == "review"` in its frontmatter.
+
+If status is NOT `review`:
+```
+Error: --apply=minor requires status 'review' (current: {status})
+```
+Exit 1. No state mutation.
+
+### 2.5.b Parse Severity Counts from Latest Review History
+
+Read the spec file and find the most recent `### Review v[N]` entry in Review History.
+
+Extract Critical, Major, and Minor counts from that entry.
+
+Run:
+```bash
+node bin/sf-tools.cjs recommend --source review --critical N --major M --minor K
+```
+
+Parse the JSON response.
+
+If `action != "done --apply=minor"`:
+```
+Error: --apply=minor cannot be used when Critical or Major findings exist (found {N} Critical, {M} Major). Run /sf:fix instead.
+```
+Exit 1. No state mutation.
+
+### 2.5.c Apply Minor Fixes via `/sf:fix` Machinery
+
+Parse the latest Review History entry and extract the numbered list of Minor findings (the sequential numbers as they appear in the Minor section, e.g. `"4,5,7"`).
+
+Invoke existing `/sf:fix` machinery passing the numbered target list and `--internal` flag (so `/sf:fix` Step 8 does NOT mutate STATE.md — the caller owns the status transition):
+```
+/sf:fix SPEC-XXX "{N,M,K}" --internal
+```
+
+This reuses `/sf:fix`'s existing per-fix atomic commit behavior. Do NOT duplicate fix logic.
+
+### 2.5.d Test Gate
+
+Detect and run the project test command:
+
+1. If `package.json` exists and has `scripts.test` → run `npm test`
+2. Else if `test/` directory exists → run `node --test test/`
+3. Else → note `No test command detected; proceeding without test gate.`
+
+If test command exits non-zero:
+- Print captured stdout+stderr
+- Leave STATE.md status as `review` (no transition)
+- Exit 1
+- Note: Fix commits remain in git history; user can manually `git revert` or run full `/sf:fix` cycle.
+
+### 2.5.e Lint Gate
+
+Detect and run lint:
+
+1. If `package.json` exists and has `scripts.lint` → run `npm run lint`
+2. Else if `.eslintrc*` or `eslint.config.*` present → run `npx eslint .`
+3. Else → skip silently
+
+If lint exits non-zero:
+- Same abort semantics as 2.5.d (print output, leave STATUS as `review`, exit 1)
+
+### 2.5.f On Gate Success: Continue to Finalization
+
+On all gates passing: continue into existing Step 3+ finalization path (update spec frontmatter status → "done", archive, generate L1 summary per SPEC-012).
+
+All STATE.md mutations use Read+Write per SPEC-004 (not Bash/awk/sed).
+
+---
+
 ## Step 3: Load Specification
 
 Read the active spec file: `.specflow/specs/SPEC-XXX.md`

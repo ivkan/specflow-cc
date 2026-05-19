@@ -15,6 +15,8 @@ allowed-tools:
 
 <purpose>
 Fix the implementation based on review feedback. Can apply all fixes, specific numbered items, or custom fixes described by user. Creates atomic commits for each fix.
+
+Accepts an `--internal` flag: when present, Step 8 (STATE.md mutation) is suppressed. Used by `/sf:done --apply=minor` to apply minor fixes inline without advancing the spec lifecycle status prematurely.
 </purpose>
 
 <context>
@@ -174,6 +176,10 @@ Append to Review History:
 ```
 
 ## Step 8: Update STATE.md
+
+**If `--internal` flag was passed:** SKIP this step entirely. Do NOT mutate STATE.md or spec frontmatter status. The caller (`/sf:done --apply=minor`) owns the status transition and needs the status to remain `review` until its test+lint gate passes.
+
+**If `--internal` is NOT set (normal invocation):**
 
 ```bash
 node bin/sf-tools.cjs state add-active SPEC-XXX review /sf:review
