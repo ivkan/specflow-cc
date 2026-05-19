@@ -9,6 +9,7 @@
  *   spec load <id>                        Parse spec file, return frontmatter + body
  *   spec list                             List all specs
  *   spec next-id                          Next available SPEC-XXX number
+ *   spec validate <id>                    Validate spec frontmatter and required headings
  *   todo load <id>                        Parse TODO file, return frontmatter + body
  *   todo list [--all]                     List all TODOs sorted by priority
  *   todo next-id                          Next available TODO-XXX number
@@ -24,6 +25,7 @@
  *   state migrate                         One-shot idempotent migration to new schema
  *   archive summarize <SPEC-ID>           Generate L1 summary for one archived spec
  *   archive backfill [--force]            Generate missing summaries for all archived specs
+ *   recommend                             Map severity counts to recommended action
  *   resolve-model <agent-type>            Model for agent by current profile
  *   verify-structure                      Check .specflow/ integrity
  *   generate-slug <text>                  Text to URL-safe slug
@@ -47,6 +49,7 @@ const { cmdTodoLoad, cmdTodoList, cmdTodoNextId, cmdTodoReindex, cmdTodoCheckSta
 const { cmdResolveModel } = require('./lib/config.cjs');
 const { cmdVerifyStructure } = require('./lib/verify.cjs');
 const { cmdArchiveSummarize, cmdArchiveBackfill } = require('./lib/archive-summary.cjs');
+const { recommend } = require('./lib/recommend.cjs');
 
 const cwd = process.cwd();
 const args = process.argv.slice(2);
@@ -72,6 +75,49 @@ const COMMANDS = {
   },
   'spec list':       () => cmdSpecList(cwd, raw),
   'spec next-id':    () => cmdSpecNextId(cwd, raw),
+  'spec validate':   () => {
+    const specId = filteredArgs[2];
+    if (!specId) {
+      process.stderr.write('Error: spec validation failed: missing spec ID. Usage: spec validate <SPEC-XXX>\n');
+      process.exit(1);
+    }
+    const { safeReadFile, parseFrontmatter } = require('./lib/core.cjs');
+    const specPath = require('path').join(cwd, '.specflow', 'specs', specId + '.md');
+    const content = safeReadFile(specPath);
+    if (content === null) {
+      process.stderr.write(`Error: spec validation failed: spec file not found at ${specPath}\n`);
+      process.exit(1);
+    }
+    let frontmatter;
+    try {
+      const parsed = parseFrontmatter(content);
+      frontmatter = parsed.frontmatter;
+      if (!frontmatter || typeof frontmatter !== 'object') {
+        throw new Error('invalid frontmatter');
+      }
+    } catch (e) {
+      process.stderr.write('Error: spec validation failed: invalid or missing frontmatter\n');
+      process.exit(1);
+    }
+    // Require ---...--- block to exist (parseFrontmatter returns empty obj if absent)
+    if (!content.match(/^---\r?\n[\s\S]*?\r?\n---/)) {
+      process.stderr.write('Error: spec validation failed: invalid or missing frontmatter\n');
+      process.exit(1);
+    }
+    const required = ['id', 'type', 'status', 'priority'];
+    for (const field of required) {
+      if (!frontmatter[field]) {
+        process.stderr.write(`Error: spec validation failed: missing frontmatter field '${field}'\n`);
+        process.exit(1);
+      }
+    }
+    if (!content.match(/^## Requirements/m)) {
+      process.stderr.write("Error: spec validation failed: missing required heading '## Requirements'\n");
+      process.exit(1);
+    }
+    // Success: no stdout, exit 0
+    process.exit(0);
+  },
   'todo load':       () => {
     if (!filteredArgs[2]) error('Missing TODO ID. Usage: todo load <id>');
     cmdTodoLoad(cwd, filteredArgs[2], raw);
@@ -125,6 +171,58 @@ const COMMANDS = {
     cmdArchiveBackfill(cwd, { force: flags.force });
   },
 
+  'recommend':       () => {
+    // Parse --source, --critical, --major, --minor from filteredArgs
+    // Flags take the form: --source audit  or  --critical 2  etc.
+    const flagValues = {};
+    for (let i = 1; i < filteredArgs.length; i++) {
+      const a = filteredArgs[i];
+      if (a.startsWith('--')) {
+        const key = a.slice(2);
+        const val = filteredArgs[i + 1];
+        if (val !== undefined && !val.startsWith('--')) {
+          flagValues[key] = val;
+          i++; // skip value token
+        } else {
+          flagValues[key] = true;
+        }
+      }
+    }
+
+    const source = flagValues['source'];
+    if (!source || source === true) {
+      process.stderr.write('Error: --source is required (audit|review)\n');
+      process.exit(1);
+    }
+
+    // Parse integer counts with validation
+    function parseCount(flagName) {
+      const raw = flagValues[flagName];
+      if (raw === undefined || raw === true) return 0;
+      const n = Number(raw);
+      if (!Number.isInteger(n) || n < 0) {
+        process.stderr.write(`Error: --${flagName} must be a non-negative integer\n`);
+        process.exit(1);
+      }
+      return n;
+    }
+
+    const critical = parseCount('critical');
+    const major = parseCount('major');
+    const minor = parseCount('minor');
+
+    let result;
+    try {
+      result = recommend({ source, critical, major, minor });
+    } catch (e) {
+      process.stderr.write('Error: ' + e.message + '\n');
+      process.exit(1);
+    }
+
+    process.stdout.write(JSON.stringify(result) + '\n');
+    process.exit(0);
+  },
+
   'resolve-model':   () => {
     if (!filteredArgs[1]) error('Missing agent type. Usage: resolve-model <agent-type>');
     cmdResolveModel(cwd, filteredArgs[1], raw);
@@ -145,6 +243,7 @@ Commands:
   spec load <id>                          Parse spec file, return frontmatter + body
   spec list                               List all specs from .specflow/specs/
   spec next-id                            Next available SPEC-XXX number
+  spec validate <id>                      Validate spec frontmatter and required headings
   todo load <id>                          Parse TODO file, return frontmatter + body
   todo list [--all]                       List TODOs sorted by priority (--all includes eliminated)
   todo next-id                            Next available TODO-XXX number
@@ -160,6 +259,7 @@ Commands:
   state migrate                          One-shot idempotent migration to new schema
   archive summarize <SPEC-ID>            Generate L1 summary for one archived spec
   archive backfill [--force]             Generate missing summaries for all archived specs
+  recommend                              Map severity counts to recommended action
   resolve-model <agent-type>              Resolve model for agent by current profile
   verify-structure                        Check .specflow/ directory integrity
   generate-slug <text>                    Convert text to URL-safe slug
