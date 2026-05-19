@@ -5,6 +5,22 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.22.0] - 2026-05-19
+
+### Added
+
+- **`Recommendation:` line on `/sf:audit` and `/sf:review` output** — after every audit or review, the Next Step block now includes a deterministic `**Recommendation:** {action} — {reason}` line (e.g. `done — implementation is clean, ready to finalize`, `run --apply=minor — 2 non-blocking recommendations, apply inline`, `revise — 1 critical issue blocks execution`). Removes the "what next" guesswork when the result has only non-blocking findings. Emitted by `sf-spec-auditor` and `sf-impl-reviewer` agents via a new Step 7.5 that shells out to `node bin/sf-tools.cjs recommend`. STATE.md's canonical `Next Step` is unchanged — the Recommendation line is advisory in agent output only.
+- **`--apply=minor` flag on `/sf:done` and `/sf:run`** — quick-fix path for non-blocking findings. `/sf:done --apply=minor` (review path): requires spec status `review` with only Minor findings; invokes `/sf:fix --internal` to apply each finding as an atomic commit; runs project test + lint gate; on success, proceeds to standard finalization. `/sf:run --apply=minor` (audit path): requires status `audited` with only Recommendations; invokes `/sf:revise --internal`; runs structural `spec validate` gate; on success, proceeds to standard execution. **No second audit/review cycle is invoked.** Both refuse with a clear error when Critical/Major findings exist. On gate failure: applied commits remain in git, but STATE.md status is unchanged (sole rollback signal).
+- **`recommend` CLI subcommand** in `bin/sf-tools.cjs` — pure mapping module exposed via `node bin/sf-tools.cjs recommend --source <audit|review> --critical N --major N --minor N`. Emits JSON `{action, reason}` to stdout. Single source of truth for the recommendation truth-table consumed by both agents and `--apply=minor` callers.
+- **`spec validate` CLI subcommand** in `bin/sf-tools.cjs` — lightweight structural validation (frontmatter parses, required fields present, `## Requirements` heading present). Exits 0 on success with no stdout; exits 1 with `Error: spec validation failed: {reason}` on stderr. Used by `/sf:run --apply=minor` as the post-revise integrity gate (distinct from content-driven `/sf:audit`).
+- **`--internal` flag on `/sf:fix` and `/sf:revise`** — symmetric guard that suppresses the Step 8 `state add-active` STATE.md mutation. Lets `/sf:done --apply=minor` and `/sf:run --apply=minor` shell out to the existing fix/revise machinery without losing control of the lifecycle transition. Reusable pattern for future composite commands.
+- `bin/lib/recommend.cjs` — pure 57-line `recommend({source, critical, major, minor})` → `{action, reason}` function; no I/O, no state mutation. Zero new runtime npm dependencies — Node.js built-ins only.
+- 39 new tests across `test/recommend.test.cjs` (28 tests: truth-table coverage, CLI integration, error cases) and `test/spec-validate.test.cjs` (11 tests: success + all five failure modes). Full suite: 93/93 pass.
+
+### Fixed
+
+- **Brittle hardcoded-spec test in spec-validate suite** — removed a test that referenced a live `SPEC-013.md` file, which broke the moment SPEC-013 was archived (the normal end of every spec's lifecycle). The success path is fully covered by an adjacent temp-fixture test, so the duplicate was removed rather than rewritten.
+
 ## [1.21.0] - 2026-05-15
 
 ### Added
