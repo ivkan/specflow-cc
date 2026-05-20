@@ -183,6 +183,8 @@ function cmdTodoList(cwd, raw, { showAll } = {}) {
  * Scans:
  * 1. .specflow/todos/TODO-*.md filenames using fs.readdirSync() + JS regex
  * 2. .specflow/todos/TODO.md for legacy IDs using fs.readFileSync() + /TODO-(\d+)/g
+ * 3. .specflow/specs/*.md and .specflow/archive/*.md for `source: TODO-XXX`
+ *    frontmatter entries (retired IDs from promoted TODOs).
  *
  * NOTE: Does NOT use grep -oP (GNU-only, unavailable on macOS).
  *
@@ -220,6 +222,31 @@ function cmdTodoNextId(cwd, raw) {
     }
   } catch (e) {
     // file may not exist — skip
+  }
+
+  // Scan promoted-spec frontmatter for retired TODO IDs.
+  // On promotion, the source TODO file is deleted; the only surviving
+  // record is `source: TODO-XXX` in the spec's frontmatter. Without this
+  // scan, next-id can reissue a retired ID and downstream `/sf:plan` will
+  // reject the new TODO because the archive still records the old promotion.
+  for (const sub of ['specs', 'archive']) {
+    const dir = path.join(cwd, '.specflow', sub);
+    let files;
+    try {
+      files = fs.readdirSync(dir).filter(f => f.endsWith('.md'));
+    } catch (e) { continue; }
+    for (const file of files) {
+      let content;
+      try {
+        content = fs.readFileSync(path.join(dir, file), 'utf8');
+      } catch (e) { continue; }
+      const regex = /(?:^|\n)source:\s*TODO-(\d+)/g;
+      let match;
+      while ((match = regex.exec(content)) !== null) {
+        const num = parseInt(match[1], 10);
+        if (num > maxNum) maxNum = num;
+      }
+    }
   }
 
   const nextNumber = maxNum + 1;

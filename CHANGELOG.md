@@ -5,6 +5,12 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.22.1] - 2026-05-20
+
+### Fixed
+
+- `todo next-id` now scans `.specflow/specs/` and `.specflow/archive/` for `source: TODO-XXX` frontmatter entries, preventing reissue of retired IDs. Previously, a TODO file deleted during promotion to a spec could have its ID reassigned to an unrelated new TODO, leaving downstream `/sf:plan` unable to operate on the new TODO (it rejects the ID as "already promoted").
+
 ## [1.22.0] - 2026-05-19
 
 ### Added
