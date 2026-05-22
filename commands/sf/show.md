@@ -42,7 +42,7 @@ Exit.
 Use provided ID (e.g., SPEC-003).
 
 **If no argument:**
-Call `node bin/sf-tools.cjs state resolve` to get active spec.
+Call `node ~/.claude/specflow-cc/bin/sf-tools.cjs state resolve` to get active spec.
 
 Parse the JSON response:
 - `{"action":"use","id":"SPEC-XXX"}` → use SPEC-XXX

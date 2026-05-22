@@ -58,7 +58,7 @@ Use `/sf:list` to see available specifications.
 Exit.
 
 **If no ID provided:**
-Call `node bin/sf-tools.cjs state resolve` to get active spec.
+Call `node ~/.claude/specflow-cc/bin/sf-tools.cjs state resolve` to get active spec.
 
 Parse the JSON response:
 - `{"action":"use","id":"SPEC-XXX"}` → use SPEC-XXX
@@ -365,8 +365,8 @@ Add split reference to archived parent.
 - Add children to Queue (using Read+Write)
 - Register first child in Active Specifications table:
   ```bash
-  node bin/sf-tools.cjs state remove-active SPEC-PARENT
-  node bin/sf-tools.cjs state add-active SPEC-XXXa draft /sf:audit
+  node ~/.claude/specflow-cc/bin/sf-tools.cjs state remove-active SPEC-PARENT
+  node ~/.claude/specflow-cc/bin/sf-tools.cjs state add-active SPEC-XXXa draft /sf:audit
   ```
 
 </fallback>

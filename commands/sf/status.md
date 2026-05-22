@@ -39,12 +39,12 @@ Read `.specflow/STATE.md` and extract Queue, Recent Decisions, Warnings.
 
 Get active specs:
 ```bash
-node bin/sf-tools.cjs state list-active
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state list-active
 ```
 
 For single-spec display, also call:
 ```bash
-node bin/sf-tools.cjs state resolve
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state resolve
 ```
 
 Parse the resolve response:
@@ -108,13 +108,13 @@ Fix: Rename the spec in specs/ to next available ID.
 Compare the set of TODO files on disk to the IDs listed in `.specflow/todos/INDEX.md`:
 
 ```bash
-node bin/sf-tools.cjs todo check-stale
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo check-stale
 ```
 
 Parse the JSON response. If `stale: true`, add a warning to the Warnings section:
 
 ```
-INDEX.md stale — run /sf:todos (or `node bin/sf-tools.cjs todo reindex`).
+INDEX.md stale — run /sf:todos (or `node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex`).
 {If missing_from_index is non-empty:}
   Missing from INDEX.md (TODO file exists on disk but not listed):
     {comma-separated list}
@@ -232,7 +232,7 @@ Based on state, provide additional guidance:
 - [ ] STATE.md loaded
 - [ ] PROJECT.md info extracted
 - [ ] Statistics calculated
-- [ ] TODO index freshness checked via `node bin/sf-tools.cjs todo check-stale` (warning surfaced if stale)
+- [ ] TODO index freshness checked via `node ~/.claude/specflow-cc/bin/sf-tools.cjs todo check-stale` (warning surfaced if stale)
 - [ ] Current position displayed
 - [ ] Queue shown
 - [ ] Recommended next step clear
