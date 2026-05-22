@@ -39,7 +39,22 @@ Exit.
 
 ## Step 2: Resolve Active Specification
 
-Call `node bin/sf-tools.cjs state resolve $ARGUMENTS` (pass the optional SPEC-XXX arg if provided).
+Parse `$ARGUMENTS`:
+- Let `FIRST_TOKEN` = first whitespace-separated token of `$ARGUMENTS`.
+- If `FIRST_TOKEN` matches `^SPEC-\d{3,}$`:
+  - Set `SPEC_ARG="$FIRST_TOKEN"`
+  - Set `REVIEW_SCOPE` = remainder of `$ARGUMENTS` after `FIRST_TOKEN` (trimmed)
+- Else:
+  - Set `SPEC_ARG=""` (resolver uses Active Specifications table)
+  - Set `REVIEW_SCOPE="$ARGUMENTS"`
+
+Call:
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state resolve $SPEC_ARG
+```
+
+Use `REVIEW_SCOPE` in subsequent steps for any review flags.
 
 Parse the JSON response:
 - `{"action":"use","id":"SPEC-XXX"}` → proceed with SPEC-XXX
@@ -158,7 +173,7 @@ After the agent updates STATE.md, check if rotation is needed:
 
 ### If APPROVED (no minor issues):
 
-The `Recommendation:` line is emitted by the reviewer agent (Step 7.5 in `agents/impl-reviewer.md`) using `node bin/sf-tools.cjs recommend --source review --critical 0 --major 0 --minor 0`. The STATE.md Next Step remains `/sf:done` (canonical).
+The `Recommendation:` line is emitted by the reviewer agent (Step 7.5 in `agents/impl-reviewer.md`) using `node ~/.claude/specflow-cc/bin/sf-tools.cjs recommend --source review --critical 0 --major 0 --minor 0`. The STATE.md Next Step remains `/sf:done` (canonical).
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -345,9 +360,9 @@ Append Review History to spec.
 
 ```bash
 # If APPROVED:
-node bin/sf-tools.cjs state add-active SPEC-XXX done /sf:done
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state add-active SPEC-XXX done /sf:done
 # If CHANGES_REQUESTED:
-node bin/sf-tools.cjs state add-active SPEC-XXX review /sf:fix
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state add-active SPEC-XXX review /sf:fix
 ```
 
 </fallback>

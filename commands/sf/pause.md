@@ -36,7 +36,22 @@ Exit.
 
 ## Step 2: Resolve Active Specification
 
-Call `node bin/sf-tools.cjs state resolve $ARGUMENTS` (pass the optional SPEC-XXX arg if provided).
+Parse `$ARGUMENTS`:
+- Let `FIRST_TOKEN` = first whitespace-separated token of `$ARGUMENTS`.
+- If `FIRST_TOKEN` matches `^SPEC-\d{3,}$`:
+  - Set `SPEC_ARG="$FIRST_TOKEN"`
+  - Set `PAUSE_NOTE` = remainder of `$ARGUMENTS` after `FIRST_TOKEN` (trimmed)
+- Else:
+  - Set `SPEC_ARG=""` (resolver uses Active Specifications table)
+  - Set `PAUSE_NOTE="$ARGUMENTS"`
+
+Call:
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state resolve $SPEC_ARG
+```
+
+Use `PAUSE_NOTE` in Step 6.5 (notes prompt — pre-populate if non-empty).
 
 Parse the JSON response:
 - `{"action":"use","id":"SPEC-XXX"}` → proceed with SPEC-XXX
@@ -53,7 +68,7 @@ Parse the JSON response:
   Options: {id — title (status)} for each entry
   ```
 
-Also call `node bin/sf-tools.cjs state list-active` to capture all active specs in the pause file.
+Also call `node ~/.claude/specflow-cc/bin/sf-tools.cjs state list-active` to capture all active specs in the pause file.
 
 ## Step 3: Load Active Specification Details
 

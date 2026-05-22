@@ -36,7 +36,22 @@ Exit.
 
 ## Step 2: Resolve Active Specification
 
-Call `node bin/sf-tools.cjs state resolve $ARGUMENTS` (pass the optional SPEC-XXX arg if provided).
+Parse `$ARGUMENTS`:
+- Let `FIRST_TOKEN` = first whitespace-separated token of `$ARGUMENTS`.
+- If `FIRST_TOKEN` matches `^SPEC-\d{3,}$`:
+  - Set `SPEC_ARG="$FIRST_TOKEN"`
+  - Set `VERIFY_SCOPE` = remainder of `$ARGUMENTS` after `FIRST_TOKEN` (trimmed)
+- Else:
+  - Set `SPEC_ARG=""` (resolver uses Active Specifications table)
+  - Set `VERIFY_SCOPE="$ARGUMENTS"`
+
+Call:
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state resolve $SPEC_ARG
+```
+
+Use `VERIFY_SCOPE` in subsequent steps for any verify flags.
 
 Parse the JSON response:
 - `{"action":"use","id":"SPEC-XXX"}` → proceed with SPEC-XXX

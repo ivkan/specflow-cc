@@ -42,7 +42,22 @@ Exit.
 
 ## Step 2: Resolve Active Specification
 
-Call `node bin/sf-tools.cjs state resolve $ARGUMENTS` (pass the optional SPEC-XXX arg if provided).
+Parse `$ARGUMENTS`:
+- Let `FIRST_TOKEN` = first whitespace-separated token of `$ARGUMENTS`.
+- If `FIRST_TOKEN` matches `^SPEC-\d{3,}$`:
+  - Set `SPEC_ARG="$FIRST_TOKEN"`
+  - Set `RUN_SCOPE` = remainder of `$ARGUMENTS` after `FIRST_TOKEN` (trimmed)
+- Else:
+  - Set `SPEC_ARG=""` (resolver uses Active Specifications table)
+  - Set `RUN_SCOPE="$ARGUMENTS"`
+
+Call:
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state resolve $SPEC_ARG
+```
+
+Use `RUN_SCOPE` in the subsequent argument-parsing step (Step 3.5).
 
 Parse the JSON response:
 - `{"action":"use","id":"SPEC-XXX"}` → proceed with SPEC-XXX
@@ -68,7 +83,7 @@ Read the active spec file: `.specflow/specs/SPEC-XXX.md`
 
 ## Step 3.5: Handle `--apply=minor` Flag
 
-**Check if `--apply=minor` was passed in the invocation arguments.**
+**Check if `RUN_SCOPE` contains `--apply=minor`.**
 
 **If `--apply=minor` is NOT present:** Continue to Step 4 (existing behavior unchanged).
 
@@ -92,7 +107,7 @@ Extract Critical count and Recommendations count from that entry. Map Recommenda
 
 Run:
 ```bash
-node bin/sf-tools.cjs recommend --source audit --critical N --minor M
+node ~/.claude/specflow-cc/bin/sf-tools.cjs recommend --source audit --critical N --minor M
 ```
 
 Parse the JSON response.
@@ -118,7 +133,7 @@ This reuses `/sf:revise`'s existing per-item commit behavior. Do NOT duplicate r
 
 Run spec structural validation:
 ```bash
-node bin/sf-tools.cjs spec validate SPEC-XXX
+node ~/.claude/specflow-cc/bin/sf-tools.cjs spec validate SPEC-XXX
 ```
 
 This is the exact gate specified in R2.5: verifies frontmatter parses, required fields present (`id`, `type`, `status`, `priority`), and `## Requirements` heading present. No fallback path.
@@ -265,7 +280,7 @@ Use model for `spec-executor` or `spec-executor-orchestrator` from selected prof
 ## Step 7: Update Status
 
 ```bash
-node bin/sf-tools.cjs state add-active SPEC-XXX running "(in progress)"
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state add-active SPEC-XXX running "(in progress)"
 ```
 
 Update spec frontmatter:
