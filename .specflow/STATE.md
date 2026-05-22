@@ -3,13 +3,11 @@
 
 | SPEC-ID | Status | Next Step |
 |---------|--------|-----------|
-| SPEC-014 | review | /sf:review |
 
 ## Queue
 
 | Priority | ID | Title | Status | Complexity | Depends On |
 |----------|-----|-------|--------|------------|------------|
-| p0 | SPEC-014 | Fix Installed-Command Failures — Bare bin/sf-tools.cjs Paths and Unsafe state resolve $ARGUMENTS | draft | small | -- |
 | p1 | SPEC-006 | Adopt Superpowers Patterns: Debugging, Evidence, Anti-Patterns, Two-Stage Review, TDD | draft | large | -- |
 | p2 | SPEC-009 | Delta Specs for Brownfield Tasks — ADDED/MODIFIED/REMOVED Change Sections | draft | medium | -- |
 
@@ -37,6 +35,8 @@
 | 2026-05-22 | SPEC-014: DRAFTED — fixes 22 commands/sf/*.md files broken in user installs: bare `bin/sf-tools.cjs` paths (22 files) and unsafe `state resolve $ARGUMENTS` (8 files) |
 | 2026-05-22 | SPEC-014: Audit v1 APPROVED — 0 critical + 6 recommendations (accuracy of 22-vs-15 file count, deferred TODO for installer validation, parallel execution hint, parsing-block clarity, no-op-file note, manual regression coverage); recommendation: run --apply=minor |
 | 2026-05-22 | SPEC-014: EXECUTED — 4 commits, 0 files created, 15 files modified (bare-path fix in all 15 + SPEC-ID guard in 8 dual-fix files); all AC#1-#7 pass; ready for /sf:review |
+| 2026-05-22 | SPEC-014: Review v1 APPROVED — all AC#1-#7 verified; zero critical/major issues; implementation is mechanically precise |
+| 2026-05-22 | SPEC-014: COMPLETED — bare `bin/sf-tools.cjs` paths prefixed in 15 files; SPEC-ID parsing guard added in 8 dual-fix files; new idiom for command files accepting scope/mode flags |
 
 ## Notes
 
@@ -64,6 +64,7 @@
 - SPEC-011: Parallel Specification Execution — Multi-Active STATE.md and Per-Command Spec ID Resolution
 - SPEC-012: L1 Archive Summary Layer — Compact Summaries Over Completed Specs
 - SPEC-013: Audit/Review Recommendation Field + --apply=minor Quick-Fix Path
+- SPEC-014: Fix Installed-Command Failures — Bare bin/sf-tools.cjs Paths and Unsafe state resolve $ARGUMENTS
 
 ### Architecture Alignment with GSD
 | Aspect | SF Status |
@@ -85,4 +86,4 @@
 | Multi-Active STATE.md | Implemented (SPEC-011) - DONE |
 
 ---
-*Last updated: 2026-05-22 (SPEC-014 EXECUTED — 4 commits, 15 files modified, all AC#1-#7 pass; ready for /sf:review)*
+*Last updated: 2026-05-22 (SPEC-014 COMPLETED — archived; queue advances to SPEC-006)*
