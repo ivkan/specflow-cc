@@ -206,7 +206,7 @@ Exit.
 
 Show active specs count (uses list-active for multi-spec awareness):
 ```bash
-node bin/sf-tools.cjs state list-active --raw
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state list-active --raw
 ```
 
 Display full command reference:

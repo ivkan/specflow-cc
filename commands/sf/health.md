@@ -38,7 +38,7 @@ Exit.
 Run migration on entry — idempotent, no-op when already migrated:
 
 ```bash
-node bin/sf-tools.cjs state migrate
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state migrate
 ```
 
 Parse the response:
@@ -84,7 +84,7 @@ For each check:
 Read STATE.md and validate:
 
 **E003: Active spec references non-existent file**
-- List all active specs via `node bin/sf-tools.cjs state list-active`
+- List all active specs via `node ~/.claude/specflow-cc/bin/sf-tools.cjs state list-active`
 - For each SPEC-ID, check `.specflow/specs/{ID}.md` exists
 - If missing: error (repairable — remove that row via `state remove-active`)
 

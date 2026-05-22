@@ -42,7 +42,22 @@ Exit.
 
 ## Step 2: Resolve Active Specification
 
-Call `node bin/sf-tools.cjs state resolve $ARGUMENTS` (pass the optional SPEC-XXX arg if provided; strip non-SPEC-ID args first).
+Parse `$ARGUMENTS`:
+- Let `FIRST_TOKEN` = first whitespace-separated token of `$ARGUMENTS`.
+- If `FIRST_TOKEN` matches `^SPEC-\d{3,}$`:
+  - Set `SPEC_ARG="$FIRST_TOKEN"`
+  - Set `REVISE_SCOPE` = remainder of `$ARGUMENTS` after `FIRST_TOKEN` (trimmed)
+- Else:
+  - Set `SPEC_ARG=""` (resolver uses Active Specifications table)
+  - Set `REVISE_SCOPE="$ARGUMENTS"`
+
+Call:
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state resolve $SPEC_ARG
+```
+
+Use `REVISE_SCOPE` in the subsequent argument-parsing step (Step 5).
 
 Parse the JSON response:
 - `{"action":"use","id":"SPEC-XXX"}` → proceed with SPEC-XXX
@@ -160,9 +175,11 @@ Continue to Step 5 with analysis context available.
 
 ## Step 5: Parse Arguments
 
-| Argument | Action |
-|----------|--------|
-| (none) | Interactive mode — show comments, ask what to fix |
+Parse `REVISE_SCOPE` (set in Step 2):
+
+| Value of `REVISE_SCOPE` | Action |
+|-------------------------|--------|
+| (empty) | Interactive mode — show comments, ask what to fix |
 | "all" | Apply all critical issues AND recommendations |
 | "1,2,3" | Apply only numbered items |
 | "--no-analysis" | Skip pre-analysis, go directly to review mode |
@@ -170,9 +187,9 @@ Continue to Step 5 with analysis context available.
 
 **Check for `--no-analysis` flag:**
 
-If the arguments string contains `--no-analysis`:
+If `REVISE_SCOPE` contains `--no-analysis`:
 - Set SKIP_ANALYSIS to true
-- Remove the `--no-analysis` flag from the arguments string for further processing
+- Remove the `--no-analysis` flag from `REVISE_SCOPE` for further processing
 
 ### If Interactive Mode (no arguments):
 
@@ -532,7 +549,7 @@ In spec frontmatter: `status: auditing`
 
 In STATE.md:
 ```bash
-node bin/sf-tools.cjs state add-active SPEC-XXX auditing /sf:audit
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state add-active SPEC-XXX auditing /sf:audit
 ```
 
 </fallback>

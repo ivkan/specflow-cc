@@ -62,7 +62,7 @@ Determine discussion mode from arguments:
 - Mode: `requirements-gathering`
 
 **Case E: No arguments**
-- Call `node bin/sf-tools.cjs state resolve` to resolve active spec
+- Call `node ~/.claude/specflow-cc/bin/sf-tools.cjs state resolve` to resolve active spec
 - `{"action":"use","id":"SPEC-XXX"}` → discuss that spec
 - `{"action":"error","code":"NO_ACTIVE_SPEC"}` → ask what to discuss
 - `{"action":"ask","options":[...]}` → use AskUserQuestion to pick which spec to discuss
