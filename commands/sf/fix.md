@@ -43,7 +43,22 @@ Exit.
 
 ## Step 2: Resolve Active Specification
 
-Call `node bin/sf-tools.cjs state resolve $ARGUMENTS` (pass the optional SPEC-XXX arg if provided).
+Parse `$ARGUMENTS`:
+- Let `FIRST_TOKEN` = first whitespace-separated token of `$ARGUMENTS`.
+- If `FIRST_TOKEN` matches `^SPEC-\d{3,}$`:
+  - Set `SPEC_ARG="$FIRST_TOKEN"`
+  - Set `FIX_SCOPE` = remainder of `$ARGUMENTS` after `FIRST_TOKEN` (trimmed)
+- Else:
+  - Set `SPEC_ARG=""` (resolver uses Active Specifications table)
+  - Set `FIX_SCOPE="$ARGUMENTS"`
+
+Call:
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state resolve $SPEC_ARG
+```
+
+Use `FIX_SCOPE` in the subsequent argument-parsing step (Step 5).
 
 Parse the JSON response:
 - `{"action":"use","id":"SPEC-XXX"}` → proceed with SPEC-XXX
@@ -93,14 +108,16 @@ Exit.
 
 ## Step 5: Parse Arguments
 
-| Argument | Action |
-|----------|--------|
-| (none) | Interactive mode — show issues, ask what to fix |
+Parse `FIX_SCOPE` (set in Step 2):
+
+| Value of `FIX_SCOPE` | Action |
+|----------------------|--------|
+| (empty) | Interactive mode — show issues, ask what to fix |
 | "all" | Apply all critical AND major AND minor fixes |
 | "1,2,3" | Apply only numbered items |
 | "..." | Treat as custom fix instructions |
 
-### If Interactive Mode (no arguments):
+### If Interactive Mode (FIX_SCOPE is empty):
 
 Display review findings:
 
@@ -182,7 +199,7 @@ Append to Review History:
 **If `--internal` is NOT set (normal invocation):**
 
 ```bash
-node bin/sf-tools.cjs state add-active SPEC-XXX review /sf:review
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state add-active SPEC-XXX review /sf:review
 ```
 
 ## Step 9: Display Result

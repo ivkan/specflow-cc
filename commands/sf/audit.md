@@ -43,7 +43,22 @@ Exit.
 
 ## Step 2: Resolve Active Specification
 
-Call `node bin/sf-tools.cjs state resolve $ARGUMENTS` (pass the optional SPEC-XXX arg if provided).
+Parse `$ARGUMENTS`:
+- Let `FIRST_TOKEN` = first whitespace-separated token of `$ARGUMENTS`.
+- If `FIRST_TOKEN` matches `^SPEC-\d{3,}$`:
+  - Set `SPEC_ARG="$FIRST_TOKEN"`
+  - Set `AUDIT_SCOPE` = remainder of `$ARGUMENTS` after `FIRST_TOKEN` (trimmed)
+- Else:
+  - Set `SPEC_ARG=""` (resolver uses Active Specifications table)
+  - Set `AUDIT_SCOPE="$ARGUMENTS"`
+
+Call:
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state resolve $SPEC_ARG
+```
+
+Use `AUDIT_SCOPE` in the subsequent argument-parsing step (Step 3.5).
 
 Parse the JSON response:
 - `{"action":"use","id":"SPEC-XXX"}` → proceed with SPEC-XXX
@@ -77,7 +92,7 @@ Exit.
 
 ## Step 3.5: Check for --import Flag
 
-Parse arguments for `--import "feedback text"` pattern.
+Parse `AUDIT_SCOPE` for `--import "feedback text"` pattern.
 
 **If --import flag present:** Go to Step 4-IMPORT
 **Otherwise:** Continue to Step 4 (internal audit)
@@ -156,7 +171,7 @@ In spec frontmatter, set: `status: revision_requested`
 
 Update STATE.md via CLI:
 ```bash
-node bin/sf-tools.cjs state add-active SPEC-XXX external_review /sf:revise
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state add-active SPEC-XXX external_review /sf:revise
 ```
 Add decision: "Imported external feedback for SPEC-XXX"
 
@@ -299,7 +314,7 @@ Tip: `/clear` recommended — executor needs fresh context for implementation
 
 ### If APPROVED (with optional recommendations):
 
-The `Recommendation:` line is emitted by the auditor agent (Step 7.5 in `agents/spec-auditor.md`) using `node bin/sf-tools.cjs recommend --source audit --critical 0 --minor N`. The STATE.md Next Step remains `/sf:run` (without the `--apply=minor` suffix) — the suffix is advisory here only.
+The `Recommendation:` line is emitted by the auditor agent (Step 7.5 in `agents/spec-auditor.md`) using `node ~/.claude/specflow-cc/bin/sf-tools.cjs recommend --source audit --critical 0 --minor N`. The STATE.md Next Step remains `/sf:run` (without the `--apply=minor` suffix) — the suffix is advisory here only.
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

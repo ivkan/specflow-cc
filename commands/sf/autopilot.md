@@ -50,7 +50,22 @@ Parse the command argument to determine execution mode:
 
 **CRITICAL — N>1 guard (autopilot must be unambiguous):**
 
-Call `node bin/sf-tools.cjs state resolve $SPEC_ID_ARG` (pass SPEC-ID arg if provided; omit if not).
+Parse `$ARGUMENTS`:
+- Let `FIRST_TOKEN` = first whitespace-separated token of `$ARGUMENTS`.
+- If `FIRST_TOKEN` matches `^SPEC-\d{3,}$`:
+  - Set `SPEC_ARG="$FIRST_TOKEN"`
+  - Set `AUTOPILOT_SCOPE` = remainder of `$ARGUMENTS` after `FIRST_TOKEN` (trimmed)
+- Else:
+  - Set `SPEC_ARG=""` (resolver uses Active Specifications table)
+  - Set `AUTOPILOT_SCOPE="$ARGUMENTS"`
+
+Call:
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state resolve $SPEC_ARG
+```
+
+Use `AUTOPILOT_SCOPE` in the subsequent mode-determination step (e.g. `--all` flag).
 
 Parse the JSON response:
 - `{"action":"use","id":"SPEC-XXX"}` → proceed with SPEC-XXX
@@ -274,7 +289,7 @@ mv .specflow/specs/SPEC-XXX.md .specflow/archive/
 5. **Update STATE.md:**
    Remove SPEC-XXX from Active Specifications table:
    ```bash
-   node bin/sf-tools.cjs state remove-active SPEC-XXX
+   node ~/.claude/specflow-cc/bin/sf-tools.cjs state remove-active SPEC-XXX
    ```
    Remove SPEC-XXX row from Queue table (using Read+Write).
 

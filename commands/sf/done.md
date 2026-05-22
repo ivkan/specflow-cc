@@ -39,7 +39,22 @@ Exit.
 
 ## Step 2: Resolve Active Specification
 
-Call `node bin/sf-tools.cjs state resolve $ARGUMENTS` (pass the optional SPEC-XXX arg if provided).
+Parse `$ARGUMENTS`:
+- Let `FIRST_TOKEN` = first whitespace-separated token of `$ARGUMENTS`.
+- If `FIRST_TOKEN` matches `^SPEC-\d{3,}$`:
+  - Set `SPEC_ARG="$FIRST_TOKEN"`
+  - Set `DONE_SCOPE` = remainder of `$ARGUMENTS` after `FIRST_TOKEN` (trimmed)
+- Else:
+  - Set `SPEC_ARG=""` (resolver uses Active Specifications table)
+  - Set `DONE_SCOPE="$ARGUMENTS"`
+
+Call:
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state resolve $SPEC_ARG
+```
+
+Use `DONE_SCOPE` in the subsequent argument-parsing step (Step 2.5).
 
 Parse the JSON response:
 - `{"action":"use","id":"SPEC-XXX"}` → proceed with SPEC-XXX
@@ -61,7 +76,7 @@ Parse the JSON response:
 
 ## Step 2.5: Handle `--apply=minor` Flag
 
-**Check if `--apply=minor` was passed in the invocation arguments.**
+**Check if `DONE_SCOPE` contains `--apply=minor`.**
 
 **If `--apply=minor` is NOT present:** Continue to Step 3 (existing behavior unchanged).
 
@@ -85,7 +100,7 @@ Extract Critical, Major, and Minor counts from that entry.
 
 Run:
 ```bash
-node bin/sf-tools.cjs recommend --source review --critical N --major M --minor K
+node ~/.claude/specflow-cc/bin/sf-tools.cjs recommend --source review --critical N --major M --minor K
 ```
 
 Parse the JSON response.
@@ -414,7 +429,7 @@ If the command fails (parser cannot extract required fields), log a warning to t
 ### Remove from Active Specifications Table
 
 ```bash
-node bin/sf-tools.cjs state remove-active SPEC-XXX
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state remove-active SPEC-XXX
 ```
 
 ### Remove from Queue
