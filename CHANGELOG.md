@@ -5,6 +5,14 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.22.2] - 2026-05-22
+
+### Fixed
+
+- **Installed `/sf:*` commands broken on user projects** — every `/sf:*` command shipped in `commands/sf/*.md` is now safe to run from a project directory with no local `bin/`. Two bugs fixed:
+  1. **Bare `bin/sf-tools.cjs` paths in 15 command files** (`audit.md`, `autopilot.md`, `discuss.md`, `done.md`, `fix.md`, `health.md`, `help.md`, `pause.md`, `review.md`, `revise.md`, `run.md`, `show.md`, `split.md`, `status.md`, `verify.md`) were rewritten to `~/.claude/specflow-cc/bin/sf-tools.cjs`. The installer rewrites this literal prefix to the actual install location, so every invocation now resolves correctly. Previously these lines errored with `Cannot find module '/path/to/project/bin/sf-tools.cjs'`.
+  2. **Unsafe `state resolve $ARGUMENTS` in 8 commands** (`audit.md`, `autopilot.md`, `done.md`, `fix.md`, `pause.md`, `review.md`, `run.md`, `verify.md`) was replaced with a SPEC-ID parsing guard: `$ARGUMENTS` is split into `FIRST_TOKEN` (matched against `^SPEC-\d{3,}$`) and a per-command scope variable (`FIX_SCOPE`, `DONE_SCOPE`, `AUDIT_SCOPE`, …). Previously `/sf:fix all`, `/sf:done --apply=minor`, etc. produced spurious `SPEC_NOT_ACTIVE` errors because the scope/mode flag was passed to the resolver as if it were a SPEC-ID.
+
 ## [1.22.1] - 2026-05-20
 
 ### Fixed
