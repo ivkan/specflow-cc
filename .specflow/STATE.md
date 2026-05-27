@@ -3,7 +3,6 @@
 
 | SPEC-ID | Status | Next Step |
 |---------|--------|-----------|
-| SPEC-015 | review | /sf:review |
 
 ## Queue
 
@@ -11,7 +10,6 @@
 |----------|-----|-------|--------|------------|------------|
 | p1 | SPEC-006 | Adopt Superpowers Patterns: Debugging, Evidence, Anti-Patterns, Two-Stage Review, TDD | draft | large | -- |
 | p2 | SPEC-009 | Delta Specs for Brownfield Tasks — ADDED/MODIFIED/REMOVED Change Sections | draft | medium | -- |
-| p3 | SPEC-015 | Validate TODO Frontmatter in cmdTodoReindex — Fail/Mark Instead of Silent Defaults | draft | small | -- |
 
 **Master Spec:** SPEC-GSD-IMPROVEMENTS (umbrella for GSD adoption) - COMPLETE
 
@@ -42,6 +40,8 @@
 | 2026-05-27 | SPEC-015: DRAFTED from TODO-028 — `cmdTodoReindex` validates required frontmatter fields (`id`, `title`, `created`), renders MALFORMED rows + stderr warnings + non-zero exit instead of silent defaults |
 | 2026-05-27 | SPEC-015: Audit v1 APPROVED — 0 critical + 4 recommendations (stale "27 TODO files" count from TODO-028, conditional Total: format test coverage, ambiguity in malformed-row counting toward N items, invocation-path note for non-zero exit propagation); recommendation: run --apply=minor |
 | 2026-05-27 | SPEC-015: EXECUTED — 2 commits, 0 files created, 2 files modified (bin/lib/todo.cjs validation + tests/todo-index.test.cjs 6 new cases); 15 tests pass; ready for /sf:review |
+| 2026-05-27 | SPEC-015: Review v1 APPROVED — 0 critical/major/minor issues; all AC#1-#4 verified; 15 tests pass; implementation is clean and precise |
+| 2026-05-27 | SPEC-015: COMPLETED — `cmdTodoReindex` validates required frontmatter fields with MALFORMED rows + stderr warnings + non-zero exit; defense-in-depth at the indexing chokepoint, no template pinning or PreToolUse hook needed |
 
 ## Notes
 
@@ -70,6 +70,7 @@
 - SPEC-012: L1 Archive Summary Layer — Compact Summaries Over Completed Specs
 - SPEC-013: Audit/Review Recommendation Field + --apply=minor Quick-Fix Path
 - SPEC-014: Fix Installed-Command Failures — Bare bin/sf-tools.cjs Paths and Unsafe state resolve $ARGUMENTS
+- SPEC-015: Validate TODO Frontmatter in cmdTodoReindex — Fail/Mark Instead of Silent Defaults
 
 ### Architecture Alignment with GSD
 | Aspect | SF Status |
@@ -91,4 +92,4 @@
 | Multi-Active STATE.md | Implemented (SPEC-011) - DONE |
 
 ---
-*Last updated: 2026-05-27 (SPEC-015 EXECUTED — 15 tests pass, ready for /sf:review)*
+*Last updated: 2026-05-27 (SPEC-015 COMPLETED — archived, TODO-028 cleaned up, INDEX reindexed to 23 TODOs)*
