@@ -5,6 +5,17 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.23.0] - 2026-05-27
+
+### Added
+
+- **Strict TODO frontmatter validation in `cmdTodoReindex` (SPEC-015)** — the indexing chokepoint at [`bin/lib/todo.cjs`](bin/lib/todo.cjs) now enforces a `REQUIRED_TODO_FIELDS = ['id', 'title', 'created']` invariant per TODO file. Files missing any required field (or lacking a frontmatter block entirely) are no longer silently defaulted into the index — they are surfaced as `MALFORMED: <reason>` sentinel rows in `INDEX.md`, sorted after well-formed entries by `fileId` ascending. Each malformed file emits a per-file warning to stderr, the `**Total:**` summary line gains a `… X malformed` component, and `node bin/sf-tools.cjs todo reindex` exits non-zero (`process.exitCode = 1` after `output()` flushes) so callers can gate on it. Well-formed runs remain byte-identical to the legacy format. Validation lives at the call site, not in shared `parseFrontmatter()` — `cmdTodoLoad` / `cmdTodoList` keep their tolerance. 6 new tests in `tests/todo-index.test.cjs` cover the four malformed shapes, malformed-YAML, and a regression guard for legacy parity.
+- **`todo check-stale` exit gate (TODO-029)** — `cmdTodoCheckStale` in [`bin/lib/todo.cjs`](bin/lib/todo.cjs) now sets `process.exitCode = 1` when `INDEX.md` drifts from disk (ghost rows or missing entries). Previously it only reported drift via JSON/text output and always exited 0, so callers could not gate on it.
+
+### Fixed
+
+- **Ghost-row drift after `/sf:done` and `/sf:plan` finalize (TODO-029)** — the LLM-orchestrated `rm .specflow/todos/{source}.md` + `node bin/sf-tools.cjs todo reindex` sequence in [`commands/sf/done.md`](commands/sf/done.md) Step 7.5 and [`commands/sf/plan.md`](commands/sf/plan.md) Step 7 (plus its inline fallback) had no enforced atomicity — any inversion, interruption, or skipped step left `INDEX.md` with a row pointing at a deleted file, and the only enforcement was `/sf:status` running `check-stale` reactively, days later. Both command files now invoke `node ~/.claude/specflow-cc/bin/sf-tools.cjs todo check-stale` immediately after the `rm` + `reindex` block and treat non-zero exit as a finalization failure (re-run reindex once; if still stale, halt and surface `extra_in_index` / `missing_from_index` to the user). Surfaced in a downstream project (`~/Projects/topgun`) where SPEC-275 finalization left TODO-406 as a ghost in `INDEX.md`, then `/sf:plan TODO-406` operated on it.
+
 ## [1.22.2] - 2026-05-22
 
 ### Fixed
