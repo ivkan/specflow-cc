@@ -16,6 +16,13 @@ const path = require('path');
 const { output, error, safeReadFile, parseFrontmatter } = require('./core.cjs');
 
 /**
+ * Required YAML frontmatter fields for each TODO file.
+ * When any of these is absent or blank, the reindex records the file as MALFORMED
+ * rather than silently defaulting to empty values (which would hide drift).
+ */
+const REQUIRED_TODO_FIELDS = ['id', 'title', 'created'];
+
+/**
  * Priority sort order (lower number = higher priority in sort).
  */
 const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 };
@@ -284,23 +291,55 @@ function cmdTodoReindex(cwd, raw) {
     const parsed = parseFrontmatter(content);
     const fm = parsed.frontmatter;
 
+    // Determine which required fields are absent or blank.
+    const missing = REQUIRED_TODO_FIELDS.filter(k => !fm[k] || String(fm[k]).trim() === '');
+
+    if (missing.length > 0) {
+      // Distinguish "no frontmatter block at all" (fm has no keys) from "some
+      // fields present but specific ones missing".
+      const hasAnyKey = Object.keys(fm).length > 0;
+      const reason = hasAnyKey
+        ? 'missing fields: ' + missing.join(', ')
+        : 'no frontmatter block';
+
+      process.stderr.write('warn: ' + file + ' — ' + reason + '\n');
+
+      todos.push({
+        malformed: true,
+        fileId: file.replace('.md', ''),
+        reason,
+      });
+      continue;
+    }
+
     // Strip surrounding quotes from title (YAML may preserve them)
-    let title = fm.title || '';
+    let title = String(fm.title);
     if ((title.startsWith('"') && title.endsWith('"')) || (title.startsWith("'") && title.endsWith("'"))) {
       title = title.slice(1, -1);
     }
 
     todos.push({
-      id: fm.id || file.replace('.md', ''),
+      id: fm.id,
       title,
       priority: fm.priority || '—',
       status: fm.status || 'open',
-      created: fm.created || '',
+      created: fm.created,
     });
   }
 
-  // Sort by priority (high > medium > low > unset), then by created date
+  // Sort: well-formed records by priority then created date; malformed records
+  // always come after all well-formed ones, ordered by fileId ascending.
   todos.sort((a, b) => {
+    const am = a.malformed ? 1 : 0;
+    const bm = b.malformed ? 1 : 0;
+    if (am !== bm) return am - bm; // well-formed before malformed
+    if (a.malformed && b.malformed) {
+      // Both malformed: sort by fileId ascending
+      if (a.fileId < b.fileId) return -1;
+      if (a.fileId > b.fileId) return 1;
+      return 0;
+    }
+    // Both well-formed: priority then date
     const pa = priorityKey(a.priority);
     const pb = priorityKey(b.priority);
     if (pa !== pb) return pa - pb;
@@ -309,13 +348,21 @@ function cmdTodoReindex(cwd, raw) {
     return 0;
   });
 
-  // Count by priority
+  // Count by priority — malformed records are excluded from priority breakdown.
   const counts = { high: 0, medium: 0, low: 0, unset: 0 };
+  let malformedCount = 0;
   for (const t of todos) {
-    if (t.priority === 'high') counts.high++;
-    else if (t.priority === 'medium') counts.medium++;
-    else if (t.priority === 'low') counts.low++;
-    else counts.unset++;
+    if (t.malformed) {
+      malformedCount++;
+    } else if (t.priority === 'high') {
+      counts.high++;
+    } else if (t.priority === 'medium') {
+      counts.medium++;
+    } else if (t.priority === 'low') {
+      counts.low++;
+    } else {
+      counts.unset++;
+    }
   }
 
   // Build INDEX.md
@@ -333,13 +380,28 @@ function cmdTodoReindex(cwd, raw) {
 
   for (let i = 0; i < todos.length; i++) {
     const t = todos[i];
-    let title = t.title;
-    if (title.length > 50) title = title.slice(0, 50) + '...';
-    lines.push(`| ${i + 1} | ${t.id} | ${title} | ${t.priority} | ${t.status} | ${t.created} |`);
+    if (t.malformed) {
+      // Render the MALFORMED sentinel row; truncate the reason if very long.
+      let marker = 'MALFORMED: ' + t.reason;
+      if (marker.length > 50) marker = marker.slice(0, 50) + '...';
+      lines.push(`| ${i + 1} | ${t.fileId} | ${marker} | — | — | — |`);
+    } else {
+      let title = t.title;
+      if (title.length > 50) title = title.slice(0, 50) + '...';
+      lines.push(`| ${i + 1} | ${t.id} | ${title} | ${t.priority} | ${t.status} | ${t.created} |`);
+    }
   }
 
   lines.push('');
-  lines.push(`**Total:** ${todos.length} items (${counts.high} high, ${counts.medium} medium, ${counts.low} low, ${counts.unset} unset)`);
+  // Malformed records count toward N items total; they are excluded only from
+  // the priority breakdown (H/M/L/unset). When all TODOs are well-formed the
+  // summary line is byte-identical to the legacy format so downstream parsers
+  // of well-formed runs stay compatible.
+  if (malformedCount > 0) {
+    lines.push(`**Total:** ${todos.length} items (${counts.high} high, ${counts.medium} medium, ${counts.low} low, ${counts.unset} unset, ${malformedCount} malformed)`);
+  } else {
+    lines.push(`**Total:** ${todos.length} items (${counts.high} high, ${counts.medium} medium, ${counts.low} low, ${counts.unset} unset)`);
+  }
   lines.push('');
   lines.push('---');
   const now = new Date();
@@ -350,7 +412,15 @@ function cmdTodoReindex(cwd, raw) {
   const indexPath = path.join(todosDir, 'INDEX.md');
   fs.writeFileSync(indexPath, lines.join('\n'), 'utf8');
 
-  output({ reindexed: todos.length, path: indexPath }, raw, `Reindexed ${todos.length} TODOs → INDEX.md`);
+  // Signal callers that drift was found — set exit code non-zero AFTER writing
+  // INDEX.md (so the file is on disk) and BEFORE the output() call (so JSON
+  // still flushes). Do NOT call process.exit() here; Node will use exitCode
+  // when the event loop drains.
+  if (malformedCount > 0) {
+    process.exitCode = 1;
+  }
+
+  output({ reindexed: todos.length, malformed: malformedCount, path: indexPath }, raw, `Reindexed ${todos.length} TODOs → INDEX.md`);
 }
 
 /**
