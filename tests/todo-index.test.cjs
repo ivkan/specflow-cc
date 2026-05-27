@@ -45,6 +45,18 @@ function captureStdout(fn) {
   return captured;
 }
 
+function captureStderr(fn) {
+  const origWrite = process.stderr.write;
+  let captured = '';
+  process.stderr.write = (s) => { captured += s; };
+  try {
+    fn();
+  } finally {
+    process.stderr.write = origWrite;
+  }
+  return captured;
+}
+
 function makeTodo(id, priority, status, created) {
   return [
     '---',
@@ -274,6 +286,188 @@ test('raw output is FRESH/STALE marker', () => {
     out = captureStdout(() => cmdTodoCheckStale(tmpDir, true));
     assert.equal(out.trim(), 'STALE');
   } finally {
+    cleanup(tmpDir);
+  }
+});
+
+// ---------- cmdTodoReindex — frontmatter validation ----------
+
+console.log('cmdTodoReindex (validation):');
+
+test('no frontmatter block — row MALFORMED, stderr warning, exit code 1', () => {
+  process.exitCode = 0;
+  const proseBody = [
+    '## TODO-099',
+    '',
+    '**Status:** open',
+    '**Priority:** high',
+    '',
+    'Some prose body without a YAML frontmatter block.',
+  ].join('\n');
+
+  const { tmpDir, todosDir } = fixture({ 'TODO-099': proseBody });
+  let stderrOutput = '';
+  try {
+    captureStdout(() => {
+      stderrOutput = captureStderr(() => cmdTodoReindex(tmpDir, false));
+    });
+    const indexContent = fs.readFileSync(path.join(todosDir, 'INDEX.md'), 'utf8');
+
+    assert.ok(indexContent.includes('MALFORMED:'), 'INDEX row must contain MALFORMED:');
+    assert.ok(indexContent.includes('no frontmatter block'), 'INDEX row must mention no frontmatter block');
+    assert.ok(stderrOutput.includes('TODO-099.md'), 'stderr must mention the filename');
+    assert.ok(stderrOutput.includes('no frontmatter block'), 'stderr must mention the reason');
+    assert.equal(process.exitCode, 1, 'exit code must be 1');
+  } finally {
+    process.exitCode = 0;
+    cleanup(tmpDir);
+  }
+});
+
+test('missing id field — row MALFORMED, reason mentions id', () => {
+  process.exitCode = 0;
+  const content = [
+    '---',
+    'title: "No ID Todo"',
+    'priority: medium',
+    'status: open',
+    'created: 2026-05-27',
+    '---',
+    '',
+    'Body text.',
+  ].join('\n');
+
+  const { tmpDir, todosDir } = fixture({ 'TODO-100': content });
+  let stderrOutput = '';
+  try {
+    captureStdout(() => {
+      stderrOutput = captureStderr(() => cmdTodoReindex(tmpDir, false));
+    });
+    const indexContent = fs.readFileSync(path.join(todosDir, 'INDEX.md'), 'utf8');
+
+    assert.ok(indexContent.includes('MALFORMED:'), 'INDEX row must contain MALFORMED:');
+    assert.ok(stderrOutput.includes('id'), 'stderr reason must mention id');
+    assert.equal(process.exitCode, 1, 'exit code must be 1');
+  } finally {
+    process.exitCode = 0;
+    cleanup(tmpDir);
+  }
+});
+
+test('missing title field — row MALFORMED, reason mentions title', () => {
+  process.exitCode = 0;
+  const content = [
+    '---',
+    'id: TODO-101',
+    'priority: low',
+    'status: open',
+    'created: 2026-05-27',
+    '---',
+    '',
+    'Body text.',
+  ].join('\n');
+
+  const { tmpDir, todosDir } = fixture({ 'TODO-101': content });
+  let stderrOutput = '';
+  try {
+    captureStdout(() => {
+      stderrOutput = captureStderr(() => cmdTodoReindex(tmpDir, false));
+    });
+    const indexContent = fs.readFileSync(path.join(todosDir, 'INDEX.md'), 'utf8');
+
+    assert.ok(indexContent.includes('MALFORMED:'), 'INDEX row must contain MALFORMED:');
+    assert.ok(stderrOutput.includes('title'), 'stderr reason must mention title');
+    assert.equal(process.exitCode, 1, 'exit code must be 1');
+  } finally {
+    process.exitCode = 0;
+    cleanup(tmpDir);
+  }
+});
+
+test('missing created field — row MALFORMED, reason mentions created', () => {
+  process.exitCode = 0;
+  const content = [
+    '---',
+    'id: TODO-102',
+    'title: "No Created Todo"',
+    'priority: high',
+    'status: open',
+    '---',
+    '',
+    'Body text.',
+  ].join('\n');
+
+  const { tmpDir, todosDir } = fixture({ 'TODO-102': content });
+  let stderrOutput = '';
+  try {
+    captureStdout(() => {
+      stderrOutput = captureStderr(() => cmdTodoReindex(tmpDir, false));
+    });
+    const indexContent = fs.readFileSync(path.join(todosDir, 'INDEX.md'), 'utf8');
+
+    assert.ok(indexContent.includes('MALFORMED:'), 'INDEX row must contain MALFORMED:');
+    assert.ok(stderrOutput.includes('created'), 'stderr reason must mention created');
+    assert.equal(process.exitCode, 1, 'exit code must be 1');
+  } finally {
+    process.exitCode = 0;
+    cleanup(tmpDir);
+  }
+});
+
+test('malformed YAML in frontmatter block — treated as malformed, warning + exit code 1', () => {
+  process.exitCode = 0;
+  // A "---" block whose content has no valid key:value lines breaks parsing;
+  // parseFrontmatter() returns {}, so all required fields are missing.
+  const content = [
+    '---',
+    'this line has no colon so the parser sees no fields',
+    'another bad line',
+    '---',
+    '',
+    'Body text.',
+  ].join('\n');
+
+  const { tmpDir, todosDir } = fixture({ 'TODO-103': content });
+  let stderrOutput = '';
+  try {
+    captureStdout(() => {
+      stderrOutput = captureStderr(() => cmdTodoReindex(tmpDir, false));
+    });
+    const indexContent = fs.readFileSync(path.join(todosDir, 'INDEX.md'), 'utf8');
+
+    assert.ok(indexContent.includes('MALFORMED:'), 'INDEX row must contain MALFORMED:');
+    assert.ok(stderrOutput.length > 0, 'stderr must receive a warning');
+    assert.equal(process.exitCode, 1, 'exit code must be 1');
+  } finally {
+    process.exitCode = 0;
+    cleanup(tmpDir);
+  }
+});
+
+test('regression guard — well-formed TODOs: no warnings, no MALFORMED rows, legacy Total: format', () => {
+  process.exitCode = 0;
+  const { tmpDir, todosDir } = fixture({
+    'TODO-001': makeTodo('TODO-001', 'high', 'open', '2026-05-14'),
+    'TODO-002': makeTodo('TODO-002', 'medium', 'open', '2026-05-15'),
+    'TODO-003': makeTodo('TODO-003', 'low', 'open', '2026-05-16'),
+  });
+  let stderrOutput = '';
+  try {
+    captureStdout(() => {
+      stderrOutput = captureStderr(() => cmdTodoReindex(tmpDir, false));
+    });
+    const indexContent = fs.readFileSync(path.join(todosDir, 'INDEX.md'), 'utf8');
+
+    assert.equal(stderrOutput, '', 'no stderr warnings for well-formed TODOs');
+    assert.ok(!indexContent.includes('MALFORMED:'), 'no MALFORMED rows for well-formed TODOs');
+    assert.equal(process.exitCode, 0, 'exit code must remain 0 for well-formed runs');
+    // Assert exact legacy Total: format (no trailing ', X malformed' component).
+    assert.ok(
+      indexContent.includes('**Total:** 3 items (1 high, 1 medium, 1 low, 0 unset)'),
+      'Total: line must match exact legacy format with no malformed component'
+    );
+  } finally {
+    process.exitCode = 0;
     cleanup(tmpDir);
   }
 });
