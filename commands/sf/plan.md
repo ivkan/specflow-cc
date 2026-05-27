@@ -179,6 +179,15 @@ node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex
 
 This is mandatory — skipping it leaves INDEX.md listing a TODO that no longer exists on disk, which trips the `/sf:status` freshness check and breaks downstream consumers.
 
+4. **Run the stale-check exit gate.** The `rm` + `reindex` sequence is LLM-orchestrated; this surfaces drift immediately instead of deferring it to the next `/sf:status`.
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo check-stale
+```
+
+   - **Exit 0 (FRESH):** proceed to Step 8.
+   - **Exit 1 (STALE):** re-run `todo reindex` once; if `check-stale` still exits non-zero, halt the conversion and report `extra_in_index` / `missing_from_index` from the JSON output so the user can repair the drift manually.
+
 ## Step 8: Display Result
 
 **IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:
@@ -240,12 +249,15 @@ Use `/sf:new "{todo description}"` logic:
 
 ### Remove Todo
 
-Delete the file `.specflow/todos/TODO-{XXX}.md`, then refresh INDEX.md:
+Delete the file `.specflow/todos/TODO-{XXX}.md`, then refresh INDEX.md and run the stale-check exit gate:
 
 ```bash
 rm .specflow/todos/TODO-{XXX}.md
 node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo check-stale
 ```
+
+Treat non-zero exit from `check-stale` as a failure: re-run `todo reindex`, and if still stale, surface the drift to the user before continuing.
 
 </fallback>
 

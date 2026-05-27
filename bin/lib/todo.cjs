@@ -478,6 +478,13 @@ function cmdTodoCheckStale(cwd, raw) {
     extraInIndex.length > 0 ||
     (!indexExists && diskIds.size > 0);
 
+  // Exit non-zero when stale so callers can use this as a gate after
+  // delete-and-reindex sequences (per SPEC TODO-029). Set exitCode before
+  // output() so JSON still flushes; do not call process.exit() directly.
+  if (stale) {
+    process.exitCode = 1;
+  }
+
   output(
     {
       stale,

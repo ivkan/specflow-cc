@@ -400,6 +400,15 @@ rm .specflow/todos/{source}.md
 node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex
 ```
 
+   Then run the stale-check exit gate. The `rm` + `reindex` sequence is LLM-orchestrated and has no machine-enforced atomicity — any inversion, interruption, or skipped step leaves INDEX.md with a ghost row. Treat non-zero exit as a **finalization failure**: re-run `todo reindex`, and if still stale, surface the drift to the user before continuing.
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo check-stale
+```
+
+   - **Exit 0 (FRESH):** proceed to Step 8.
+   - **Exit 1 (STALE):** re-run `todo reindex` once; if `check-stale` still exits non-zero, halt finalization and report `extra_in_index` / `missing_from_index` from the JSON output so the user can repair the drift manually.
+
 3. **If NOT_FOUND (backward compatibility):** Also check legacy format — look in `.specflow/todos/TODO.md` for the referenced ID. If found there, remove the block using the Edit tool.
 
 No "Last updated" lines to update in per-file format.
