@@ -3,6 +3,7 @@
 
 | SPEC-ID | Status | Next Step |
 |---------|--------|-----------|
+| SPEC-015 | review | /sf:review |
 
 ## Queue
 
@@ -10,6 +11,7 @@
 |----------|-----|-------|--------|------------|------------|
 | p1 | SPEC-006 | Adopt Superpowers Patterns: Debugging, Evidence, Anti-Patterns, Two-Stage Review, TDD | draft | large | -- |
 | p2 | SPEC-009 | Delta Specs for Brownfield Tasks — ADDED/MODIFIED/REMOVED Change Sections | draft | medium | -- |
+| p3 | SPEC-015 | Validate TODO Frontmatter in cmdTodoReindex — Fail/Mark Instead of Silent Defaults | draft | small | -- |
 
 **Master Spec:** SPEC-GSD-IMPROVEMENTS (umbrella for GSD adoption) - COMPLETE
 
@@ -37,6 +39,9 @@
 | 2026-05-22 | SPEC-014: EXECUTED — 4 commits, 0 files created, 15 files modified (bare-path fix in all 15 + SPEC-ID guard in 8 dual-fix files); all AC#1-#7 pass; ready for /sf:review |
 | 2026-05-22 | SPEC-014: Review v1 APPROVED — all AC#1-#7 verified; zero critical/major issues; implementation is mechanically precise |
 | 2026-05-22 | SPEC-014: COMPLETED — bare `bin/sf-tools.cjs` paths prefixed in 15 files; SPEC-ID parsing guard added in 8 dual-fix files; new idiom for command files accepting scope/mode flags |
+| 2026-05-27 | SPEC-015: DRAFTED from TODO-028 — `cmdTodoReindex` validates required frontmatter fields (`id`, `title`, `created`), renders MALFORMED rows + stderr warnings + non-zero exit instead of silent defaults |
+| 2026-05-27 | SPEC-015: Audit v1 APPROVED — 0 critical + 4 recommendations (stale "27 TODO files" count from TODO-028, conditional Total: format test coverage, ambiguity in malformed-row counting toward N items, invocation-path note for non-zero exit propagation); recommendation: run --apply=minor |
+| 2026-05-27 | SPEC-015: EXECUTED — 2 commits, 0 files created, 2 files modified (bin/lib/todo.cjs validation + tests/todo-index.test.cjs 6 new cases); 15 tests pass; ready for /sf:review |
 
 ## Notes
 
@@ -86,4 +91,4 @@
 | Multi-Active STATE.md | Implemented (SPEC-011) - DONE |
 
 ---
-*Last updated: 2026-05-22 (SPEC-014 COMPLETED — archived; queue advances to SPEC-006)*
+*Last updated: 2026-05-27 (SPEC-015 EXECUTED — 15 tests pass, ready for /sf:review)*
