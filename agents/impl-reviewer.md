@@ -289,8 +289,9 @@ Using the Critical, Major, and Minor counts determined in Step 5:
 
 1. Shell out to obtain the recommendation:
    ```
-   node bin/sf-tools.cjs recommend --source review --critical <N> --major <M> --minor <K>
+   node ~/.claude/specflow-cc/bin/sf-tools.cjs recommend --source review --critical <N> --major <M> --minor <K>
    ```
+   If the shell-out fails for any reason, derive the recommendation deterministically from the documented (critical/major/minor)→action mapping rather than omitting the line.
 
 2. Parse the JSON response: `{ "action": "...", "reason": "..." }`
 

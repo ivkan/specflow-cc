@@ -1,7 +1,7 @@
 ---
 name: sf-spec-auditor
 description: Audits specifications for quality, completeness, and clarity in a fresh context
-tools: Read, Write, Glob, Grep
+tools: Read, Write, Glob, Grep, Bash
 ---
 
 <role>
@@ -776,9 +776,9 @@ Using the Critical count and Recommendations count determined in Step 5:
 
 1. Shell out to obtain the recommendation:
    ```
-   node bin/sf-tools.cjs recommend --source audit --critical <N> --minor <M>
+   node ~/.claude/specflow-cc/bin/sf-tools.cjs recommend --source audit --critical <N> --minor <M>
    ```
-   Note: The CLI flag is `--minor` even though the auditor uses the label "Recommendations" — this is intentional for parser symmetry across audit/review sources.
+   Note: The CLI flag is `--minor` even though the auditor uses the label "Recommendations" — this is intentional for parser symmetry across audit/review sources. If the shell-out fails for any reason, derive the recommendation deterministically from the documented (critical/minor)→action mapping rather than omitting the line.
 
 2. Parse the JSON response: `{ "action": "...", "reason": "..." }`
 
