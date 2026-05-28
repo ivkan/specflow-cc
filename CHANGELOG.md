@@ -5,6 +5,12 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.23.1] - 2026-05-28
+
+### Fixed
+
+- **spec-auditor could not emit its Recommendation line** (agent lacked the Bash tool, and both audit/review agents referenced a non-existent relative `bin/sf-tools.cjs` path). Granted Bash to spec-auditor and corrected both paths to the canonical `~/.claude/specflow-cc/bin/sf-tools.cjs`. Also prefixed the same latent bare-path bug in [`agents/spec-reviser.md`](agents/spec-reviser.md) (`todo next-id` / `todo reindex`) so no bare relative `bin/sf-tools.cjs` remains in any agent. Both audit/review Step 7.5 blocks now fall back to the deterministic action mapping if the shell-out fails.
+
 ## [1.23.0] - 2026-05-27
 
 ### Added
