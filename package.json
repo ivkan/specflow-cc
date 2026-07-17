@@ -5,6 +5,10 @@
   "bin": {
     "specflow-cc": "bin/install.js"
   },
+  "scripts": {
+    "test": "for f in tests/*.test.cjs; do node \"$f\" || exit 1; done",
+    "prepublishOnly": "npm test"
+  },
   "files": [
     "bin",
     "commands",
