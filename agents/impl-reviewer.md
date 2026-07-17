@@ -314,12 +314,23 @@ Using the Critical, Major, and Minor counts determined in Step 5:
 - If APPROVED: Status → "done", Next Step → "/sf:done"
 - If CHANGES_REQUESTED: Status → "review", Next Step → "/sf:fix"
 
-Update STATE.md by reading the current file content, then writing the updated file with:
-- "**Status:**" line changed to the new status
-- "**Next Step:**" line changed to the new next step
-- No other content modified
+```bash
+# APPROVED
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state set-status <SPEC-ID> done --next "/sf:done"
+# CHANGES_REQUESTED
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state set-status <SPEC-ID> review --next "/sf:fix"
+```
 
-Use the Read tool to read `.specflow/STATE.md`, then use the Write tool to write the updated content.
+Record the verdict itself as a decision — one line, pointing at the review history rather than repeating it:
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state add-decision <SPEC-ID> \
+  --summary "Review v<N> <VERDICT> — <one-line reason>; details in the spec's Review History"
+```
+
+**NEVER write `.specflow/STATE.md` with the Write tool.** The file may exceed your Read cap; a full-file Write after a truncated Read destroys it. All STATE.md changes go through `sf-tools state ...`. If sf-tools cannot express the change, use a single anchored `Edit` with an exact-match unique `old_string` — never a full rewrite.
+
+`--summary` is capped at 500 chars and will be REJECTED above it: STATE.md cells are pointers, not narratives. Put the full review in the spec's Review History and link to it.
 Do NOT use Bash (awk, sed, or echo) to modify `.specflow/STATE.md`.
 
 </process>

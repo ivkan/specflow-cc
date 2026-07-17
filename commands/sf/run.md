@@ -148,7 +148,7 @@ If `spec validate` exits non-zero:
 
 On validation passing: skip Steps 4–7 (audit status check, mode determination, pre-execution summary, model profile, status update) and proceed directly to Step 8 (Spawn Executor Agent) with mode="orchestrated" (or "single" based on the spec's Implementation Tasks section — same logic as Step 4.5).
 
-All STATE.md mutations use Read+Write per SPEC-004 (not Bash/awk/sed).
+All STATE.md mutations go through `sf-tools state ...` / `sf-tools queue ...` — never a Read+Write of the whole file, and never Bash/awk/sed. (This supersedes the SPEC-004 Read+Write rule: STATE.md can outgrow the Read cap, and a full-file write after a truncated read destroys it.)
 
 ---
 
@@ -283,6 +283,8 @@ Use model for `spec-executor` or `spec-executor-orchestrator` from selected prof
 node ~/.claude/specflow-cc/bin/sf-tools.cjs state add-active SPEC-XXX running "(in progress)"
 ```
 
+**NEVER write `.specflow/STATE.md` with the Write tool** — it may exceed your Read cap, and a full-file Write after a truncated Read destroys it. Use `sf-tools state ...` only; if it cannot express the change, use a single anchored `Edit` with a unique `old_string`, never a full rewrite.
+
 Update spec frontmatter:
 - status → "running"
 
@@ -348,17 +350,13 @@ The agent will:
 
 After updating STATE.md, check if rotation is needed:
 
-1. Use the Read tool to read `.specflow/STATE.md` and count total lines
-2. If total lines <= 100, no action needed
-3. If total lines > 100:
-   a. Read the `## Decisions` section and extract all decision rows (lines matching `| YYYY-`)
-   b. Count decision rows. If <= 7, no rotation needed
-   c. If > 7 decisions:
-      - Identify the 5 most recent decisions (last 5 rows) -- these STAY
-      - Identify older decisions (all rows except last 5) -- these MOVE to archive
-      - Read `.specflow/DECISIONS_ARCHIVE.md` (create with template if missing)
-      - Write updated DECISIONS_ARCHIVE.md: insert old decisions after the table header row
-      - Write updated STATE.md: replace Decisions section content with only the 5 most recent decisions
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state rotate
+```
+
+Idempotent — a no-op when the file is already within limits, so it is safe to run every time. It moves old decision rows to `.specflow/DECISIONS_ARCHIVE.md`, compresses any oversized cell into a pointer, and prints a one-line integrity summary (lines, bytes, decision rows, largest row) worth a glance.
+
+**Do NOT rotate by hand, and do NOT gate rotation on line count.** The previous guidance here read STATE.md, counted lines, and rewrote the file if it exceeded ~100 — which failed on both counts. A field STATE.md reached 205 KB at *91 lines*, because markdown rows grow in WIDTH, not number: the trigger never fired. And by then the file was far past the Read cap, so the rewrite step ran on a truncated read and destroyed the Decisions tail. `state rotate` triggers on BYTES and does the work in Node, which has no Read cap.
 
 ## Step 10: Display Result
 

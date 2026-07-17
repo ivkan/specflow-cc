@@ -155,17 +155,13 @@ The agent will:
 
 After the agent updates STATE.md, check if rotation is needed:
 
-1. Use the Read tool to read `.specflow/STATE.md` and count total lines
-2. If total lines <= 100, no action needed
-3. If total lines > 100:
-   a. Read the `## Decisions` section and extract all decision rows (lines matching `| YYYY-`)
-   b. Count decision rows. If <= 7, no rotation needed
-   c. If > 7 decisions:
-      - Identify the 5 most recent decisions (last 5 rows) -- these STAY
-      - Identify older decisions (all rows except last 5) -- these MOVE to archive
-      - Read `.specflow/DECISIONS_ARCHIVE.md` (create with template if missing)
-      - Write updated DECISIONS_ARCHIVE.md: insert old decisions after the table header row
-      - Write updated STATE.md: replace Decisions section content with only the 5 most recent decisions
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state rotate
+```
+
+Idempotent — a no-op when the file is already within limits, so it is safe to run every time. It moves old decision rows to `.specflow/DECISIONS_ARCHIVE.md`, compresses any oversized cell into a pointer, and prints a one-line integrity summary (lines, bytes, decision rows, largest row) worth a glance.
+
+**Do NOT rotate by hand, and do NOT gate rotation on line count.** The previous guidance here read STATE.md, counted lines, and rewrote the file if it exceeded ~100 — which failed on both counts. A field STATE.md reached 205 KB at *91 lines*, because markdown rows grow in WIDTH, not number: the trigger never fired. And by then the file was far past the Read cap, so the rewrite step ran on a truncated read and destroyed the Decisions tail. `state rotate` triggers on BYTES and does the work in Node, which has no Read cap.
 
 ## Step 8: Display Result
 
@@ -364,6 +360,8 @@ node ~/.claude/specflow-cc/bin/sf-tools.cjs state add-active SPEC-XXX done /sf:d
 # If CHANGES_REQUESTED:
 node ~/.claude/specflow-cc/bin/sf-tools.cjs state add-active SPEC-XXX review /sf:fix
 ```
+
+**NEVER write `.specflow/STATE.md` with the Write tool** — it may exceed your Read cap, and a full-file Write after a truncated Read destroys it. Use `sf-tools state ...` only; if it cannot express the change, use a single anchored `Edit` with a unique `old_string`, never a full rewrite.
 
 </fallback>
 

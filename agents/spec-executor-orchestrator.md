@@ -326,12 +326,12 @@ Write `.specflow/execution/SPEC-XXX-state.json`:
 ```
 
 **Update STATE.md Execution Status table:**
-```markdown
-| SPEC-XXX | orchestrated | Wave 0/{total} (0%) | {timestamp} |
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state set-execution <SPEC-ID> \
+  --mode orchestrated --progress "Wave 0/{total} (0%)"
 ```
 
-Update STATE.md by reading the current file content, then writing the updated file with the Execution Status table row added/updated.
-Use the Read tool to read `.specflow/STATE.md`, then use the Write tool to write the updated content.
+**NEVER write `.specflow/STATE.md` with the Write tool.** The file may exceed your Read cap; a full-file Write after a truncated Read destroys it. All STATE.md changes go through `sf-tools state ...`. If sf-tools cannot express the change, use a single anchored `Edit` with an exact-match unique `old_string` — never a full rewrite.
 Do NOT use Bash (awk, sed, or echo) to modify `.specflow/STATE.md`.
 
 ## Step 3: Execute Waves
@@ -597,12 +597,12 @@ After wave completes (all groups done):
 ```
 
 **Update STATE.md Execution Status table:**
-```markdown
-| SPEC-XXX | orchestrated | Wave 2/{total} (67%) | {timestamp} |
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state set-execution <SPEC-ID> \
+  --mode orchestrated --progress "Wave {n}/{total} ({pct}%)"
 ```
 
-Update STATE.md by reading the current file content, then writing the updated file with the Execution Status table row updated for this wave.
-Use the Read tool to read `.specflow/STATE.md`, then use the Write tool to write the updated content.
+**NEVER write `.specflow/STATE.md` with the Write tool.** The file may exceed your Read cap; a full-file Write after a truncated Read destroys it. All STATE.md changes go through `sf-tools state ...`. If sf-tools cannot express the change, use a single anchored `Edit` with an exact-match unique `old_string` — never a full rewrite.
 Do NOT use Bash (awk, sed, or echo) to modify `.specflow/STATE.md`.
 
 ## Step 4: Aggregate Results
@@ -688,11 +688,16 @@ rm .specflow/execution/SPEC-XXX-state.json
 ```
 
 **Update STATE.md Execution Status table:**
-- Change row to show "Complete" or remove row entirely
-- Or archive: `mv .specflow/execution/SPEC-XXX-state.json .specflow/execution/archive/`
+```bash
+# Mark complete…
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state set-execution <SPEC-ID> --progress Complete
+# …or drop the row entirely
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state clear-execution <SPEC-ID>
+```
 
-Update STATE.md by reading the current file content, then writing the updated file with the Execution Status table row removed or updated to "Complete".
-Use the Read tool to read `.specflow/STATE.md`, then use the Write tool to write the updated content.
+Optionally archive the state file: `mv .specflow/execution/SPEC-XXX-state.json .specflow/execution/archive/`
+
+**NEVER write `.specflow/STATE.md` with the Write tool.** The file may exceed your Read cap; a full-file Write after a truncated Read destroys it. All STATE.md changes go through `sf-tools state ...`. If sf-tools cannot express the change, use a single anchored `Edit` with an exact-match unique `old_string` — never a full rewrite.
 Do NOT use Bash (awk, sed, or echo) to modify `.specflow/STATE.md`.
 
 **Note:** Only delete on FULL success. If any groups failed or are partial, keep state file for potential retry.
@@ -704,13 +709,13 @@ Update ONLY the Current Position section:
 - Next Step → "/sf:review"
 - Remove or update Execution Status row
 
-Update STATE.md by reading the current file content, then writing the updated file with:
-- "**Status:**" line changed to the new status
-- "**Next Step:**" line changed to the new next step
-- Execution Status row removed or updated
-- No other content modified
+```bash
+SF=~/.claude/specflow-cc/bin/sf-tools.cjs
+node $SF state set-status <SPEC-ID> review --next "/sf:review"
+node $SF state clear-execution <SPEC-ID>
+```
 
-Use the Read tool to read `.specflow/STATE.md`, then use the Write tool to write the updated content.
+**NEVER write `.specflow/STATE.md` with the Write tool.** The file may exceed your Read cap; a full-file Write after a truncated Read destroys it. All STATE.md changes go through `sf-tools state ...`. If sf-tools cannot express the change, use a single anchored `Edit` with an exact-match unique `old_string` — never a full rewrite.
 Do NOT use Bash (awk, sed, or echo) to modify `.specflow/STATE.md`.
 
 **CRITICAL — DO NOT go beyond this:**

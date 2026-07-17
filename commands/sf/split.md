@@ -361,13 +361,15 @@ Add split reference to archived parent.
 
 ### Update STATE.md
 
-- Remove parent from Queue (using Read+Write)
-- Add children to Queue (using Read+Write)
+- Remove parent from Queue: `node ~/.claude/specflow-cc/bin/sf-tools.cjs queue remove SPEC-PARENT`
+- Add children to Queue (one call each): `node ~/.claude/specflow-cc/bin/sf-tools.cjs queue add SPEC-XXXa --title "<short title>" --priority <p> --status draft`
 - Register first child in Active Specifications table:
   ```bash
   node ~/.claude/specflow-cc/bin/sf-tools.cjs state remove-active SPEC-PARENT
   node ~/.claude/specflow-cc/bin/sf-tools.cjs state add-active SPEC-XXXa draft /sf:audit
   ```
+
+**NEVER write `.specflow/STATE.md` with the Write tool** — it may exceed your Read cap, and a full-file Write after a truncated Read destroys it. Use `sf-tools state ...` only; if it cannot express the change, use a single anchored `Edit` with a unique `old_string`, never a full rewrite.
 
 </fallback>
 

@@ -802,12 +802,20 @@ Update status:
 - If NEEDS_DECOMPOSITION: Status → "needs_decomposition", Next Step → "/sf:split or /sf:run --parallel"
 - If NEEDS_REVISION: Status → "revision_requested", Next Step → "/sf:revise"
 
-Update STATE.md by reading the current file content, then writing the updated file with:
-- "**Status:**" line changed to the new status
-- "**Next Step:**" line changed to the new next step
-- No other content modified
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state set-status <SPEC-ID> <status> --next "<next step>"
+```
 
-Use the Read tool to read `.specflow/STATE.md`, then use the Write tool to write the updated content.
+Record the verdict as a decision — a POINTER to the Audit History, not a copy of it:
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state add-decision <SPEC-ID> \
+  --summary "Audit v<N> <VERDICT> — <N> criticals, <N> recommendations; see the spec's Audit History"
+```
+
+**NEVER write `.specflow/STATE.md` with the Write tool.** The file may exceed your Read cap; a full-file Write after a truncated Read destroys it. All STATE.md changes go through `sf-tools state ...`. If sf-tools cannot express the change, use a single anchored `Edit` with an exact-match unique `old_string` — never a full rewrite.
+
+`--summary` is capped at 500 chars and will be REJECTED above it. Never paste an audit narrative into STATE.md — that is precisely what grew a field STATE.md to 205 KB and got its Decisions tail destroyed twice. The narrative belongs in the spec's Audit History; STATE.md holds the verdict and the link.
 Do NOT use Bash (awk, sed, or echo) to modify `.specflow/STATE.md`.
 
 </process>
