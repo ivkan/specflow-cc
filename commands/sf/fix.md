@@ -202,6 +202,8 @@ Append to Review History:
 node ~/.claude/specflow-cc/bin/sf-tools.cjs state add-active SPEC-XXX review /sf:review
 ```
 
+**NEVER write `.specflow/STATE.md` with the Write tool** — it may exceed your Read cap, and a full-file Write after a truncated Read destroys it. Use `sf-tools state ...` only; if it cannot express the change, use a single anchored `Edit` with a unique `old_string`, never a full rewrite.
+
 ## Step 9: Display Result
 
 **IMPORTANT:** Output the following directly as formatted text, NOT wrapped in a markdown code block:

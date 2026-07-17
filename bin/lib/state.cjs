@@ -23,6 +23,11 @@ const { output, error, safeReadFile, atomicWrite } = require('./core.cjs');
 const { withStateLock } = require('./lock.cjs');
 const { resolveActiveSpec, parseActiveSpecsTable } = require('./resolve.cjs');
 const { migrateStateMd } = require('./migrate-state.cjs');
+const {
+  findSection, findTable, splitRow, renderRow, unescapeCell,
+} = require('./state-table.cjs');
+const { loadSizeConfig, checkCell, integrity } = require('./state-size.cjs');
+const { colIndex, formatIntegrity } = require('./state-decisions.cjs');
 
 // ─── Internal helpers ─────────────────────────────────────────────────────────
 
@@ -62,57 +67,61 @@ function extractActiveSpec(content) {
 
 /**
  * Parse the queue table from STATE.md.
- * Expects pipe-delimited markdown table with columns:
- * Priority | ID | Title | Status | Complexity | Depends On
+ *
+ * Columns are resolved BY NAME from the header row on disk, never by position. Three
+ * incompatible queue schemas exist in the wild — `templates/state.md` ships
+ * `| # | ID | Title | Priority | Status |`, this repo's tests use
+ * `| Priority | ID | Title | Status | Complexity | Depends On |`, and a field project had
+ * drifted to `| ID | Title | Priority | Created |`. The previous positional parser
+ * accepted any header containing "id" and "priority", then read cells[0] as priority and
+ * cells[1] as id — so on the field file every field came back shifted by one column, and
+ * `queue next` silently returned a title where the caller expected a SPEC-ID.
+ *
+ * Missing columns yield '' rather than borrowing the neighbouring cell's value.
+ *
  * @param {string} content - STATE.md content
  * @returns {Array<Object>}
  */
 function parseQueueTable(content) {
   const lines = content.split('\n');
+  const sec = findSection(lines, 'Queue');
+  if (!sec) return [];
+
+  const tbl = findTable(lines, sec.start, sec.end);
+  if (!tbl) return [];
+
+  const at = (aliases) => colIndex(tbl.columns, aliases);
+  const idx = {
+    priority: at(['priority', 'prio', 'p']),
+    id: at(['id', 'spec-id', 'spec id', 'spec']),
+    title: at(['title', 'name']),
+    status: at(['status', 'state']),
+    complexity: at(['complexity', 'size']),
+    depends_on: at(['depends on', 'depends_on', 'deps']),
+  };
+
   const queue = [];
-  let inQueue = false;
-  let headerFound = false;
-  let separatorFound = false;
 
-  for (const line of lines) {
-    const trimmed = line.trim();
+  for (const li of tbl.rowIdxs) {
+    const cells = splitRow(lines[li], tbl.columns.length);
+    if (!cells) continue;
 
-    if (trimmed === '## Queue') {
-      inQueue = true;
-      continue;
-    }
+    const get = (k) => (idx[k] === -1 ? '' : unescapeCell(cells[idx[k]] || ''));
+    const row = {
+      priority: get('priority'),
+      id: get('id'),
+      title: get('title'),
+      status: get('status'),
+      complexity: get('complexity'),
+      depends_on: get('depends_on'),
+    };
 
-    if (inQueue && trimmed.startsWith('##') && trimmed !== '## Queue') {
-      break;
-    }
+    // Skip placeholder rows (`| — | — | … |`) and rows with no identity.
+    const meaningful = Object.values(row).some(v => v && v !== '—' && v !== '-');
+    if (!meaningful) continue;
+    if (!row.id || row.id === '—' || row.id === '-') continue;
 
-    if (!inQueue) continue;
-
-    if (trimmed.startsWith('|') && !headerFound) {
-      if (trimmed.toLowerCase().includes('priority') && trimmed.toLowerCase().includes('id')) {
-        headerFound = true;
-        continue;
-      }
-    }
-
-    if (headerFound && !separatorFound && trimmed.startsWith('|') && trimmed.includes('---')) {
-      separatorFound = true;
-      continue;
-    }
-
-    if (headerFound && separatorFound && trimmed.startsWith('|')) {
-      const cells = trimmed.split('|').map(c => c.trim()).filter(c => c !== '');
-      if (cells.length >= 4) {
-        queue.push({
-          priority: cells[0] || '',
-          id: cells[1] || '',
-          title: cells[2] || '',
-          status: cells[3] || '',
-          complexity: cells[4] || '',
-          depends_on: cells[5] || '',
-        });
-      }
-    }
+    queue.push(row);
   }
 
   return queue;
@@ -226,8 +235,42 @@ function cmdStateListActive(cwd, raw) {
 }
 
 /**
+ * Locate one spec's row in the Active Specifications table.
+ * @returns {{lineIdx, cells, columns, table, lines}|null}
+ */
+function locateActiveRow(lines, id) {
+  const sec = findSection(lines, 'Active Specifications');
+  if (!sec) return null;
+
+  const tbl = findTable(lines, sec.start, sec.end);
+  if (!tbl) return null;
+
+  const idIdx = colIndex(tbl.columns, ['spec-id', 'spec id', 'id']);
+  if (idIdx === -1) return { table: tbl, lineIdx: -1, idIdx: -1 };
+
+  for (const li of tbl.rowIdxs) {
+    const cells = splitRow(lines[li], tbl.columns.length);
+    if (!cells) continue;
+    if (unescapeCell(cells[idIdx]) === id) {
+      return { table: tbl, lineIdx: li, cells, idIdx };
+    }
+  }
+
+  return { table: tbl, lineIdx: -1, idIdx };
+}
+
+/**
  * Add or update one spec row in the Active Specifications table.
  * All writes execute under withStateLock.
+ *
+ * The row is edited as a single LINE — the section is never re-rendered. That keeps every
+ * untouched byte (HTML comments, spacing, sibling rows) exactly as it was, and it keeps
+ * the on-disk column layout intact when it has drifted from templates/state.md.
+ *
+ * `next_step` is capped: this command already existed as a CLI call, yet a caller still
+ * managed to write an 80 KB audit narrative into this cell and push STATE.md past every
+ * agent's Read cap. Routing writes through Node was necessary but not sufficient — the
+ * cell itself needs a bound.
  *
  * @param {string} cwd - Working directory
  * @param {string} id - SPEC-ID
@@ -240,6 +283,13 @@ async function cmdStateAddActive(cwd, id, status, nextStep, raw) {
     error('Missing arguments. Usage: state add-active <id> <status> <next_step>');
   }
 
+  const cfg = loadSizeConfig(cwd);
+  checkCell(nextStep || '', 'next_step', cfg, {
+    hint: 'Next Step is a POINTER to the next command (e.g. "/sf:audit"). Keep audit ' +
+          'narratives in the spec\'s Audit History and record verdicts with ' +
+          '`state add-decision`.',
+  });
+
   const statePath = path.join(cwd, '.specflow', 'STATE.md');
 
   const result = await withStateLock(async () => {
@@ -251,25 +301,126 @@ async function cmdStateAddActive(cwd, id, status, nextStep, raw) {
       content = migrateStateMd(content);
     }
 
-    const rows = parseActiveSpecsTable(content);
+    let lines = content.split('\n');
+    const found = locateActiveRow(lines, id);
 
-    // Update existing row or append new row
-    const existingIdx = rows.findIndex(r => r.id === id);
-    const newRow = { id, status, nextStep: nextStep || '' };
-
-    if (existingIdx !== -1) {
-      rows[existingIdx] = newRow;
-    } else {
-      rows.push(newRow);
+    if (!found || found.idIdx === -1) {
+      // No usable table on disk — fall back to rendering the canonical section.
+      const rows = parseActiveSpecsTable(content);
+      const i = rows.findIndex(r => r.id === id);
+      const row = { id, status, nextStep: nextStep || '' };
+      if (i !== -1) rows[i] = row; else rows.push(row);
+      const updated = rewriteActiveSpecsTable(content, rows);
+      atomicWrite(statePath, updated);
+      return { updated: true, id, status, next_step: nextStep || '', integrity: integrity(updated, cfg) };
     }
 
-    const updated = rewriteActiveSpecsTable(content, rows);
+    const cols = found.table.columns;
+    const statusIdx = colIndex(cols, ['status', 'state']);
+    const nextIdx = colIndex(cols, ['next step', 'next_step', 'next']);
+
+    let cells;
+    if (found.lineIdx !== -1) {
+      cells = found.cells.map(unescapeCell);
+    } else {
+      cells = cols.map(() => '');
+      cells[found.idIdx] = id;
+    }
+
+    if (statusIdx !== -1) cells[statusIdx] = status;
+    if (nextIdx !== -1 && nextStep !== undefined && nextStep !== null) cells[nextIdx] = nextStep;
+
+    const line = renderRow(cells);
+
+    if (found.lineIdx !== -1) {
+      lines[found.lineIdx] = line;
+    } else {
+      const t = found.table;
+      // Drop a `| — | — | — |` placeholder instead of appending beside it.
+      const placeholders = t.rowIdxs.filter(li => {
+        const c = splitRow(lines[li], cols.length) || [];
+        return c.every(x => !x || x === '—' || x === '-');
+      });
+      const insertAt = t.rowIdxs.length ? t.rowIdxs[t.rowIdxs.length - 1] + 1 : t.sepIdx + 1;
+      lines = lines.slice(0, insertAt).concat([line], lines.slice(insertAt));
+      const shifted = new Set(placeholders.map(li => (li >= insertAt ? li + 1 : li)));
+      if (shifted.size) lines = lines.filter((_, i) => !shifted.has(i));
+    }
+
+    const updated = lines.join('\n');
     atomicWrite(statePath, updated);
 
-    return { updated: true, id, status, next_step: nextStep || '' };
+    return {
+      updated: true,
+      id,
+      status,
+      next_step: nextStep || '',
+      integrity: integrity(updated, cfg),
+    };
   });
 
-  output(result, raw, 'updated');
+  output(result, raw, formatIntegrity(result));
+}
+
+/**
+ * Update only the Status (and optionally Next Step) cells of one active row.
+ * Narrower than add-active: it refuses to create a row that does not exist, so a typo'd
+ * SPEC-ID surfaces as an error instead of silently registering a phantom active spec.
+ *
+ * @param {string} cwd
+ * @param {string} id - SPEC-ID
+ * @param {string} status - New status
+ * @param {string|undefined} nextStep - New next step, or undefined to leave as-is
+ * @param {boolean} raw
+ */
+async function cmdStateSetStatus(cwd, id, status, nextStep, raw) {
+  if (!id || !status) {
+    error('Missing arguments. Usage: state set-status <SPEC-ID> <status> [--next <step>]');
+  }
+
+  const cfg = loadSizeConfig(cwd);
+  if (nextStep !== undefined && nextStep !== null) {
+    checkCell(nextStep, 'next_step', cfg, {
+      hint: 'Next Step is a POINTER to the next command. Record verdicts with `state add-decision`.',
+    });
+  }
+
+  const statePath = path.join(cwd, '.specflow', 'STATE.md');
+
+  const result = await withStateLock(async () => {
+    const content = safeReadFile(statePath);
+    if (!content) error('STATE.md not found at ' + statePath);
+
+    const lines = content.split('\n');
+    const found = locateActiveRow(lines, id);
+
+    if (!found || found.idIdx === -1 || found.lineIdx === -1) {
+      error(`${id} is not in the Active Specifications table. ` +
+            `Use \`state add-active ${id} <status> <next_step>\` to add it.`);
+    }
+
+    const cols = found.table.columns;
+    const statusIdx = colIndex(cols, ['status', 'state']);
+    const nextIdx = colIndex(cols, ['next step', 'next_step', 'next']);
+    const cells = found.cells.map(unescapeCell);
+
+    if (statusIdx !== -1) cells[statusIdx] = status;
+    if (nextIdx !== -1 && nextStep !== undefined && nextStep !== null) cells[nextIdx] = nextStep;
+
+    lines[found.lineIdx] = renderRow(cells);
+    const updated = lines.join('\n');
+    atomicWrite(statePath, updated);
+
+    return {
+      updated: true,
+      id,
+      status,
+      next_step: nextIdx === -1 ? '' : cells[nextIdx],
+      integrity: integrity(updated, cfg),
+    };
+  });
+
+  output(result, raw, formatIntegrity(result));
 }
 
 /**
@@ -287,6 +438,8 @@ async function cmdStateRemoveActive(cwd, id, raw) {
 
   const statePath = path.join(cwd, '.specflow', 'STATE.md');
 
+  const cfg = loadSizeConfig(cwd);
+
   const result = await withStateLock(async () => {
     let content = safeReadFile(statePath);
     if (!content) error('STATE.md not found at ' + statePath);
@@ -295,16 +448,22 @@ async function cmdStateRemoveActive(cwd, id, raw) {
       content = migrateStateMd(content);
     }
 
-    const rows = parseActiveSpecsTable(content);
-    const filtered = rows.filter(r => r.id !== id);
+    const lines = content.split('\n');
+    const found = locateActiveRow(lines, id);
 
-    const updated = rewriteActiveSpecsTable(content, filtered);
-    atomicWrite(statePath, updated);
+    // Surgical delete: drop exactly one line, leave every other byte alone.
+    if (found && found.idIdx !== -1 && found.lineIdx !== -1) {
+      const kept = lines.filter((_, i) => i !== found.lineIdx);
+      const updated = kept.join('\n');
+      atomicWrite(statePath, updated);
+      return { removed: true, id, was_present: true, integrity: integrity(updated, cfg) };
+    }
 
-    return { removed: true, id, was_present: rows.length !== filtered.length };
+    // Row absent — no write, so the file cannot be disturbed by a no-op.
+    return { removed: true, id, was_present: false, integrity: integrity(content, cfg) };
   });
 
-  output(result, raw, 'removed');
+  output(result, raw, formatIntegrity(result));
 }
 
 /**
@@ -531,9 +690,12 @@ module.exports = {
   cmdStateSetActive,
   cmdStateListActive,
   cmdStateAddActive,
+  cmdStateSetStatus,
   cmdStateRemoveActive,
   cmdStateResolve,
   cmdStateMigrate,
   cmdQueueNext,
   extractActiveSpec,
+  parseQueueTable,
+  locateActiveRow,
 };

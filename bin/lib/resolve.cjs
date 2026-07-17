@@ -26,11 +26,15 @@
 
 const fs = require('fs');
 const path = require('path');
+const { findSection, findTable, splitRow, unescapeCell } = require('./state-table.cjs');
 
 /**
  * Parse the `## Active Specifications` table from STATE.md content.
  * Returns an array of {id, status, nextStep} objects.
  * Returns empty array if section or table is missing.
+ *
+ * Columns are resolved by header name, not position, so a table that has drifted from
+ * templates/state.md still parses correctly instead of silently mis-mapping fields.
  *
  * @param {string} content - STATE.md file content
  * @returns {Array<{id: string, status: string, nextStep: string}>}
@@ -39,55 +43,43 @@ function parseActiveSpecsTable(content) {
   if (!content) return [];
 
   const lines = content.split('\n');
+  const sec = findSection(lines, 'Active Specifications');
+  if (!sec) return [];
+
+  const tbl = findTable(lines, sec.start, sec.end);
+  if (!tbl) return [];
+
+  const lower = tbl.columns.map(c => String(c).toLowerCase().trim());
+  const find = (aliases) => {
+    for (const a of aliases) {
+      const i = lower.indexOf(a);
+      if (i !== -1) return i;
+    }
+    return -1;
+  };
+
+  const idIdx = find(['spec-id', 'spec id', 'id']);
+  const statusIdx = find(['status', 'state']);
+  const nextIdx = find(['next step', 'next_step', 'next']);
+  if (idIdx === -1) return [];
+
   const rows = [];
-  let inSection = false;
-  let headerFound = false;
-  let separatorFound = false;
 
-  for (const line of lines) {
-    const trimmed = line.trim();
+  for (const li of tbl.rowIdxs) {
+    // splitRow() lets the trailing column absorb surplus `|`, so a Next Step holding
+    // raw pipes round-trips instead of shifting Status/Next Step out of alignment.
+    const cells = splitRow(lines[li], tbl.columns.length);
+    if (!cells) continue;
 
-    // Enter section
-    if (trimmed === '## Active Specifications') {
-      inSection = true;
-      continue;
-    }
+    const id = unescapeCell(cells[idIdx] || '');
+    // Skip empty placeholder rows (e.g. "| — | — | — |")
+    if (!id || id === '—' || id === '-' || !/^SPEC-/i.test(id)) continue;
 
-    // Exit section on next ## heading
-    if (inSection && trimmed.startsWith('## ') && trimmed !== '## Active Specifications') {
-      break;
-    }
-
-    if (!inSection) continue;
-
-    // Table header row
-    if (!headerFound && trimmed.startsWith('|')) {
-      const lower = trimmed.toLowerCase();
-      if (lower.includes('spec-id') || lower.includes('spec id')) {
-        headerFound = true;
-        continue;
-      }
-    }
-
-    // Separator row
-    if (headerFound && !separatorFound && trimmed.startsWith('|') && trimmed.includes('---')) {
-      separatorFound = true;
-      continue;
-    }
-
-    // Data rows
-    if (headerFound && separatorFound && trimmed.startsWith('|')) {
-      const cells = trimmed.split('|').map(c => c.trim()).filter(c => c !== '');
-      if (cells.length >= 1) {
-        const id = cells[0] || '';
-        const status = cells[1] || '';
-        const nextStep = cells[2] || '';
-        // Skip empty placeholder rows (e.g. "| — | — | — |")
-        if (id && id !== '—' && id !== '-' && /^SPEC-/i.test(id)) {
-          rows.push({ id, status, nextStep });
-        }
-      }
-    }
+    rows.push({
+      id,
+      status: statusIdx === -1 ? '' : unescapeCell(cells[statusIdx] || ''),
+      nextStep: nextIdx === -1 ? '' : unescapeCell(cells[nextIdx] || ''),
+    });
   }
 
   return rows;

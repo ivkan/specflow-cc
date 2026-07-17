@@ -188,14 +188,26 @@ Update `.specflow/STATE.md`:
 - Set first child (no dependencies) as Active Specification
 - Add note to Decisions: "Split SPEC-XXX into N parts"
 
-Update STATE.md by reading the current file content, then writing the updated file with:
-- Parent spec removed from Queue table
-- All child specs added to Queue table in dependency order
-- First child (no dependencies) set as Active Specification
-- Decisions section updated with split note
-- No other content modified
+```bash
+SF=~/.claude/specflow-cc/bin/sf-tools.cjs
 
-Use the Read tool to read `.specflow/STATE.md`, then use the Write tool to write the updated content.
+# Parent out of the Queue and out of Active Specifications
+node $SF queue remove <PARENT-ID>
+node $SF state remove-active <PARENT-ID>
+
+# Children into the Queue, in dependency order (one call each)
+node $SF queue add <CHILD-ID> --title "<short title>" --priority <priority> --status draft
+
+# First child (no dependencies) becomes active
+node $SF state add-active <FIRST-CHILD-ID> drafting "/sf:audit"
+
+# Record the split as one decision row
+node $SF state add-decision <PARENT-ID> --summary "SPLIT into <N> parts: <CHILD-IDs>"
+```
+
+**NEVER write `.specflow/STATE.md` with the Write tool.** The file may exceed your Read cap; a full-file Write after a truncated Read destroys it. All STATE.md changes go through `sf-tools state ...` / `sf-tools queue ...`. If sf-tools cannot express the change, use a single anchored `Edit` with an exact-match unique `old_string` — never a full rewrite.
+
+Each command is surgical: it edits one row and leaves every other byte untouched. Run them one at a time rather than trying to batch the section.
 Do NOT use Bash (awk, sed, or echo) to modify `.specflow/STATE.md`.
 
 </process>

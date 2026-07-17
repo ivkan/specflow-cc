@@ -5,6 +5,50 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.24.0] - 2026-07-17
+
+### Fixed
+
+- **STATE.md could be destroyed by the agents that maintain it.** `.specflow/STATE.md` had no size bound, so it could outgrow an agent's ~25k-token Read cap. Eight agent files then instructed agents to "Read `.specflow/STATE.md`, then use the Write tool to write the updated content" — a full-file write built from a *truncated* read, which silently discards everything past the cut. A field project ([`topgun`](https://github.com/)) lost its Decisions tail twice this way and survived only by having sessions disobey the shipped instructions in favour of surgical `Edit` calls. Its STATE.md reached **205 KB across 91 lines**, one `Next Step` cell holding 80 KB.
+
+  Four defects, all now closed:
+
+  1. **The rotation trigger measured the wrong dimension.** The guidance ("if total lines > 100") was copy-pasted across five command files and never fired on the field file — 91 lines, 205 KB. Markdown table rows grow in WIDTH, not number. Rotation now triggers on BYTES (32 KB default; `state_max_bytes` in `.specflow/config.json` or `SF_STATE_MAX_BYTES`).
+  2. **Rotation was itself implemented via the hazard.** The old block told the agent to read STATE.md, count lines, and "Write updated STATE.md". By the time it would have fired, the file was already past the Read cap. Rotation now runs in Node, which has no Read cap.
+  3. **No cell had a size bound.** `state add-active` was *already* a CLI call and still produced the 80 KB cell — routing writes through Node was necessary but not sufficient. Cells are now capped (target 300 chars, hard cap 500) at every writer.
+  4. **The Decisions table — the heaviest section at 119 KB — had no CLI writer at all**, so agents appended to it by hand. `state add-decision` closes that path.
+
+- **`queue next` returned mis-mapped fields on any drifted Queue.** `parseQueueTable` accepted any header containing "id" and "priority", then read cells *by position*, and `filter(c => c !== '')` dropped empty cells so every later column shifted left. On the field file it returned the title as `id`, `"high"` as `title`, and a date as `status`. Columns are now resolved by header NAME across all parsers; a missing column yields `''` instead of a neighbour's value. `parseActiveSpecsTable` had the same defect plus a second one: it truncated `Next Step` at the first `|` inside the cell.
+
+### Added
+
+- **`state` / `queue` subcommands** — every STATE.md mutation an agent used to perform by hand:
+  `state set-status`, `state add-decision`, `state set-execution`, `state clear-execution`,
+  `state rotate`, `state check`, `state normalize`, `queue add`, `queue remove`.
+  All are schema-adaptive (they write whatever column layout is on disk), surgical (one line
+  edited; every other byte untouched), run under the existing advisory lock, and print a
+  one-line integrity summary (lines, bytes, decision rows, largest row).
+
+- **`state rotate [--keep N]`** — moves decision rows beyond the newest N to `.specflow/DECISIONS_ARCHIVE.md`, and compresses any cell over the cap *in any table* into a `… [full text: DECISIONS_ARCHIVE.md <date> <spec>]` pointer, full text preserved in the archive. Lossless, idempotent, and safe to run on every `/sf:done`. The archive is written **before** STATE.md: a crash between the two duplicates an archive row (harmless) rather than dropping a row that never landed (silent loss).
+
+- **`state check`** — byte size, oversized cells, schema drift, table structure, and *truncation-scar* detection (file ending mid-row, or sections gone — the fingerprint of a truncated read written back). `/sf:health` now calls it instead of eyeballing the file, which would itself hit the Read cap it is meant to detect. New codes: E004–E006, W011–W012, I003–I004.
+
+- **`state normalize [--apply] [--force]`** — reports table schema drift; dry-run by default. Drift is not treated as a defect (every reader resolves columns by name), and `--apply` refuses to drop a column holding data unless `--force`.
+
+- **Agent-instruction lint** (`tests/agent-instructions.test.cjs`) — fails the build if any agent or command file re-introduces a full-file STATE.md write, prescribes Read+Write as the mutation method, or gates rotation on line count. The original defect was never in code; it was prose. Prose has no type system, so this is the type system.
+
+### Migration
+
+Existing projects: run once, from the project root.
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state rotate
+```
+
+Idempotent, and it *is* the migration — no STATE.md format change, only size discipline. The 80 KB-cell case is exactly what the oversized-cell compression handles. Verify with `node ~/.claude/specflow-cc/bin/sf-tools.cjs state check`. On the field file this took **205 KB → 8 KB** (largest row 461 bytes), archiving 57 rows and compressing 13 cells, with the Queue, prose blockquotes, and drifted schemas preserved byte-for-byte.
+
+If `state check` reports a truncation scar (E006), rotation cannot help — those bytes are already gone. Recover from `git log -p --follow .specflow/STATE.md`, from `DECISIONS_ARCHIVE.md`, or from session transcripts, and do not let an agent reconstruct the file from memory.
+
 ## [1.23.1] - 2026-05-28
 
 ### Fixed

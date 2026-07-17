@@ -268,12 +268,11 @@ Update ONLY the Current Position section:
 - Status → "review"
 - Next Step → "/sf:review"
 
-Update STATE.md by reading the current file content, then writing the updated file with:
-- "**Status:**" line changed to the new status
-- "**Next Step:**" line changed to the new next step
-- No other content modified
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state set-status <SPEC-ID> review --next "/sf:review"
+```
 
-Use the Read tool to read `.specflow/STATE.md`, then use the Write tool to write the updated content.
+**NEVER write `.specflow/STATE.md` with the Write tool.** The file may exceed your Read cap; a full-file Write after a truncated Read destroys it. All STATE.md changes go through `sf-tools state ...`. If sf-tools cannot express the change, use a single anchored `Edit` with an exact-match unique `old_string` — never a full rewrite.
 Do NOT use Bash (awk, sed, or echo) to modify `.specflow/STATE.md`.
 
 **CRITICAL — DO NOT go beyond this:**

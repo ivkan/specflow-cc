@@ -285,14 +285,15 @@ Update `.specflow/STATE.md`:
 - Set Next Step to "/sf:audit"
 - Add spec to Queue
 
-Update STATE.md by reading the current file content, then writing the updated file with:
-- "**Active Specification:**" line changed to the new spec
-- "**Status:**" line changed to "drafting"
-- "**Next Step:**" line changed to "/sf:audit"
-- Queue table updated with new spec entry
-- No other content modified
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state add-active <SPEC-ID> drafting "/sf:audit"
+node ~/.claude/specflow-cc/bin/sf-tools.cjs queue add <SPEC-ID> \
+  --title "<short title>" --priority <priority> --status draft
+```
 
-Use the Read tool to read `.specflow/STATE.md`, then use the Write tool to write the updated content.
+**NEVER write `.specflow/STATE.md` with the Write tool.** The file may exceed your Read cap; a full-file Write after a truncated Read destroys it. All STATE.md changes go through `sf-tools state ...` / `sf-tools queue ...`. If sf-tools cannot express the change, use a single anchored `Edit` with an exact-match unique `old_string` — never a full rewrite.
+
+Every cell is capped at 500 chars and will be REJECTED above it — `--title` is a short label, and Next Step is the next command, not a plan.
 Do NOT use Bash (awk, sed, or echo) to modify `.specflow/STATE.md`.
 
 **If `<prior_discussion>` provided:**

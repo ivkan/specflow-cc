@@ -79,7 +79,49 @@ For each check:
 
 **For W010:** If both `TODO-*.md` files AND `TODO.md` exist in `.specflow/todos/`, add info note suggesting `/sf:migrate-todos` to complete migration.
 
-### 3.2 STATE.md Integrity
+### 3.2 STATE.md Size and Structure
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state check
+```
+
+Do NOT compute these checks by reading STATE.md yourself. The file can exceed your Read cap — that is the very condition being tested — so an eyeball check would read a truncated file and pronounce it healthy. `state check` runs in Node, which has no such limit.
+
+**NEVER write `.specflow/STATE.md` with the Write tool**, including while repairing — that is what this check exists to detect. Repairs go through `sf-tools state ...`; if a change cannot be expressed that way, use a single anchored `Edit` with a unique `old_string`, never a full rewrite.
+
+Map the JSON response onto the collectors:
+
+| Field | Code | Severity | Action |
+|-------|------|----------|--------|
+| `over_limit: true` | E004 | error | Repairable — run `state rotate` |
+| `oversized_cells: [...]` | E005 | error | Repairable — run `state rotate` (one entry per cell above the 500-char cap) |
+| `truncation_scar: "..."` | E006 | error | NOT repairable — see the recovery note below |
+| `broken_tables: [...]` | W011 | warning | NOT repairable — a row holds an unescaped `\|`; fix that row by hand |
+| `missing_sections: [...]` | W012 | warning | Repairable — run `state normalize` |
+| `schema_drift: [...]` | I003 | info | Not a defect: every sf-tools reader resolves columns by name. `state normalize --apply` only if you want the canonical layout |
+| `approaching_limit: true` | I004 | info | Over 80% of the limit; `state rotate` will keep it clear |
+
+**Repair path for E004/E005 (`--repair`):**
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs state rotate
+```
+Lossless and idempotent: old decision rows and oversized cells move to `.specflow/DECISIONS_ARCHIVE.md`, leaving a pointer behind. Re-run `state check` afterwards to confirm.
+
+**E006 — truncation scar.** The file ends mid-row, or whole sections are gone. This is the fingerprint of an agent writing back a truncated read. Rotation cannot help; the bytes are already gone. Report it and point the user at recovery:
+```
+[E006] STATE.md shows a truncation scar: {reason}
+
+This is what a full-file Write after a truncated Read leaves behind.
+Recover the lost tail from:
+  - git history:   git log -p --follow .specflow/STATE.md
+  - the archive:   .specflow/DECISIONS_ARCHIVE.md (rotated rows survive there)
+  - session transcripts, which often contain the rows verbatim
+
+Do NOT let an agent "reconstruct" the file from memory — that is how the tail is
+lost a second time.
+```
+
+### 3.3 STATE.md Integrity
 
 Read STATE.md and validate:
 
@@ -101,21 +143,21 @@ Read STATE.md and validate:
 - Check for: `## Active Specification`, `## Queue`
 - If missing: warning
 
-### 3.3 Orphaned Specs Check
+### 3.4 Orphaned Specs Check
 
 **I001: Spec file exists but not in queue or archive**
 - List all files in `.specflow/specs/`
 - For each, check if its ID appears in STATE.md queue
 - If not: info (may be work-in-progress)
 
-### 3.4 Archive Consistency
+### 3.5 Archive Consistency
 
 **I002: Spec in queue marked as completed but not archived**
 - Parse queue for specs with status containing "done" or "complete"
 - Check if file exists in `.specflow/archive/`
 - If not: info
 
-### 3.5 Execution State
+### 3.6 Execution State
 
 **W008: Stale execution state files**
 - List `.specflow/execution/*.json`
@@ -200,6 +242,9 @@ Display final status.
 | E001 | error | STATE.md not found | Yes |
 | E002 | error | STATE.md missing Queue section | No |
 | E003 | error | Active spec references non-existent file | Yes |
+| E004 | error | STATE.md exceeds the byte limit (default 32 KB) | Yes — `state rotate` |
+| E005 | error | A table cell exceeds the 500-char cap | Yes — `state rotate` |
+| E006 | error | Truncation scar (file ends mid-row / sections lost) | No — recover from git or the archive |
 | W001 | warning | todos/ directory missing | Yes |
 | W002 | warning | specs/ directory missing | Yes |
 | W003 | warning | archive/ directory missing | Yes |
@@ -210,8 +255,12 @@ Display final status.
 | W008 | warning | Stale execution state files | Yes |
 | W009 | warning | TODO file without valid frontmatter | No |
 | W010 | info | Legacy TODO.md alongside per-file TODOs | No |
+| W011 | warning | Table row holds an unescaped `\|` (columns mis-align) | No |
+| W012 | warning | STATE.md missing a canonical section | Yes — `state normalize` |
 | I001 | info | Spec not in queue (may be WIP) | No |
 | I002 | info | Completed spec not archived | No |
+| I003 | info | Table schema drifted from the template (readers cope; cosmetic) | Opt-in — `state normalize --apply` |
+| I004 | info | STATE.md over 80% of the byte limit | Yes — `state rotate` |
 
 </error_codes>
 
@@ -224,11 +273,15 @@ Display final status.
 | Create directories | specs/, archive/, execution/ | None |
 | Clear active spec | Set to "—" if spec file missing | Loses active reference |
 | Delete stale execution | Remove orphaned .json state files | None |
+| `state rotate` | Old/oversized rows → DECISIONS_ARCHIVE.md, pointer left behind | None — lossless and idempotent |
+| `state normalize` | Restores a missing canonical section | None (refuses to drop a column holding data) |
 
 **Not repairable (too risky):**
 - STATE.md content/queue entries
 - Spec file contents
 - Archive decisions
+- A truncation scar (E006) — the bytes are already gone; recover from git history, `DECISIONS_ARCHIVE.md`, or session transcripts. Never let an agent reconstruct it from memory.
+- A row with an unescaped `|` (W011) — only a human can tell which pipe was the separator.
 
 </repair_actions>
 
