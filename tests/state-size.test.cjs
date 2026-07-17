@@ -395,6 +395,70 @@ const section = (txt, name) => {
       'the oversized cell must survive a round-trip unchanged');
   });
 
+  await test('rotation preserves extra columns of a drifted Decisions schema', () => {
+    // A 4-column Decisions table: the extra column must survive rotation, folded into the
+    // archived text rather than silently dropped.
+    const wide = [
+      '## Decisions', '',
+      '| Date | Spec | Decision | Rationale |',
+      '|------|------|----------|-----------|',
+      ...Array.from({ length: 15 }, (_, i) =>
+        `| 2026-07-${String(20 - i).padStart(2, '0')} | SPEC-${400 + i} | Verdict ${i} | because ${i} |`),
+      '',
+    ].join('\n');
+    const r = rotateContent(wide, cfg, 5);
+    // Rows 5..14 rotate out; their Rationale must appear in the archived entries.
+    const dropped = r.archived.filter(e => /Rationale:/.test(e.text));
+    assert.ok(dropped.length >= 10, 'extra column must be folded into archived text, not lost');
+    assert.ok(dropped.some(e => /because \d+/.test(e.text)));
+  });
+
+  await test('add-decision --force does not pollute the archive when Decisions is absent', async () => {
+    const dir = tmpProject('## Active Specifications\n\n| SPEC-ID | Status | Next Step |\n|--|--|--|\n| SPEC-1 | run | /x |\n');
+    const archivePath = path.join(dir, '.specflow', 'DECISIONS_ARCHIVE.md');
+    const { cmdStateAddDecision } = require('../bin/lib/state-decisions.cjs');
+
+    let threw = false;
+    const orig = process.stdout.write;
+    const origErr = process.stderr.write;
+    const origExit = process.exit;
+    process.stdout.write = () => {};
+    process.stderr.write = () => {};
+    process.exit = (code) => { throw new Error('exit ' + code); };
+    try {
+      await cmdStateAddDecision(dir, 'SPEC-999', 'x'.repeat(5000), { force: true, raw: true });
+    } catch (_) {
+      threw = true;
+    } finally {
+      process.stdout.write = orig;
+      process.stderr.write = origErr;
+      process.exit = origExit;
+    }
+
+    assert.ok(threw, 'must error when Decisions section is missing');
+    assert.ok(!fs.existsSync(archivePath),
+      'the archive must NOT be written when the STATE.md mutation cannot proceed');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  await test('findTable does not absorb a second table after a blank line', () => {
+    const two = [
+      '## Decisions', '',
+      '| Date | Decision |',
+      '|------|----------|',
+      '| 2026-07-01 | first |',
+      '',
+      '| Other | Table |',
+      '|-------|-------|',
+      '| a | b |',
+    ].join('\n');
+    const { findSection, findTable } = require('../bin/lib/state-table.cjs');
+    const lines = two.split('\n');
+    const sec = findSection(lines, 'Decisions');
+    const tbl = findTable(lines, sec.start, sec.end);
+    assert.equal(tbl.rowIdxs.length, 1, 'only the first table\'s row belongs to it');
+  });
+
   await test('rotation never drops a decision row on the floor', () => {
     const before = integrity(fixture, cfg).decision_rows;
     const after = integrity(r1.content, cfg).decision_rows;

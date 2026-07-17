@@ -84,10 +84,24 @@ function readEntry(columns, cells) {
   const si = colIndex(columns, SPEC_ALIASES);
   const ti = colIndex(columns, TEXT_ALIASES);
 
+  let text = ti === -1 ? '' : unescapeCell(cells[ti] || '');
+
+  // Fold any columns beyond date/spec/text into the text so a drifted schema with extra
+  // columns (e.g. `| Date | Spec | Decision | Rationale |`) loses nothing when the row is
+  // rotated into a 2- or 3-column archive. Without this the extra cells vanish from both
+  // STATE.md (row removed) and the archive (never written).
+  const extra = [];
+  for (let i = 0; i < columns.length; i++) {
+    if (i === di || i === si || i === ti) continue;
+    const v = unescapeCell(cells[i] || '').trim();
+    if (v && v !== '—' && v !== '-') extra.push(`${String(columns[i]).trim()}: ${v}`);
+  }
+  if (extra.length) text = text ? `${text} — ${extra.join('; ')}` : extra.join('; ');
+
   return {
     date: di === -1 ? '' : unescapeCell(cells[di] || ''),
     spec: si === -1 ? '' : unescapeCell(cells[si] || ''),
-    text: ti === -1 ? '' : unescapeCell(cells[ti] || ''),
+    text,
   };
 }
 
@@ -382,17 +396,20 @@ async function cmdStateAddDecision(cwd, specId, summary, opts) {
     let lines = content.split('\n');
     let text = summary;
 
-    // --force on an oversized summary: archive the full text, keep a pointer.
-    if (opts.force && summary.length > cfg.cellHardCap) {
-      appendArchive(cwd, [{ date: today(), spec: specId, text: summary }], ['Date', 'Spec', 'Decision']);
-      text = compressCell(summary, `${today()} ${specId}`, cfg);
-    }
-
+    // Validate the destination BEFORE any archive write. If the Decisions table is
+    // missing we must bail without side effects — a force-archive here would leave an
+    // orphaned entry in DECISIONS_ARCHIVE.md that no STATE.md row references.
     const sec = findSection(lines, 'Decisions');
     if (!sec) error('STATE.md has no `## Decisions` section. Run: sf-tools state normalize');
 
     const tbl = findTable(lines, sec.start, sec.end);
     if (!tbl) error('STATE.md `## Decisions` section has no table. Run: sf-tools state normalize');
+
+    // --force on an oversized summary: archive the full text, keep a pointer.
+    if (opts.force && summary.length > cfg.cellHardCap) {
+      appendArchive(cwd, [{ date: today(), spec: specId, text: summary }], ['Date', 'Spec', 'Decision']);
+      text = compressCell(summary, `${today()} ${specId}`, cfg);
+    }
 
     const rows = tbl.rowIdxs
       .map(li => ({ li, cells: splitRow(lines[li], tbl.columns.length) }))

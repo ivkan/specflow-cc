@@ -81,11 +81,9 @@ function findTable(lines, start, end) {
 
     for (let j = i + 2; j < end; j++) {
       const t = lines[j].trim();
-      if (!t.startsWith('|')) {
-        // A blank line or prose ends the table; stop at the first non-row.
-        if (t === '') continue;
-        break;
-      }
+      // A blank line or prose ends the table (standard markdown). Stopping on blank also
+      // prevents absorbing a second table that follows a blank line in the same section.
+      if (!t.startsWith('|')) break;
       if (isSeparator(lines[j])) continue;
       rowIdxs.push(j);
     }
