@@ -191,6 +191,58 @@ test('source: with trailing context is parsed correctly', () => {
   }
 });
 
+test('split suffix does not consume a number: TODO-093a + TODO-093b → TODO-094', () => {
+  const tmpDir = makeTmpProject();
+  try {
+    for (const id of ['TODO-093', 'TODO-093a', 'TODO-093b']) {
+      fs.writeFileSync(
+        path.join(tmpDir, '.specflow', 'todos', id + '.md'),
+        '---\nid: ' + id + '\n---\n',
+        'utf8'
+      );
+    }
+    assert.equal(nextIdRaw(tmpDir), 'TODO-094');
+  } finally {
+    cleanup(tmpDir);
+  }
+});
+
+test('suffixed source: in an archived spec is read by its number', () => {
+  const tmpDir = makeTmpProject();
+  try {
+    fs.writeFileSync(
+      path.join(tmpDir, '.specflow', 'archive', 'SPEC-070.md'),
+      '---\nid: SPEC-070\nsource: TODO-093a\n---\n',
+      'utf8'
+    );
+    assert.equal(nextIdRaw(tmpDir), 'TODO-094');
+  } finally {
+    cleanup(tmpDir);
+  }
+});
+
+test('unrecognized TODO filename is named on stderr, not counted silently', () => {
+  const tmpDir = makeTmpProject();
+  const origWrite = process.stderr.write;
+  let stderrOutput = '';
+  try {
+    fs.writeFileSync(
+      path.join(tmpDir, '.specflow', 'todos', 'TODO-007 copy.md'),
+      '---\nid: TODO-007\n---\n',
+      'utf8'
+    );
+    process.stderr.write = (s) => { stderrOutput += s; };
+    const id = nextIdRaw(tmpDir);
+    process.stderr.write = origWrite;
+
+    assert.equal(id, 'TODO-001', 'a rejected name contributes no number');
+    assert.ok(stderrOutput.includes('TODO-007 copy.md'), 'stderr must name the file');
+  } finally {
+    process.stderr.write = origWrite;
+    cleanup(tmpDir);
+  }
+});
+
 test('source: in spec body (not at line start) does NOT influence next-id', () => {
   const tmpDir = makeTmpProject();
   try {
