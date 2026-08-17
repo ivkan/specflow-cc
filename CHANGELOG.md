@@ -5,6 +5,44 @@ All notable changes to SpecFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.25.0] - 2026-08-17
+
+### Fixed
+
+- **`todo reindex` dropped TODO files and reported success.** Nine hand-copied variants of `/^TODO-\d+\.md$/` in [`bin/lib/todo.cjs`](bin/lib/todo.cjs) made any filename outside that exact shape invisible. A split TODO — `TODO-093a.md`, `TODO-093b.md`, produced when an oversized item is divided in place — matched none of them. On a field project ([`topgun`](https://github.com/)) with 298 `TODO-*.md` files on disk, `todo reindex` printed `{"reindexed": 296, "malformed": 0}` and silently omitted both files from INDEX.md. The counter confirmed work that had not happened: a skipped name was neither indexed NOR counted as malformed.
+
+  Two defects, the second worse than the first:
+
+  1. **The drop was unreported.** A file that failed the pattern left no trace in any output stream, exit code, or artifact.
+  2. **`check-stale` was blind to exactly the divergence it exists to detect.** It used the same pattern to enumerate the disk, so the two omitted files could never appear in `missing_from_index`. The INDEX/disk gap was not merely present — it was undiagnosable with the tool built to diagnose it.
+
+- **Frontmatter `id` disagreeing with the filename is now MALFORMED.** Previously `reindex` wrote the row from `id:` while `check-stale` read the disk by filename, so a mismatch produced permanent drift that no reindex could settle.
+
+### Added
+
+- **Split ids are a supported id shape:** `TODO-` + digits + optional lowercase suffix (`TODO-093` → `TODO-093a`, `TODO-093b`). The suffix belongs to the id and must match the `id:` frontmatter field. It does **not** consume a number — with `TODO-093a` and `TODO-093b` on disk, `todo next-id` still returns `TODO-094`.
+
+- **A defined listing order.** Ties (equal priority, equal date) now break by id — numeric part, then suffix — so a split TODO sorts directly after its parent (`TODO-093`, `TODO-093a`, `TODO-093b`, `TODO-094`) instead of following `readdir` order.
+
+- **Unindexable filenames are named, never dropped quietly.** Any `.specflow/todos/TODO-*.md` whose name is not a valid id is now reported through every available channel: a `warn:` line on stderr naming the file and the reason, a `rejected[]` array in the `todo reindex` JSON, a **Not indexed** section inside INDEX.md itself, and exit code 1. `todo check-stale` reports the same files in `unindexable_files` and returns STALE — a directory holding a file no reindex will ever pick up is drift by definition. `todo list` and `todo next-id` warn on stderr and stay exit-0, since they feed interactive command flows.
+
+### Changed
+
+- **One source for the id grammar instead of nine.** `TODO_ID_SRC` / `TODO_ID_SRC_ATOMIC` are built from two atoms, and every match derives from them via `parseTodoFilename()`, `compareTodoEntries()`, and `listTodoFiles()`. The helpers are exported so callers derive from the same source rather than re-inlining a literal.
+
+- `todo reindex` JSON gains `rejected[]`; `todo check-stale` JSON gains `unindexable_files[]`. Existing fields are unchanged, and INDEX.md is byte-identical to previous output for a directory with no rejected files.
+
+### Migration
+
+None required. Projects already carrying split TODOs pick them up on the next reindex:
+
+```bash
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo reindex
+node ~/.claude/specflow-cc/bin/sf-tools.cjs todo check-stale
+```
+
+On the field project this took the index from 296 to 298 entries, with `check-stale` reporting `stale: false`. If `reindex` now exits non-zero and names files under **Not indexed**, rename those files to the documented id shape — they were being discarded before, without notice.
+
 ## [1.24.0] - 2026-07-17
 
 ### Fixed

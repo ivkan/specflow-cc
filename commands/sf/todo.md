@@ -12,6 +12,14 @@ allowed-tools:
 Add a new to-do item to the backlog. To-dos are ideas or tasks that don't need immediate specification but should be captured for later. They can later be converted to specifications with `/sf:plan`.
 
 Each TODO is stored as an individual file `.specflow/todos/TODO-XXX.md` with YAML frontmatter.
+
+**Id format.** `TODO-` + digits, optionally followed by lowercase letters when an
+oversized TODO is split in place: `TODO-093` → `TODO-093a`, `TODO-093b`. The
+suffix is part of the id — the `id:` frontmatter field must match the filename
+exactly, and the suffix does not consume a new number (`next-id` still moves on
+to `TODO-094`). Any other filename shape under `.specflow/todos/TODO-*.md` is
+rejected by `todo reindex` and `todo check-stale` with a non-zero exit code, and
+never reaches INDEX.md.
 </purpose>
 
 <context>

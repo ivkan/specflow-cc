@@ -472,6 +472,208 @@ test('regression guard — well-formed TODOs: no warnings, no MALFORMED rows, le
   }
 });
 
+// ---------- Split ids (TODO-093a) ----------
+
+console.log('cmdTodoReindex (split ids):');
+
+test('suffixed TODO files are indexed, ordered TODO-093, 093a, 093b, 094', () => {
+  process.exitCode = 0;
+  const { tmpDir, todosDir } = fixture({
+    // Same priority and created date for all four, so the tie-breaker alone
+    // decides the order.
+    'TODO-094': makeTodo('TODO-094', 'high', 'open', '2026-04-08'),
+    'TODO-093b': makeTodo('TODO-093b', 'high', 'open', '2026-04-08'),
+    'TODO-093': makeTodo('TODO-093', 'high', 'open', '2026-04-08'),
+    'TODO-093a': makeTodo('TODO-093a', 'high', 'open', '2026-04-08'),
+  });
+  let stderrOutput = '';
+  let stdout = '';
+  try {
+    stdout = captureStdout(() => {
+      stderrOutput = captureStderr(() => cmdTodoReindex(tmpDir, false));
+    });
+    const result = JSON.parse(stdout);
+    const indexContent = fs.readFileSync(path.join(todosDir, 'INDEX.md'), 'utf8');
+
+    assert.equal(result.reindexed, 4, 'all four files must be indexed');
+    assert.deepEqual(result.rejected, [], 'well-formed split ids are not rejections');
+    assert.equal(stderrOutput, '', 'no warnings for well-formed split ids');
+    assert.equal(process.exitCode, 0, 'split ids must not set a failure exit code');
+
+    for (const id of ['TODO-093', 'TODO-093a', 'TODO-093b', 'TODO-094']) {
+      assert.ok(indexContent.includes('| ' + id + ' |'), id + ' must appear in INDEX.md');
+    }
+
+    // Locked-in order: a split TODO sits directly after its parent.
+    const order = indexContent
+      .split('\n')
+      .map(l => l.match(/^\|\s*\d+\s*\|\s*(TODO-\S+)\s*\|/))
+      .filter(Boolean)
+      .map(m => m[1]);
+    assert.deepEqual(order, ['TODO-093', 'TODO-093a', 'TODO-093b', 'TODO-094']);
+  } finally {
+    process.exitCode = 0;
+    cleanup(tmpDir);
+  }
+});
+
+test('check-stale is FRESH for suffixed TODOs after reindex', () => {
+  process.exitCode = 0;
+  const { tmpDir } = fixture({
+    'TODO-093': makeTodo('TODO-093', 'high', 'open', '2026-04-08'),
+    'TODO-093a': makeTodo('TODO-093a', 'high', 'open', '2026-04-08'),
+    'TODO-093b': makeTodo('TODO-093b', 'low', 'open', '2026-04-08'),
+  });
+  try {
+    captureStdout(() => cmdTodoReindex(tmpDir, false));
+    process.exitCode = 0;
+    const out = captureStdout(() => cmdTodoCheckStale(tmpDir, false));
+    const result = JSON.parse(out);
+    assert.equal(result.stale, false, 'suffixed ids must not read as drift');
+    assert.equal(result.todo_count, 3);
+    assert.equal(result.index_count, 3);
+    assert.deepEqual(result.missing_from_index, []);
+    assert.equal(process.exitCode, 0);
+  } finally {
+    process.exitCode = 0;
+    cleanup(tmpDir);
+  }
+});
+
+test('frontmatter id disagreeing with filename — row MALFORMED, exit code 1', () => {
+  process.exitCode = 0;
+  // A split that renamed the file but left the parent id inside: INDEX would
+  // otherwise list TODO-093 twice while TODO-093a.md sits unreferenced.
+  const { tmpDir, todosDir } = fixture({
+    'TODO-093a': makeTodo('TODO-093', 'high', 'open', '2026-04-08'),
+  });
+  let stderrOutput = '';
+  try {
+    captureStdout(() => {
+      stderrOutput = captureStderr(() => cmdTodoReindex(tmpDir, false));
+    });
+    const indexContent = fs.readFileSync(path.join(todosDir, 'INDEX.md'), 'utf8');
+
+    assert.ok(indexContent.includes('MALFORMED:'), 'INDEX row must contain MALFORMED:');
+    assert.ok(indexContent.includes('TODO-093a'), 'row must carry the filename id');
+    assert.ok(stderrOutput.includes('id mismatch'), 'stderr must name the mismatch');
+    assert.equal(process.exitCode, 1, 'exit code must be 1');
+  } finally {
+    process.exitCode = 0;
+    cleanup(tmpDir);
+  }
+});
+
+// ---------- Unindexable filenames must never be dropped in silence ----------
+
+console.log('cmdTodoReindex (rejected filenames):');
+
+test('reindex does not report plain success when a TODO-*.md file is dropped', () => {
+  process.exitCode = 0;
+  const { tmpDir, todosDir } = fixture({
+    'TODO-001': makeTodo('TODO-001', 'high', 'open', '2026-05-14'),
+    'TODO-002 copy': makeTodo('TODO-002', 'high', 'open', '2026-05-14'),
+  });
+  let stderrOutput = '';
+  let stdout = '';
+  try {
+    stdout = captureStdout(() => {
+      stderrOutput = captureStderr(() => cmdTodoReindex(tmpDir, false));
+    });
+    const result = JSON.parse(stdout);
+    const indexContent = fs.readFileSync(path.join(todosDir, 'INDEX.md'), 'utf8');
+
+    // The count alone used to be the whole story, and it said "success".
+    assert.equal(result.reindexed, 1, 'only the valid file is indexed');
+    assert.equal(result.rejected.length, 1, 'the dropped file must be reported');
+    assert.equal(result.rejected[0].file, 'TODO-002 copy.md', 'reported by name');
+    assert.ok(result.rejected[0].reason, 'reported with a reason');
+    assert.equal(process.exitCode, 1, 'a dropped file is a non-zero exit');
+    assert.ok(stderrOutput.includes('TODO-002 copy.md'), 'stderr must name the file');
+    assert.ok(
+      indexContent.includes('Not indexed') && indexContent.includes('TODO-002 copy.md'),
+      'INDEX.md itself must say which files it does not cover'
+    );
+  } finally {
+    process.exitCode = 0;
+    cleanup(tmpDir);
+  }
+});
+
+test('raw reindex output names dropped files instead of claiming success', () => {
+  process.exitCode = 0;
+  const { tmpDir } = fixture({
+    'TODO-001': makeTodo('TODO-001', 'high', 'open', '2026-05-14'),
+    'TODO-XYZ': makeTodo('TODO-XYZ', 'high', 'open', '2026-05-14'),
+  });
+  try {
+    let out = '';
+    captureStderr(() => {
+      out = captureStdout(() => cmdTodoReindex(tmpDir, true));
+    });
+    assert.ok(out.includes('NOT indexed'), 'raw summary must flag the omission');
+    assert.ok(out.includes('TODO-XYZ.md'), 'raw summary must name the file');
+    assert.equal(process.exitCode, 1);
+  } finally {
+    process.exitCode = 0;
+    cleanup(tmpDir);
+  }
+});
+
+test('check-stale reports an unindexable file rather than FRESH', () => {
+  process.exitCode = 0;
+  const { tmpDir, todosDir } = fixture({
+    'TODO-001': makeTodo('TODO-001', 'high', 'open', '2026-05-14'),
+  });
+  try {
+    captureStderr(() => captureStdout(() => cmdTodoReindex(tmpDir, false)));
+    process.exitCode = 0;
+
+    // Appears after the reindex: INDEX.md is complete for every id it can see,
+    // which is exactly the situation the old check-stale called FRESH.
+    fs.writeFileSync(
+      path.join(todosDir, 'TODO-002-old.md'),
+      makeTodo('TODO-002', 'high', 'open', '2026-05-14'),
+      'utf8'
+    );
+
+    let out = '';
+    const stderrOutput = captureStderr(() => {
+      out = captureStdout(() => cmdTodoCheckStale(tmpDir, false));
+    });
+    const result = JSON.parse(out);
+
+    assert.equal(result.stale, true, 'a file no reindex can pick up is drift');
+    assert.equal(result.unindexable_files.length, 1);
+    assert.equal(result.unindexable_files[0].file, 'TODO-002-old.md');
+    assert.ok(stderrOutput.includes('TODO-002-old.md'), 'stderr must name the file');
+    assert.equal(process.exitCode, 1);
+  } finally {
+    process.exitCode = 0;
+    cleanup(tmpDir);
+  }
+});
+
+test('non-TODO files in the directory are ignored without noise', () => {
+  process.exitCode = 0;
+  const { tmpDir } = fixture({
+    'TODO-001': makeTodo('TODO-001', 'high', 'open', '2026-05-14'),
+    'NOTES': '# scratch\n',
+    'TODO': '# legacy monolithic file\n',
+  });
+  let stderrOutput = '';
+  try {
+    captureStdout(() => {
+      stderrOutput = captureStderr(() => cmdTodoReindex(tmpDir, false));
+    });
+    assert.equal(stderrOutput, '', 'only TODO-*.md names are held to the id grammar');
+    assert.equal(process.exitCode, 0);
+  } finally {
+    process.exitCode = 0;
+    cleanup(tmpDir);
+  }
+});
+
 // ---------- Summary ----------
 
 console.log('');
